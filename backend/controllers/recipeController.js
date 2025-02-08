@@ -34,11 +34,11 @@ const getSingleRecipe = async (req, res) => {
 
 // CREATE RECIPE ----------------------------------------------------------------------------------
 const createRecipe = async (req, res) => {
-    const {title, prepTime, cookingTime, difficulty, serving, cusine, prepInstruction, cookInstructions, ingredients} = req.body
+    const {title, prepTime, cookTime, servingSize, difficulty, origin, mealType, prepInstructions, cookIntructions, ingredients} = req.body
     
     // NOTE: ATTEMPTS TO CREATE RECIPE IN DB
     try {
-        const recipe = await recipeModel.create({title, prepTime, cookingTime, difficulty, serving, cusine, prepInstruction, cookInstructions, ingredients})
+        const recipe = await recipeModel.create({title, prepTime, cookTime, servingSize, difficulty, origin, mealType, prepInstructions, cookIntructions, ingredients})
         res.status(200).json(recipe)
     } catch (error) {
         // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE

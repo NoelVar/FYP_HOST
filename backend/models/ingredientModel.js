@@ -13,9 +13,7 @@ const ingredientSchema = new Schema({
         type: String,
         require: false
     }
-},
-    {timestamps: true} // NOTE: AUTOMATICALLY ADDS CREATED DATE AND UPDATE DATE FIELDS
-)
+})
 
 // NOTE: EXPORTS THE INGREDIENT MODEL BASED ON THE DEFINED SCHEMA
 module.exports = mongoose.model('Ingredient', ingredientSchema)

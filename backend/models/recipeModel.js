@@ -25,7 +25,7 @@ const recipeSchema = new Schema({
     },
     difficulty: {
         type: String,
-        enum: ['Easy', 'Moderate', 'Hard'],
+        enum: ['easy', 'moderate', 'hard'],
         require: true   // NOTE: 'difficulty' MUST BE ENTERED
     },
     origin: {
@@ -34,7 +34,7 @@ const recipeSchema = new Schema({
     },
     mealType: {
         type: String,
-        enum: ['Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Dish', 'Snack', 'Drink', 'Dessert', 'Other'],
+        enum: ['breakfast', 'brunch', 'lunch', 'dinner', 'dish', 'snack', 'drink', 'dessert', 'other'],
         require: true   // NOTE: 'mealType' MUST BE ENETERED
     },
     prepInstructions: {

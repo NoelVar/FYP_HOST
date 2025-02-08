@@ -33,14 +33,18 @@ const getSingleUser = async (req, res) => {
 
 // CREATE USER ------------------------------------------------------------------------------------
 const createUser = async (req, res) => {
-    const {username, email, password, role} = req.body
-    
-    // NOTE: ATTEMPTS TO CREATE USER IN DB
     try {
-        const user = await userModel.create({username, email, password, role})
-        res.status(200).json(user)
+        const {username, email, password, role} = req.body
+
+        // NOTE: ATTEMPTS TO CREATE USER IN DB  
+        try {
+            const user = await userModel.create({username, email, password, role})
+            res.status(200).json(user)
+        } catch (error) {
+            // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
+            res.status(400).json({error: error.message})
+        }
     } catch (error) {
-        // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
         res.status(400).json({error: error.message})
     }
 }
