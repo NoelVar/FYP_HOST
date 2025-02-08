@@ -10,8 +10,9 @@ const userSchema = new Schema({
         required: true  // NOTE: 'username' HAS TO BE ENTERED
     },
     email: {
-        type: mongoose.SchemaTypes.Email,
-        require: true
+        type: String,
+        require: true,
+        unique: true
     },
     password: {
         // TODO: HASH PASSWORDS 
