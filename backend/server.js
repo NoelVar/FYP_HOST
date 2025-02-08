@@ -3,6 +3,8 @@ const express = require('express');
 require('dotenv').config()
 
 const recipesRoutes = require('./routes/recipeRoutes');
+const userRoutes = require('./routes/userRoutes');
+const ingredientRoutes = require('./routes/ingredientRoutes');
 
 // NOTE: EXPRESS APPLICATION
 const app = express();
@@ -16,6 +18,8 @@ app.use((req, res, next) => {
 
 // NOTE: ROUTES
 app.use('/recipes', recipesRoutes);
+app.use('/users', userRoutes);
+app.use('/ingredients', ingredientRoutes);
 
 // NOTE: LISTEN FOR REQUESTS
 app.listen(process.env.PORT, () => {
