@@ -1,4 +1,5 @@
 // NOTE: REQUIRES MONGOOSE TO CREATE SCHEMA
+// FIXME:
 const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema

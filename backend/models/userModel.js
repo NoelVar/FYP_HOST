@@ -25,6 +25,7 @@ const userSchema = new Schema({
         enum: ['admin', 'moderator', 'user'],
         require: true
     }
+    // FIXME: ADD LAST_LOGGED_IN FOR SECURITY
 
 },
     {timestamps: true} // NOTE: AUTOMATICALLY ADDS CREATED DATE AND UPDATE DATE FIELDS

@@ -1,14 +1,16 @@
 // NOTE: REQUIRE EXPRESS PACKAGE
 const express = require('express');
 const mongoose = require('mongoose');
-require('dotenv').config()
-
 const recipesRoutes = require('./routes/recipeRoutes');
-const userRoutes = require('./routes/userRoutes');
-const ingredientRoutes = require('./routes/ingredientRoutes');
+const cors = require('cors')
+require('dotenv').config()
 
 // NOTE: EXPRESS APPLICATION
 const app = express();
+app.use(cors({
+    origin: "http://localhost:3000", 
+    credentials: true
+}))
 
 // NOTE: MIDDLE WARE
 app.use(express.json());
@@ -21,8 +23,6 @@ app.use((req, res, next) => {
 
 // NOTE: ROUTES
 app.use('/recipes', recipesRoutes);
-app.use('/users', userRoutes);
-app.use('/ingredients', ingredientRoutes);
 
 // CONNECT TO DB
 mongoose.connect(process.env.DB_CONNECTION)

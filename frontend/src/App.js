@@ -1,18 +1,31 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home'
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import PageNotFound from './pages/PageNotFound';
+import Recipe from './pages/Recipe';
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="App">
+    <div className="app-container">
         <Routes>
-          <Route 
-            path='/'
-            element={<Home />}
-          />
+            <Route
+              path='/'
+              element={<Home />}
+            />
+            <Route 
+              path='/recipes'
+              element={<Recipe />}
+            />
+            <Route 
+              path='/login'
+              element={<Login />}
+            />
+            <Route 
+              path='/*'
+              element={<PageNotFound />}
+            />
         </Routes>
-      </div>
-    </BrowserRouter>
+    </div>
   );
 }
 

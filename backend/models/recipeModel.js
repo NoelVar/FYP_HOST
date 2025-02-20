@@ -48,8 +48,8 @@ const recipeSchema = new Schema({
     ingredients: [{
         // NOTE: SINGLE INGREDIENT
         ingredient: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Ingredient'
+            type: String,
+            required: true
         },
         // NOTE: QUANTITY OF INGREDIENT
         quantity: {
@@ -61,7 +61,34 @@ const recipeSchema = new Schema({
             type: String,
             required: false
         }
-    }]
+    }],
+    nutritionalInfo: {
+        totalKcal: {
+            type: Number
+        },
+        totalCarbs: {
+            type: Number
+        },
+        totalFat: {
+            type: Number
+        },
+        totalProtein: {
+            type: Number
+        }
+    },
+    comments: [{
+        name: {
+            type: String
+        },
+        content: {
+            type: String
+        }
+    }],
+    status: {
+        type: String,
+        enum: ['approved', 'denied', 'pending'],
+        required: true
+    }
 },
     {timestamps: true} // NOTE: AUTOMATICALLY ADDS CREATED DATE AND UPDATE DATE FIELDS
 )
