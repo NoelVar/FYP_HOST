@@ -3,6 +3,15 @@
 const userModel = require('../models/userModel')
 const mongoose = require('mongoose')
 
+// IDEA: AND TODO:
+/*
+    - HASH PASSWORD
+    - VALIDATE REGISTRATION
+    - VALIDATE LOGIN
+    - CREATE LOGOUT
+    - ADD SESSION TOKEN
+*/ 
+
 // GET ALL USERS ----------------------------------------------------------------------------------
 const getAllUsers = async (req, res) => {
     // NOTE: FETCHES ALL USERS FROM DB

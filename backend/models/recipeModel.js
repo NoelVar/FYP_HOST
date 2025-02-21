@@ -84,7 +84,7 @@ const recipeSchema = new Schema({
             type: String
         }
     }],
-    status: {
+    approvalStatus: {
         type: String,
         enum: ['approved', 'denied', 'pending'],
         required: true

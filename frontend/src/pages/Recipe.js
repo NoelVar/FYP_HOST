@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import RecipeDetails from '../components/RecipeDetails';
 import Loading from '../components/Loading';
 import CreateNewRecipe from '../components/CreateNewRecipe';
@@ -8,7 +9,8 @@ const BACKEND = process.env.BACKEND_URL;
 
 // NOTE: RECIPE PAGE LOGIC ------------------------------------------------------------------------
 const Recipe = () => {
-    // NOTE: STATE VARIABLES
+    // NOTE: STATE VARIABLES#
+    const navigate = useNavigate();
     const [recipes, setRecipes] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [toggle, setToggle] = useState(false);
@@ -34,8 +36,11 @@ const Recipe = () => {
     }, [])
 
     // NOTE: HANDLING TOGGLE ----------------------------------------------------------------------
-    const handleClick = () => {
-        setToggle(!toggle)
+    // const handleClick = () => {
+    //     setToggle(!toggle)
+    // }
+    const reDirect = () => {
+        navigate('/newrecipe')
     }
 
     // NOTE: DISPLAYING RECIPES -------------------------------------------------------------------
@@ -49,12 +54,13 @@ const Recipe = () => {
                 />
             </form>
             <div className='add-recipe-container'>
-            <button onClick={() => handleClick()}>+ Add new recipe</button>
-                {toggle && (
+            <button onClick={reDirect}>+ Add new recipe</button>
+                {/* onClick={() => handleClick()
+                     {toggle && (
                     <div className='new-recipe-form'>
                         <CreateNewRecipe />
                     </div>
-                )}
+                )} */}
             </div>
             <div className='recipes-container'>
             {isLoading 

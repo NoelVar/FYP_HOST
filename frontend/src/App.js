@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import PageNotFound from './pages/PageNotFound';
 import Recipe from './pages/Recipe';
+import CreateNewRecipe from './components/CreateNewRecipe';
 
 function App() {
   return (
@@ -15,6 +16,10 @@ function App() {
             <Route 
               path='/recipes'
               element={<Recipe />}
+            />
+            <Route
+              path='/newrecipe'
+              element={<CreateNewRecipe />}
             />
             <Route 
               path='/login'

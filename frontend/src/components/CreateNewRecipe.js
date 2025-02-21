@@ -1,10 +1,17 @@
 // NOTE: IMPORTS ----------------------------------------------------------------------------------
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+    /* TODO: - REMOVE CAPITAL LETTER WHEN SAVING
+             - STYLE PAGE
+             - ADD ALL INGREDIENT DISPLAY BASED ON INGREDIENT NAMES (IF MATCHES DONT ADD TO LIST)
+    */
 
 // NOTE: CREATE NEW RECIPE ------------------------------------------------------------------------
 const CreateNewRecipe = () => {
 
-    // NOTE: USE STATES -------------------------------------------------------------------------------
+    // NOTE: USE STATES ---------------------------------------------------------------------------
+    const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [prepTime, setPrepTime] = useState(0);
     const [cookTime, setCookTime] = useState(0);
@@ -14,19 +21,58 @@ const CreateNewRecipe = () => {
     const [mealType, setMealType] = useState('');
     const [prepInst, setPrepInst] = useState('');
     const [cookInst, setCookInst] = useState('');
-    const [ingredient, setIngredient] = useState('');
+    const [singleIngredient, setSingleIngredient] = useState({
+            ingredient: '',
+            quantity: 0,
+            measurement: ''
+    });
     const [ingredients, setIngredients] = useState([]);
-    const [nutrInfo, setNutrInfo] = useState('');
+    const [nutrInfo, setNutrInfo] = useState({
+        totalKcal: 0,
+        totalCarbs: 0,
+        totalFat: 0,
+        totalProtein: 0
+    });
+    
+    // NOTE: HANDLING OPTION CHANGE ---------------------------------------------------------------
+    const handleDifficultyChange = (e) => {
+        setDificulty(e.target.value)
+    }
 
-     // NOTE: FUNCTION TO HANDLE THE SUBMITION --------------------------------------------------------
+    const handleMealChange = (e) => {
+        setMealType(e.target.value)
+    }
+
+    // NOTE: HANDLING ADDED INGREDIENT ------------------------------------------------------------
+    // RESEARCH / REFERENCE https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95
+    const handleNewIngredient = (e) => {
+        e.preventDefault()
+        setSingleIngredient({...singleIngredient, [e.target.name]: e.target.value})
+    }
+
+    // NOTE: HANDLING ADDED NUTRINFO --------------------------------------------------------------
+    const handleNutrition = (e) => {
+        e.preventDefault()
+        setNutrInfo({...nutrInfo, [e.target.name]: e.target.value})
+    }
+
+    // NOTE: ADDING SINGLE INGREDIENT TO LIST OF INGREDIENTS --------------------------------------
+    const addIngredient = (e) => {
+        e.preventDefault()
+        setIngredients([singleIngredient, ...ingredients])
+    }
+
+    // NOTE: FUNCTION TO HANDLE THE SUBMITION ----------------------------------------------------
     const handleSubmit = async (e) => {
         e.preventDefault()
         
+        const approvalStatus = 'pending';
+
         // NOTE: CREATING THE RECIPE OBJECT WITH THE USER INPUT
-        const recipe = {title, prepTime, cookTime, serving, difficulty, origin, mealType, prepInst, cookInst, ingredient, nutrInfo}
+        const recipe = {title, prepTime, cookTime, serving, difficulty, origin, mealType, prepInst, cookInst, ingredients, nutrInfo, approvalStatus}
         
         // NOTE: SENDING THE RECIPE TO THE SERVER
-        const response = await fetch('/recipes', {
+        const response = await fetch('http://localhost:4000/recipes', {
             method: 'POST',
             body: JSON.stringify(recipe),
             headers: {
@@ -45,50 +91,19 @@ const CreateNewRecipe = () => {
             setMealType('')
             setPrepInst('')
             setCookInst('')
-            setIngredient([])
+            setSingleIngredient([])
             setNutrInfo('')
             console.log('New recipe added', json)
+            navigate('/recipes')
         }
-    }
-    
-    // NOTE: HANDLING OPTION CHANGE ---------------------------------------------------------------
-    const handleDifficultyChange = (e) => {
-        setDificulty(e.target.value)
-    }
-
-    const handleMealChange = (e) => {
-        setMealType(e.target.value)
-    }
-
-    // NOTE: ADDING SINGLE INGREDIENT TO LIST OF INGREDIENTS --------------------------------------
-    const addIngredient = (e) => {
-        e.preventDefault()
-        setIngredients([ingredient, ...ingredients])
-    }
-
-    // DEBUG: FOR TESTING -------------------------------------------------------------------------
-    const testSubmit = (e) => {
-        e.preventDefault()
-
-        console.log(title)
-        console.log(prepTime)
-        console.log(cookTime)
-        console.log(serving)
-        console.log(difficulty)
-        console.log(origin)
-        console.log(mealType)
-        console.log(prepInst)
-        console.log(cookInst)
-        console.log(ingredients)
-        console.log(nutrInfo)
     }
 
     // NOTE: DISPLAYING FORM ----------------------------------------------------------------------
     return (
-        <form onSubmit={testSubmit} className="add-recipe-form">
+        <form onSubmit={handleSubmit} className="add-recipe-form">
             {/*NOTE: TITLE*/}
             <div className="single-input">
-                <label>Title: </label>
+                <label>Title:* </label>
                 <input 
                     type="text"
                     value={title}
@@ -98,7 +113,7 @@ const CreateNewRecipe = () => {
             </div>
             {/*NOTE: PREPARATION TIME*/}
             <div className="single-input">
-                <label>Preparation Time: </label>
+                <label>Preparation Time:* </label>
                 <input 
                     type="number"
                     value={prepTime}
@@ -108,7 +123,7 @@ const CreateNewRecipe = () => {
             </div>
             {/*NOTE: COOK TIME*/}
             <div className="single-input">
-                <label>Cook Time: </label>
+                <label>Cook Time:* </label>
                 <input 
                     type="number"
                     value={cookTime}
@@ -118,7 +133,7 @@ const CreateNewRecipe = () => {
             </div>
             {/*NOTE: SERVING SIZE*/}
             <div className="single-input">
-                <label>Serving Size: </label>
+                <label>Serving Size:* </label>
                 <input 
                     type="number"
                     value={serving}
@@ -127,10 +142,11 @@ const CreateNewRecipe = () => {
                 />
             </div>
             {/*NOTE: DIFFICULTY*/}
-            {/* https://legacy.reactjs.org/docs/forms.html#the-select-tag */}
+            {/* RESEARCH / REFERENCE https://legacy.reactjs.org/docs/forms.html#the-select-tag */}
             <div className="single-input">
-                <label>Difficulty: </label>
+                <label>Difficulty: *</label>
                 <select onChange={(e) => handleDifficultyChange(e)}>
+                    <option value="none" selected disabled hidden>Select a difficulty</option>
                     <option value="easy">Easy</option>
                     <option value="moderate">Moderate</option>
                     <option value="hard">Hard</option>
@@ -138,7 +154,7 @@ const CreateNewRecipe = () => {
             </div>
             {/*NOTE: ORIGIN OF DISH*/}
             <div className="single-input">
-                <label>Dish Origin: </label>
+                <label>Dish Origin: *</label>
                 <input 
                     type="text"
                     value={origin}
@@ -148,8 +164,9 @@ const CreateNewRecipe = () => {
             </div>
             {/*NOTE: MEAL TYPE*/}
             <div className="single-input">
-                <label>Meal Type: </label>
+                <label>Meal Type: *</label>
                 <select onChange={(e) => handleMealChange(e)}>
+                    <option value="none" selected disabled hidden>Select a meal type</option>
                     <option value="breakfast">Breakfast</option>
                     <option value="brunch">Brunch</option>
                     <option value="lunch">Lunch</option>
@@ -163,7 +180,7 @@ const CreateNewRecipe = () => {
             </div>
             {/*NOTE: PREPARATION INSTRUCTIONS*/}
             <div className="single-input">
-                <label>Preparation Instructions: </label>
+                <label>Preparation Instructions: *</label>
                 <input 
                     type="text"
                     value={prepInst}
@@ -173,7 +190,7 @@ const CreateNewRecipe = () => {
             </div>
             {/*NOTE: COOKING INSTRUCTIONS*/}
             <div className="single-input">
-                <label>Cooking Instructions: </label>
+                <label>Cooking Instructions: *</label>
                 <input 
                     type="text"
                     value={cookInst}
@@ -182,26 +199,64 @@ const CreateNewRecipe = () => {
                 />
             </div>
             {/*NOTE: INGREDIENTS*/}
-            {/* https://stackoverflow.com/questions/71880151/updating-an-array-with-usestate-in-a-form */}
+            {/* RESEARCH / REFERENCE https://stackoverflow.com/questions/71880151/updating-an-array-with-usestate-in-a-form */}
             <div className="add-ingredient">
-                <label>Ingredients: </label>
+                <label>Ingredients: *</label>
                 <input 
                     type="text" 
-                    id="inputItem" 
+                    id="inputItem"
+                    name="ingredient"
                     placeholder="Enter a Ingredinet"
-                    onChange={(e) => setIngredient(e.target.value)}
+                    onChange={handleNewIngredient}
+                />
+                <label>Quantity: </label>
+                <input 
+                    type="number" 
+                    id="inputItem"
+                    name="quantity"
+                    placeholder="Enter the quantity"
+                    onChange={handleNewIngredient}
+                />
+                <label>Measurement: </label>
+                <input 
+                    type="text"
+                    id="inputItem"
+                    name="measurement"
+                    placeholder="Enter the measurement"
+                    onChange={handleNewIngredient}
                 />
                 <button onClick={addIngredient}>Add Ingredient</button>
             </div>
-            {ingredients.map((ing) => (ing + " "))}
+            {ingredients.map((ing) => (ing.ingredient + " "))}
             {/*NOTE: NUTRITIONAL INFO*/}
-            <div className="single-input">
-                <label>nutritionalInfo: </label>
+            <div className="add-ingredient">
+                <label>Total Kcal: </label>
                 <input 
                     type="text" 
-                    value={nutrInfo}
+                    name="totalKcal"
                     placeholder="nut"
-                    onChange={(e) => setNutrInfo(e.target.value)}
+                    onChange={handleNutrition}
+                />
+                <label>Total Carbs: </label>
+                <input 
+                    type="text" 
+                    name="totalCarbs"
+                    placeholder="nut"
+                    onChange={handleNutrition}
+                />
+                <label>Total Fat: </label>
+                <input 
+                    type="text" 
+                    name="totalFat"
+                    placeholder="nut"
+                    onChange={handleNutrition}
+                />
+                <label>Total Protein: </label>
+                <input 
+                    type="text" 
+                    name="totalProtein"
+                    placeholder="nut"
+                    onChange={handleNutrition}
                 />
             </div>
 
@@ -211,3 +266,6 @@ const CreateNewRecipe = () => {
 }
 
 export default CreateNewRecipe
+
+// BUG:, CHANGED:, DEBUG:, FIXME:, HACK:, IDEA:, NOTE:, OPTIMIZE:, RESEARCH:, REVIEW:, TEMP: and TODO:
+// END OF FILE ------------------------------------------------------------------------------------
