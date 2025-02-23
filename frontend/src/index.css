@@ -45,6 +45,83 @@ body {
   }
 }
 
+/*NOTE: STYLING NAVIGATION ----------------------------------------------------------------------*/
+/* RESEARCH / REFERENCE & INSPIRED BY https://www.youtube.com/watch?v=zxkz-wPEYbE */
+header .navbar-container {
+  background-color: var(--side-panel-color);
+  height: 80px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0 0 20px 20px;
+}
+
+header .logo-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header .logo-container img {
+  width: 250px;
+  padding-left: 15px;
+}
+
+header .menu-toggle {
+  display: none;
+}
+
+header ul {
+  display: flex;
+  flex-direction: row;
+  list-style-type: none;
+  align-items: center;
+}
+
+header ul li {
+  position: relative;
+}
+
+header ul li a {
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+header ul li ul {
+  position: absolute;
+  width: 100%;
+  display: none;
+}
+
+header ul li:hover ul {
+  display: block;
+}
+
+header ul li ul li a {
+  padding: 10px;
+  top: 80px;
+  color: var(--secondary-color);
+  background-color: var(--side-panel-color);
+}
+
+header ul li ul li a:hover {
+  background-color: #ffc28d;
+}
+
+header ul li a {
+  display: block;
+  padding: 21px;
+  font-size: 1.1em;
+  transition: .2s ease;
+}
+
+header ul li a:hover {
+  background-color: #ffc28d;
+  transition: .2s ease;
+}
+
 /*HOME PAGE STYLING -----------------------------------------------------------------------------*/
 
 .home-page {
@@ -98,6 +175,47 @@ body {
 
 /*RECIPE PAGE STYLING ---------------------------------------------------------------------------*/
 
+.search-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+} 
+
+.search-field {
+  padding: 10px;
+  border-radius: 10px;
+  width: 500px;
+}
+
+.search-filter {
+  color: var(--secondary-color);
+  font-size: 1.5em;
+  background-color: inherit;
+  transition: .2s ease;
+}
+
+.search-filter:hover {
+  transform: scale(1.1);
+  transition: .2s ease;
+  cursor: pointer;
+}
+
+.search-filter:active {
+  transform: .2s ease;
+  transform: rotate(180deg);
+}
+
+.ingredient-search {
+  padding: 10px;
+  text-align: center;
+}
+
+.ingredient-search input {
+  padding: 5px;
+  border-radius: 10px;
+}
+
 .recipe-details {
   width: 20%;
   height: 60vh;
@@ -107,6 +225,8 @@ body {
   transition: .2s ease;
   background-color: var(--side-panel-color);
   box-shadow: 0 1px 25px rgba(0,0,0,0.2);
+  overflow: hidden;
+  position: relative;
 }
 
 .recipe-details:hover {
@@ -115,17 +235,57 @@ body {
   cursor: pointer;
 }
 
-.recipe-details h2 {
-  position: relative;
-  text-transform: uppercase;
+.recipe-details:hover .delete-recipe-btn {
+  top: 10px;
+  transition: .3s ease;
 }
 
 .recipe-details img {
   width: 100%;
-  height: 220px;
+  height: 100%;
   border-radius: 10px;
-  object-fit: cover;
+  object-fit: contain;
   overflow: hidden;
+  transform: scale(1.5);
+  transition: .2s ease-out;
+}
+
+.recipe-details img:hover {
+  transition: .2s ease;
+  transform: scale(1.2);
+}
+
+.recipe-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 5px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.recipe-info h2 {
+  text-transform: uppercase;
+}
+
+.delete-recipe-btn {
+  position: absolute;
+  top: -50px;
+  right: 10px;
+  padding: 5px;
+  background-color: var(--secondary-color);
+  border-radius: 15px;
+  color: var(--side-panel-color);
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: .2s ease;
+}
+
+.delete-recipe-btn:hover {
+  background-color: red;
+  transition: .2s ease;
+  cursor: pointer;
 }
 
 .recipes-container {
@@ -397,5 +557,54 @@ body {
   animation: loading .5s infinite;
 }
 
+/* NOTE: MEDIA QUERIES --------------------------------------------------------------------------*/
+@media only screen and (max-width: 750px) {
+  header .navbar-container {
+    flex-direction: column;
+    border-radius: 0;
+  }
+
+  header .logo-container {
+    width: 100%;
+  }
+
+  header .logo-container img {
+    width: 200px;
+  }
+
+  header ul {
+    width: 100%;
+    background-color: var(--side-panel-color); 
+  }
+
+  header ul li {
+    width: 100%;
+  }
+
+  header ul li ul {
+    position: static;
+    display: block;
+    width: 100%;
+  }
+
+  header ul li ul li a {
+    background-color: inherit;
+    color: inherit;
+    padding-left: 50px;
+  }
+
+  header .menu-toggle {
+    display: block;
+    font-size: 2em;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+  }
+
+  header ul {
+    flex-direction: column;
+    z-index: 0;
+  }
+}
 
 /*END OF FILE------------------------------------------------------------------------------------*/

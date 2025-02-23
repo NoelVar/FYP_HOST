@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom";
+import { useLayoutEffect } from "react";
 
-const Home = () => {
+const Home = ({ setShowNavbar }) => {
+
+    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    useLayoutEffect(() => {
+        setShowNavbar(true);
+    }, [])
+
     return (
         <div className="home-page">
             <div className="eye-catcher">
@@ -38,3 +45,5 @@ const Home = () => {
 }
 
 export default Home
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

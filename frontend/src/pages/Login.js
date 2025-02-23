@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useLayoutEffect } from "react";
 
-const Login = () => {
+const Login = ({setShowNavbar}) => {
 
+    // NOTE: SETTING NAV BAR TO FALSE -------------------------------------------------------------
+    useLayoutEffect(() => {
+        setShowNavbar(false);
+    }, [])
+
+    // NOTE: SETTING USE STATES -------------------------------------------------------------------
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    
+    // NOTE: HANDLING LOGIN FUNCTION --------------------------------------------------------------
     const handleLogin = (e) => {
         console.log("Submited: " + username + ", " + password)
     }
@@ -50,3 +58,5 @@ const Login = () => {
 }
 
 export default Login
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

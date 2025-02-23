@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom";
+import { useLayoutEffect } from 'react';
 
-const PageNotFound = () => {
+const PageNotFound = ({setShowNavbar}) => {
+
+    // NOTE: SETTING NAV BAR TO FALSE -------------------------------------------------------------
+    useLayoutEffect(() => {
+        setShowNavbar(false);
+    }, [])
+
     return (
         <div className="not-found">
             <div className="not-found-message">
@@ -17,3 +24,5 @@ const PageNotFound = () => {
 }
 
 export default PageNotFound
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 // NOTE: IMPORTS ----------------------------------------------------------------------------------
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLayoutEffect } from "react";
 
     /* TODO: - REMOVE CAPITAL LETTER WHEN SAVING
              - STYLE PAGE
@@ -8,7 +9,12 @@ import { useNavigate } from "react-router-dom";
     */
 
 // NOTE: CREATE NEW RECIPE ------------------------------------------------------------------------
-const CreateNewRecipe = () => {
+const CreateNewRecipe = ({setShowNavbar}) => {
+
+    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    useLayoutEffect(() => {
+        setShowNavbar(true);
+    }, [])
 
     // NOTE: USE STATES ---------------------------------------------------------------------------
     const navigate = useNavigate();
