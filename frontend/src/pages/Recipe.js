@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import RecipeDetails from '../components/RecipeDetails';
 import Loading from '../components/Loading';
-import CreateNewRecipe from '../components/CreateNewRecipe';
 
 // NOTE: SETTING BACKEND URL
 const BACKEND = process.env.BACKEND_URL;
@@ -13,7 +12,6 @@ const Recipe = () => {
     const navigate = useNavigate();
     const [recipes, setRecipes] = useState(null);
     const [isLoading, setLoading] = useState(true);
-    const [toggle, setToggle] = useState(false);
 
     // NOTE: ADDING TIME FOR LOADING
     useEffect(() => {
@@ -35,10 +33,7 @@ const Recipe = () => {
         fetchRecipes()
     }, [])
 
-    // NOTE: HANDLING TOGGLE ----------------------------------------------------------------------
-    // const handleClick = () => {
-    //     setToggle(!toggle)
-    // }
+    // NOTE: HANDLING NEW RECIPES -----------------------------------------------------------------
     const reDirect = () => {
         navigate('/newrecipe')
     }
@@ -54,17 +49,11 @@ const Recipe = () => {
                 />
             </form>
             <div className='add-recipe-container'>
-            <button onClick={reDirect}>+ Add new recipe</button>
-                {/* onClick={() => handleClick()
-                     {toggle && (
-                    <div className='new-recipe-form'>
-                        <CreateNewRecipe />
-                    </div>
-                )} */}
+                <button onClick={reDirect}>+ Add new recipe</button>
             </div>
             <div className='recipes-container'>
             {isLoading 
-                // NOTE: REPEATING DISPLAY INSPIRED BY: https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx-and-lodash
+                // RESEARCH / REFERENCE: REPEATING DISPLAY INSPIRED BY: https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx-and-lodash
                 ? Array.from({length: 10 }, (_, i) => <Loading key={i}/>)
                 : recipes
                     ? recipes.map((recipe) => ( <RecipeDetails key={recipe._id} recipe={recipe}/>))

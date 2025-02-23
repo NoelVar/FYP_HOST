@@ -9,6 +9,10 @@ const recipeSchema = new Schema({
         type: String,
         require: true   // NOTE: 'title' MUST BE ENTERED
     },
+    image: {
+        type: String,
+        required: false
+    },
     prepTime: {
         type: Number,
         min: 0,

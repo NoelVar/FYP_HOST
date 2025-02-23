@@ -14,6 +14,7 @@ app.use(cors({
 
 // NOTE: MIDDLE WARE
 app.use(express.json());
+app.use(express.static('public'));
 
 app.use((req, res, next) => {
     // DEBUG: REMOVE BEFORE DEPLOYMENT
@@ -36,3 +37,5 @@ mongoose.connect(process.env.DB_CONNECTION)
     .catch((error) => {
         console.log(error)
     })
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

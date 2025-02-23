@@ -6,6 +6,7 @@ const {
     deleteRecipe,
     updateRecipe
 } = require('../controllers/recipeController')
+const { upload } = require('../controllers/imageUpload')
 
 const router = express.Router()
 
@@ -16,7 +17,7 @@ router.get('/', getAllRecipes)
 router.get('/:id', getSingleRecipe)
 
 // NOTE: POST NEW RECIPE
-router.post('/', createRecipe)
+router.post('/', upload.single('file'), createRecipe)
 
 // NOTE: DELETE RECIPE
 router.delete('/:id', deleteRecipe)

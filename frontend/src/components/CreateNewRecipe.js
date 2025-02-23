@@ -13,6 +13,7 @@ const CreateNewRecipe = () => {
     // NOTE: USE STATES ---------------------------------------------------------------------------
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
+    const [file, setFile] = useState()
     const [prepTime, setPrepTime] = useState(0);
     const [cookTime, setCookTime] = useState(0);
     const [serving, setServingSize] = useState(0);
@@ -68,21 +69,32 @@ const CreateNewRecipe = () => {
         
         const approvalStatus = 'pending';
 
-        // NOTE: CREATING THE RECIPE OBJECT WITH THE USER INPUT
-        const recipe = {title, prepTime, cookTime, serving, difficulty, origin, mealType, prepInst, cookInst, ingredients, nutrInfo, approvalStatus}
-        
+        // NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('file', file); // NOTE: NAME NEEDS TO MATCH MULTER SET UP
+        formData.append('prepTime', prepTime);
+        formData.append('cookTime', cookTime);
+        formData.append('servingSize', serving);
+        formData.append('difficulty', difficulty);
+        formData.append('origin', origin);
+        formData.append('mealType', mealType);
+        formData.append('prepInst', prepInst);
+        formData.append('cookInst', cookInst);
+        formData.append('ingredients', JSON.stringify(ingredients)); // NOTE: CONVERTE TO JSON STRING
+        formData.append('nutrInfo', JSON.stringify(nutrInfo));
+        formData.append('approvalStatus', approvalStatus);
+
         // NOTE: SENDING THE RECIPE TO THE SERVER
         const response = await fetch('http://localhost:4000/recipes', {
             method: 'POST',
-            body: JSON.stringify(recipe),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        const json = await response.json()
+            body: formData,
+        });
+        const json = await response.json();
 
         if (response.ok) {
             setTitle('')
+            setFile()
             setPrepTime(0)
             setCookTime(0)
             setServingSize(0)
@@ -93,7 +105,6 @@ const CreateNewRecipe = () => {
             setCookInst('')
             setSingleIngredient([])
             setNutrInfo('')
-            console.log('New recipe added', json)
             navigate('/recipes')
         }
     }
@@ -109,6 +120,17 @@ const CreateNewRecipe = () => {
                     value={title}
                     placeholder="Title"
                     onChange={(e) => setTitle(e.target.value)}
+                />
+            </div>
+            {/*NOTE: IMAGE*/}
+            {/* RESEARCH / REFERENCE https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95*/}
+            <div className="single-input">
+                <label>Image: </label>
+                <input 
+                    type="file"
+                    accept=".png, .jpg, .jpeg"
+                    name="file"
+                    onChange={(e) => setFile(e.target.files[0])}
                 />
             </div>
             {/*NOTE: PREPARATION TIME*/}
@@ -267,5 +289,4 @@ const CreateNewRecipe = () => {
 
 export default CreateNewRecipe
 
-// BUG:, CHANGED:, DEBUG:, FIXME:, HACK:, IDEA:, NOTE:, OPTIMIZE:, RESEARCH:, REVIEW:, TEMP: and TODO:
 // END OF FILE ------------------------------------------------------------------------------------
