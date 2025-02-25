@@ -86,6 +86,9 @@ const recipeSchema = new Schema({
         },
         content: {
             type: String
+        },
+        timestamp: {
+            type: Date
         }
     }],
     approvalStatus: {

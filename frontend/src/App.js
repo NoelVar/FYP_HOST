@@ -6,6 +6,8 @@ import Recipe from './pages/Recipe';
 import CreateNewRecipe from './components/CreateNewRecipe';
 import NavBar from './components/NavBar';
 import { useState } from 'react';
+import SingleRecipe from './pages/SingleRecipe';
+import Discussions from './pages/Discussions';
 
 function App() {  
 
@@ -27,6 +29,14 @@ function App() {
             <Route
               path='/newrecipe'
               element={<CreateNewRecipe setShowNavbar={setShowNavbar}/>}
+            />
+            <Route
+              path='recipes/:id'
+              element={<SingleRecipe setShowNavbar={setShowNavbar}/>}
+            />
+            <Route
+              path='recipes/:id/discussion'
+              element={<Discussions setShowNavbar={setShowNavbar}/>}
             />
             <Route 
               path='/login'
