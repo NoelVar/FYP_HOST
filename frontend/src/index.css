@@ -206,13 +206,7 @@ header ul li a:hover {
 }
 
 .ingredient-search {
-  padding: 10px;
-  text-align: center;
-}
-
-.ingredient-search input {
-  padding: 5px;
-  border-radius: 10px;
+  margin: 10px 50px;
 }
 
 .recipe-details {
