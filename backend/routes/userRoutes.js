@@ -1,28 +1,22 @@
-// FIXME:
+// NOTE: IMPORTS ----------------------------------------------------------------------------------
 const express = require('express')
 const {
-    getAllUsers,
-    getSingleUser,
-    createUser,
-    deleteUser,
-    updateUser
+    loginUser,
+    registerUser,
+    logoutUser
 } = require('../controllers/userController')
 
+// NOTE: CREATING ROUTER COMPONENT
 const router = express.Router()
 
-// NOTE: GET ALL USERS
-router.get('/', getAllUsers)
+// NOTE: LOG USER IN
+router.post('/login', loginUser)
 
-// NOTE: GET SINGLE USER
-router.get('/:id', getSingleUser)
+// NOTE: REGISTER USER
+router.post('/register', registerUser)
 
-// NOTE: POST NEW USER
-router.post('/', createUser)
-
-// NOTE: DELETE USER
-router.delete('/:id', deleteUser)
-
-// NOTE: UPDATE USER
-router.patch('/:id', updateUser)
+// NOTE: LOG USER OUT
 
 module.exports = router
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

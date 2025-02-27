@@ -1,3 +1,4 @@
+// NOTE: IMPORTS ----------------------------------------------------------------------------------
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -14,6 +15,7 @@ function App() {
   // NOTE: ONLY SHOWING NAVBAR ON NEEDED PAGES (https://stackoverflow.com/questions/76942172/in-react-how-to-have-a-navbar-on-specific-pages-only)
   const [showNavbar, setShowNavbar] = useState(true);
 
+  // NOTE: RETURNING COMPONENTS AND PAGES
   return (
     <div className="app-container">
         {showNavbar && <NavBar />}
@@ -52,3 +54,5 @@ function App() {
 }
 
 export default App;
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

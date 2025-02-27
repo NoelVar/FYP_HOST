@@ -1,5 +1,4 @@
-// BACKEND LOGIC FOR ROUTES
-//FIXME:
+// NOTE: IMPORTS ----------------------------------------------------------------------------------
 const userModel = require('../models/userModel')
 const mongoose = require('mongoose')
 
@@ -12,99 +11,220 @@ const mongoose = require('mongoose')
     - ADD SESSION TOKEN
 */ 
 
-// GET ALL USERS ----------------------------------------------------------------------------------
-const getAllUsers = async (req, res) => {
-    // NOTE: FETCHES ALL USERS FROM DB
-    const users = await userModel.find({})
-    
-    // NOTE: RETURNS USERS IF STATUS IS OK
-    res.status(200).json(users)
-}
+// RESEARCH / REFERENCE: https://mailtrap.io/blog/nodejs-email-validation/
+// NOTE: FOR EMAIL VALIDATION USING REGULAR EXPRESSION (RegEx)
+/*
+    ^ "=>" BEGINING OF THE STRING 
+    [^\s@]+ "=>" CHECKS FIRST PART FOR WHITE SPACES OR '@' SYMBOLS WHICH ARENT ALLOWED
+    @ "=>" CHECKS FOR '@' SYMBOL
+    [^\s@]+ "=>" CHECKS SECOND PART FOR WHITE SPACES OR '@' SYMBOLS WHICH ARENT ALLOWED
+    \. "=>" CHECKS FOR PERIOD
+    [^\s@]+ "=>" CHECKS THIRD PART FOR WHITE SPACES OR '@' SYMBOLS WHICH ARENT ALLOWED
+    $ "=>" END OF STRING
+*/
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// GET SINGLE USER --------------------------------------------------------------------------------
-const getSingleUser = async (req, res) => {
-    const { id } = req.params
+// LOGIN USER -------------------------------------------------------------------------------------
+const loginUser = async (req, res) => {
+    const { email, password } = req.body;
 
-    // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such user exists'})
+    if (email === '') {
+        return res.status(400).json({ error: 'Email is required.' })
     }
 
-    const user = await userModel.findById(id)
-    
-    // NOTE: CHECKS IF USER EXISTS IN DB
-    if (!user) {
-        return res.status(400).json({error: 'No user found'})
+    if (password === '') {
+        return res.status(400).json({ error: 'Password is required.' })
     }
 
-    // NOTE: RETURNS USER IF STATUS IS OK
-    res.status(200).json(user)
-}
+    // NOTE: TEST EMAIL FORMAT USING 'emailRegex'
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format.' })
+    }
 
-// CREATE USER ------------------------------------------------------------------------------------
-const createUser = async (req, res) => {
     try {
-        const {username, email, password, role} = req.body
+        const user = await userModel.findOne({ email })
 
-        // NOTE: ATTEMPTS TO CREATE USER IN DB  
-        try {
-            const user = await userModel.create({username, email, password, role})
-            res.status(200).json(user)
-        } catch (error) {
-            // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
-            res.status(400).json({error: error.message})
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user with matching email address.' })
         }
+
+        if (password !== user.password) {
+            return res.status(401).json({ error: 'Invalid credentials.' })
+        }
+
+        // NOTE: RETURNS USER IF STATUS IS OK
+        return res.status(200).json(user)
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ error: err.message })
+    }
+}
+
+
+
+// REGISTER USER ----------------------------------------------------------------------------------
+const registerUser = async (req, res) => {
+    
+    const { username, email, password, confirmPassword } = req.body;
+    const role = 'user';
+
+// ------------------------- NOTE: VALIDATION -------------------------
+    // NOTE: CHECKS IF USERNAME IS EMPTY
+    if (username === '') {
+        return res.status(400).json({ error: 'Username is required.' })
+    }
+
+    if (password === '') {
+        return res.status(400).json({ error: 'Password is required.' })
+    }
+
+    if (confirmPassword === '') {
+        return res.status(400).json({ error: 'Confirm password is required.' })
+    }
+
+    if (password !== confirmPassword) {
+        return res.status(401).json({ error: 'Password and confirm password does not match.' })
+    }
+
+    // NOTE: CHECKS IF EMAIL IS EMPTY
+    if (email === '') {
+        return res.status(400).json({ error: 'Email is required.' })
+    }
+
+    // NOTE: TEST EMAIL FORMAT USING 'emailRegex'
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format.' })
+    }
+
+    // NOTE: CHECKS IF USER EXISTS IN DB
+    const alreadyRegisteredEmail = await userModel.findOne({ email })
+    if (alreadyRegisteredEmail) {
+        return res.status(400).json({ error: 'Email is already registered.' })
+    }
+
+    // NOTE: ATTEMPTS TO CREATE USER IN DB  
+    try {
+        const user = await userModel.create({username, email, password, role})
+
+        if(!user) {
+            // NOTE: RETURNS ERROR IF COULDN'T CREATE USER
+            return res.status(409).json({ error: 'The request could not be completed due to a conflict with the current state of the resource.' })
+        }
+
+        // NOTE: CREATES USER IF EVERYTHING IS OK
+        res.status(201).json(user)
+    
     } catch (error) {
-        res.status(400).json({error: error.message})
+         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+         return res.status(500).json({ error: err.message })
     }
 }
 
-// DELETE USER ------------------------------------------------------------------------------------
-const deleteUser = async (req, res) => {
-    const {id} = req.params
-
-    // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such user exists'})
-    }
-
-    const user = await userModel.findOneAndDelete({_id: id})
+// LOGOUT -----------------------------------------------------------------------------------------
+const logoutUser = async(req, res) => {
     
-    // NOTE: CHECKS IF USER EXISTS IN DB
-    if (!user) {
-        return res.status(400).json({error: 'No user found'})
-    }
-    
-    // NOTE: DELETES USER IF STATUS IS OK
-    res.status(200).json(user)
 }
 
-// UPDATE USER ------------------------------------------------------------------------------------
-const updateUser = async (req, res) => {
-    const {id} = req.params
-
-    // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such user exists'})
-    }
-
-    const user = await userModel.findOneAndUpdate({_id: id}, {
-        ...req.body
-    })
-
-    // NOTE: CHECKS IF USER EXISTS IN DB
-    if (!user) {
-        return res.status(400).json({error: 'No user found'})
-    }
-
-    // NOTE: UPDATES USER IF STATUS IS OK
-    res.status(200).json(user)
-}
 
 module.exports = {
-    getAllUsers,
-    getSingleUser,
-    createUser,
-    deleteUser,
-    updateUser
+    loginUser,
+    registerUser,
+    logoutUser
 }
+
+// END OF DOCUMENT --------------------------------------------------------------------------------
+
+// DEBUG: IN CASE ITS NEEDED
+// // UPDATE USER ------------------------------------------------------------------------------------
+// const updateUser = async (req, res) => {
+//     const {id} = req.params
+
+//     try {
+//         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+//         if (!mongoose.Types.ObjectId.isValid(id)) {
+//             return res.status(400).json({ error: 'Invalid user ID.' })
+//         }
+
+//         const user = await userModel.findOneAndUpdate({_id: id}, {
+//             ...req.body
+//         })
+
+//         // NOTE: CHECKS IF USER EXISTS IN DB
+//         if (!user) {
+//             return res.status(404).json({ error: 'Couldn\'t find user.' })
+//         }
+
+//         // NOTE: UPDATES USER IF STATUS IS OK
+//         res.status(200).json(user)
+//     } catch(err) {
+//         // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
+//         return res.status(500).json({ error: err.message })
+//     }
+// }
+
+// // GET ALL USERS ----------------------------------------------------------------------------------
+// const getAllUsers = async (req, res) => {
+//     // NOTE: FETCHES ALL USERS FROM DB
+//     try {
+//         const users = await userModel.find({})
+        
+//         // NOTE: VALIDATES IF THE USERS EXIST IN DB
+//         if (!users) {
+//             return res.status(404).json({ error: 'No users found.' })
+//         }
+
+//         // NOTE: RETURNS USERS IF STATUS IS OK
+//         res.status(200).json(users)
+//     } catch(err) {
+//         return res.status(500).json({ error: err.message })
+//     }
+// }
+
+// // GET SINGLE USER --------------------------------------------------------------------------------
+// const getSingleUser = async (req, res) => {
+//     const { id } = req.params
+
+//     try {
+//         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+//         if (!mongoose.Types.ObjectId.isValid(id)) {
+//             return res.status(400).json({ error: 'Invalid user ID.' })
+//         }
+
+//         const user = await userModel.findById(id)
+        
+//         // NOTE: CHECKS IF USER EXISTS IN DB
+//         if (!user) {
+//             return res.status(404).json({ error: 'Couldn\'t find user.' })
+//         }
+
+//         // NOTE: RETURNS USER IF STATUS IS OK
+//         res.status(200).json(user)
+//     } catch(err) {
+//         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+//         return res.status(500).json({ error: err.message })
+//     }
+// }
+// // DELETE USER ------------------------------------------------------------------------------------
+// const deleteUser = async (req, res) => {
+//     const {id} = req.params
+
+//     try {
+//         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+//         if (!mongoose.Types.ObjectId.isValid(id)) {
+//             return res.status(400).json({error: 'Invalid user ID.'})
+//         }
+
+//         const user = await userModel.findOneAndDelete({_id: id})
+        
+//         // NOTE: CHECKS IF USER EXISTS IN DB
+//         if (!user) {
+//             return res.status(404).json({error: 'Couldn\'t find user.'})
+//         }
+        
+//         // NOTE: DELETES USER IF STATUS IS OK
+//         res.status(200).json(user)
+//     } catch(err) {
+//         // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
+//         return res.status(500).json({ error: err.message })
+//     }
+// }

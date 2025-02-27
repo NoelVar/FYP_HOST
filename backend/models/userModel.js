@@ -7,15 +7,14 @@ const Schema = mongoose.Schema
 const userSchema = new Schema({
     username: {
         type: String,
-        required: true  // NOTE: 'username' HAS TO BE ENTERED
+        required: true 
     },
     email: {
         type: String,
         require: true,
         unique: true
     },
-    password: {
-        // TODO: HASH PASSWORDS 
+    password: { 
         type: String,
         require: true
     },
@@ -24,8 +23,11 @@ const userSchema = new Schema({
         type: String,
         enum: ['admin', 'moderator', 'user'],
         require: true
+    },
+    // NOTE: ADD LAST_LOGGED_IN FOR SECURITY
+    lastLoggedIn: {
+        type: Date
     }
-    // FIXME: ADD LAST_LOGGED_IN FOR SECURITY
 
 },
     {timestamps: true} // NOTE: AUTOMATICALLY ADDS CREATED DATE AND UPDATE DATE FIELDS
@@ -33,3 +35,5 @@ const userSchema = new Schema({
 
 // NOTE: EXPORTS THE USER MODEL BASED ON THE DEFINED SCHEMA
 module.exports = mongoose.model('User', userSchema)
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

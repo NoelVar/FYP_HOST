@@ -79,7 +79,7 @@ const createRecipe = async (req, res) => {
         }
 
         // NOTE: CREATES RECIPE IF EVERYTHING IS OK
-        return res.status(200).json(recipe);
+        return res.status(201).json(recipe);
     } catch (error) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
         return res.status(500).json({ error: err.message })
@@ -138,6 +138,7 @@ const updateRecipe = async (req, res) => {
 }
 
 // ADD COMMENTS -----------------------------------------------------------------------------------
+// RESEARCH / REFERENCE: https://www.geeksforgeeks.org/implement-comments-section-in-mern-blogs-and-news-website/
 const addComment = async (req, res) => {
     const { name, content, timestamp } = req.body;
     const { id } = req.params;
