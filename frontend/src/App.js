@@ -2,6 +2,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import PageNotFound from './pages/PageNotFound';
 import Recipe from './pages/Recipe';
 import CreateNewRecipe from './components/CreateNewRecipe';
@@ -43,6 +44,10 @@ function App() {
             <Route 
               path='/login'
               element={<Login setShowNavbar={setShowNavbar}/>}
+            />
+            <Route 
+              path='/signup'
+              element={<Register setShowNavbar={setShowNavbar}/>}
             />
             <Route 
               path='/*'

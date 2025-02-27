@@ -1,15 +1,13 @@
 // NOTE: IMPORTS ----------------------------------------------------------------------------------
 const userModel = require('../models/userModel')
 const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt');
 
-// IDEA: AND TODO:
-/*
-    - HASH PASSWORD
-    - VALIDATE REGISTRATION
-    - VALIDATE LOGIN
-    - CREATE LOGOUT
-    - ADD SESSION TOKEN
-*/ 
+// RESEARCH / REFERENCE: https://youtu.be/MsudBMepwO8
+const createToken = (_id) => {
+    return jwt.sign({ _id: _id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
+}
 
 // RESEARCH / REFERENCE: https://mailtrap.io/blog/nodejs-email-validation/
 // NOTE: FOR EMAIL VALIDATION USING REGULAR EXPRESSION (RegEx)
@@ -24,44 +22,6 @@ const mongoose = require('mongoose')
 */
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// LOGIN USER -------------------------------------------------------------------------------------
-const loginUser = async (req, res) => {
-    const { email, password } = req.body;
-
-    if (email === '') {
-        return res.status(400).json({ error: 'Email is required.' })
-    }
-
-    if (password === '') {
-        return res.status(400).json({ error: 'Password is required.' })
-    }
-
-    // NOTE: TEST EMAIL FORMAT USING 'emailRegex'
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Invalid email format.' })
-    }
-
-    try {
-        const user = await userModel.findOne({ email })
-
-        if (!user) {
-            return res.status(404).json({ error: 'Couldn\'t find user with matching email address.' })
-        }
-
-        if (password !== user.password) {
-            return res.status(401).json({ error: 'Invalid credentials.' })
-        }
-
-        // NOTE: RETURNS USER IF STATUS IS OK
-        return res.status(200).json(user)
-    } catch(err) {
-        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
-        return res.status(500).json({ error: err.message })
-    }
-}
-
-
-
 // REGISTER USER ----------------------------------------------------------------------------------
 const registerUser = async (req, res) => {
     
@@ -70,16 +30,8 @@ const registerUser = async (req, res) => {
 
 // ------------------------- NOTE: VALIDATION -------------------------
     // NOTE: CHECKS IF USERNAME IS EMPTY
-    if (username === '') {
-        return res.status(400).json({ error: 'Username is required.' })
-    }
-
-    if (password === '') {
-        return res.status(400).json({ error: 'Password is required.' })
-    }
-
-    if (confirmPassword === '') {
-        return res.status(400).json({ error: 'Confirm password is required.' })
+    if (username === '' || password === '' || confirmPassword === '') {
+        return res.status(400).json({ error: 'Field cannot be empty.' })
     }
 
     if (password !== confirmPassword) {
@@ -98,38 +50,78 @@ const registerUser = async (req, res) => {
 
     // NOTE: CHECKS IF USER EXISTS IN DB
     const alreadyRegisteredEmail = await userModel.findOne({ email })
+
     if (alreadyRegisteredEmail) {
+        console.log(alreadyRegisteredEmail, email)
         return res.status(400).json({ error: 'Email is already registered.' })
     }
 
     // NOTE: ATTEMPTS TO CREATE USER IN DB  
     try {
-        const user = await userModel.create({username, email, password, role})
+        // NOTE: HASHING PASSWORD
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(password, salt)
+
+        const user = await userModel.create({username, email, password: hash, role})
 
         if(!user) {
             // NOTE: RETURNS ERROR IF COULDN'T CREATE USER
             return res.status(409).json({ error: 'The request could not be completed due to a conflict with the current state of the resource.' })
         }
 
+        // CREATING TOKEN
+        const token = createToken(user._id)
+
         // NOTE: CREATES USER IF EVERYTHING IS OK
-        res.status(201).json(user)
+        res.status(201).json({ email, token })
     
-    } catch (error) {
+    } catch (err) {
          // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
          return res.status(500).json({ error: err.message })
     }
 }
 
-// LOGOUT -----------------------------------------------------------------------------------------
-const logoutUser = async(req, res) => {
-    
+// LOGIN USER -------------------------------------------------------------------------------------
+const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+
+    if (email === '' || password === '') {
+        return res.status(400).json({ error: 'Field cannot be empty.' })
+    }
+
+    // NOTE: TEST EMAIL FORMAT USING 'emailRegex'
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format.' })
+    }
+
+    try {
+        const user = await userModel.findOne({ email })
+
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user with matching email address.' })
+        }
+
+        const match = await bcrypt.compare(password, user.password)
+
+        if (!match) {
+            return res.status(401).json({ error: 'Invalid credentials.' })
+        }
+
+        // NOTE: RETURNS USER TOKEN
+        const token = createToken(user._id)
+
+        // NOTE: RETURNS USER IF STATUS IS OK
+        return res.status(200).json({ email, token })
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ error: err.message })
+    }
 }
 
 
 module.exports = {
     loginUser,
-    registerUser,
-    logoutUser
+    registerUser
 }
 
 // END OF DOCUMENT --------------------------------------------------------------------------------

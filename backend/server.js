@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const recipesRoutes = require('./routes/recipeRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cors = require('cors')
-require('dotenv').config()
+const dotenv = require("dotenv")
+dotenv.config()
 
 // NOTE: EXPRESS APPLICATION
 const app = express();

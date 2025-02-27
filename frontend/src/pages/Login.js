@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useLayoutEffect } from "react";
+import { useLogin } from "../hooks/useLogin";
 
 const Login = ({setShowNavbar}) => {
 
@@ -10,25 +12,30 @@ const Login = ({setShowNavbar}) => {
     }, [])
 
     // NOTE: SETTING USE STATES -------------------------------------------------------------------
-    const [username, setUsername] = useState('');
+    const navigate = useNavigate();
+    const [email, setUserEmail] = useState('');
     const [password, setPassword] = useState('');
+    const {login, isLoading, error} = useLogin()
     
     // NOTE: HANDLING LOGIN FUNCTION --------------------------------------------------------------
-    const handleLogin = (e) => {
-        console.log("Submited: " + username + ", " + password)
+    const handleLogin = async (e) => {
+        e.preventDefault()
+        
+        await login(email, password)
+        navigate('/')
     }
 
     return (
         <div className="auth-box">
             <div className="auth-container">
                 <h2 className="title">Login</h2>
-                <from onSubmit={handleLogin()}>
+                <form onSubmit={handleLogin}>
                     <div className="input-container">
-                        <label>Username: </label>
+                        <label>Email: </label>
                         <input
-                            type="text"
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Enter your username"
+                            type="email"
+                            onChange={(e) => setUserEmail(e.target.value)}
+                            placeholder="Enter your email"
                         />
                     </div>
                     <div className="input-container">
@@ -41,12 +48,14 @@ const Login = ({setShowNavbar}) => {
                             placeholder="Enter your password"
                         />
                     </div>
+                    {error && <div className="error">{error}</div>}
                     <button 
-                    type="submit"
-                    className="btn auth-btn">
+                        disabled={isLoading}
+                        type="submit"
+                        className="btn auth-btn">
                         Login
                     </button>
-                </from>
+                </form>
                 <div className="auth-switch">
                     <p className="line"><span>OR</span></p>
                     <p className="auth-switch-link">Sign up <Link to='/signup'>HERE</Link></p>

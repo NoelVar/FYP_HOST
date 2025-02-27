@@ -5,18 +5,17 @@ import './index.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
-//import axios from 'axios';
-//import AuthService from './services/authService';
+import { AuthContextProvider } from './context/AuthContext';
 
-// Setup axios interceptor
-//AuthService.setupAxiosInterceptor(axios);
-
-//const token = sessionStorage.getItem('token');
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+  <React.StrictMode>
+    <AuthContextProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </AuthContextProvider>
+  </React.StrictMode>
 );
 
 // END OF DOCUMENT --------------------------------------------------------------------------------
