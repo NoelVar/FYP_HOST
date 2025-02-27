@@ -11,9 +11,7 @@ const Discussions = ({ setShowNavbar }) => {
 
      // NOTE: STATE VARIABLES
     const [recipe, setRecipe] = useState(null);
-    const [name, setName] = useState('');
     const [content, setContent] = useState('');
-    const [time, setTime] = useState(Date)
     const params = window.location.href
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[1]
     
@@ -26,7 +24,6 @@ const Discussions = ({ setShowNavbar }) => {
 
                 if (response.ok) {
                     setRecipe(json)
-                    console.log(json)
                 }
             } catch (err) {
                 console.log(err)
@@ -44,29 +41,12 @@ const Discussions = ({ setShowNavbar }) => {
         const UserName = 'userName'
         const currentDate = Date.now()
         console.log(recipe.comments)
-        recipe.comments.push(
-            {
-                name: UserName,
-                content: content,
-                timeStamp: currentDate
-            }
-        )
-
-        await axios.put(urlname, {
-            title: recipe.title,
-            image: recipe.image,
-            prepTime: recipe.prepTime,
-            cookTime: recipe.cookTime,
-            servingSize: recipe.servingSize,
-            difficulty: recipe.difficulty,
-            origin: recipe.origin,
-            mealType: recipe.mealType,
-            prepInstructions: recipe.prepInstructions,
-            cookIntructions: recipe.cookIntructions,
-            ingredients: recipe.ingredients,
-            nutritionalInfo: recipe.nutritionalInfo,
-            comments: recipe.comments,
-            approvalStatus: recipe.approvalStatus
+        
+        // TODO: CHANGE TO REFERENCED DATA MODEL
+        await axios.post(`${urlname}/comments`, {
+            name: UserName,
+            content: content,
+            timestamp: currentDate
         })
         .then((response) => {
             if(response.ok) {
@@ -76,9 +56,6 @@ const Discussions = ({ setShowNavbar }) => {
         .catch((err) => {
             console.log(err)
         })
-        
-        console.log(recipe.comments)
-        console.log(UserName + ' Posted: ' + content + ", at " + Date(currentDate))
     }
 
     return (
@@ -89,6 +66,14 @@ const Discussions = ({ setShowNavbar }) => {
                     <RecipeCommunitySwitch key={recipe._id} recipe={recipe} active={'discussion'}/>
                     <div className="information">
                         <h1>{recipe.title} Discussion</h1>
+                        <form>
+                            <input
+                                type="text"
+                                placeholder="comment"
+                                onChange={e => setContent(e.target.value)}
+                            />
+                            <button onClick={handleSubmit}>Post</button>
+                        </form>
                         <div className="discussion-box">
                             {recipe.comments.map((comment) => (
                                 <div className="discussion-card">
@@ -98,14 +83,6 @@ const Discussions = ({ setShowNavbar }) => {
                                 </div>
                             ))}
                         </div>
-                        <form>
-                            <input
-                                type="text"
-                                placeholder="comment"
-                                onChange={e => setContent(e.target.value)}
-                            />
-                            <button onClick={handleSubmit}>Post</button>
-                        </form>
                     </div>
                 </div>
                 : <p>No discussion found!</p>

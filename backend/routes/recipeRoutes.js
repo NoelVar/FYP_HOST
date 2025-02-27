@@ -4,7 +4,8 @@ const {
     getSingleRecipe,
     createRecipe,
     deleteRecipe,
-    updateRecipe
+    updateRecipe,
+    addComment
 } = require('../controllers/recipeController')
 const { upload } = require('../controllers/imageUpload')
 
@@ -24,5 +25,8 @@ router.delete('/:id', deleteRecipe)
 
 // NOTE: UPDATE RECIPE
 router.patch('/:id', updateRecipe)
+
+// NOTE: ADDING COMMENT
+router.post('/:id/comments', addComment)
 
 module.exports = router

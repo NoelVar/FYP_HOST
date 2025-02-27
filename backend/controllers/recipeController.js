@@ -1,5 +1,4 @@
 // BACKEND LOGIC FOR ROUTES
-// FIXME:
 const recipeModel = require('../models/recipeModel.js')
 const mongoose = require('mongoose')
 
@@ -7,48 +6,52 @@ const mongoose = require('mongoose')
 const getAllRecipes = async (req, res) => {
     // NOTE: FETCHES ALL RECIPES FROM DB
     // SORTS RECIPES BY CREATION DATE WITH THE MOST RECENT FIRST
-    const recipes = await recipeModel.find({}).sort({ createdAt: -1 })
-    
-    // NOTE: RETURNS RECIPES IF STATUS IS OK
-    res.status(200).json(recipes)
+    try {
+        const recipes = await recipeModel.find({}).sort({ createdAt: -1 })
+        
+        // NOTE: VALIDATES IF THE RECIPES EXIST IN DB
+        if (!recipes) {
+            return res.status(404).json({ error: 'No recipes found.' })
+        }
+
+        // NOTE: RETURNS RECIPES IF STATUS IS OK
+        return res.status(200).json(recipes)
+    } catch (err) {
+        return res.status(500).json({ error: err.message })
+    }
 }
 
 // GET SINGLE RECIPE ------------------------------------------------------------------------------
 const getSingleRecipe = async (req, res) => {
     const { id } = req.params
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid recipe ID.' })
+        }
 
-    // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such recipe exists'})
+        const recipe = await recipeModel.findById(id)
+        
+        // NOTE: CHECKS IF RECIPE EXISTS IN DB
+        if (!recipe) {
+            return res.status(404).json({ error: 'Couldn\'t find recipe.' })
+        }
+
+        // NOTE: RETURNS RECIPE IF STATUS IS OK
+        return res.status(200).json(recipe)
+    } catch (err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ error: err.message })
     }
-
-    const recipe = await recipeModel.findById(id)
-    
-    // NOTE: CHECKS IF RECIPE EXISTS IN DB
-    if (!recipe) {
-        return res.status(400).json({error: 'No recipe found'})
-    }
-
-    // NOTE: RETURNS RECIPE IF STATUS IS OK
-    res.status(200).json(recipe)
 }
 
 // CREATE RECIPE ----------------------------------------------------------------------------------
 const createRecipe = async (req, res) => {
-    // const {title, image, prepTime, cookTime, servingSize, difficulty, origin, mealType, prepInstructions, cookIntructions, ingredients, nutritionalInfo, approvalStatus} = req.body
-    
-    // console.log(image)
-
-    // // NOTE: ATTEMPTS TO CREATE RECIPE IN DB
-    // try {
-    //     const recipe = await recipeModel.create({title, image, prepTime, cookTime, servingSize, difficulty, origin, mealType, prepInstructions, cookIntructions, ingredients, nutritionalInfo, approvalStatus})
-    //     res.status(200).json(recipe)
-
-    // FIXME: ADDED BY AI CLEAN UP
     const { title, prepTime, cookTime, servingSize, difficulty, origin, mealType, prepInstructions, cookIntructions, approvalStatus } = req.body;
-    const image = req.file ? req.file.filename : null; // Access the uploaded image filename
+    // NOTE: HANDLING UPLOADED IMAGE
+    const image = req.file ? req.file.filename : null;
 
-    // Parse ingredients and nutritionalInfo if they are sent as JSON strings
+    // NOTE: PARSE INGREDIENT AND NUTRITIONAL INFO IF THEY ARE SENT AS A JSON STRING
     const ingredients = req.body.ingredients ? JSON.parse(req.body.ingredients) : [];
     const nutritionalInfo = req.body.nutrInfo ? JSON.parse(req.body.nutrInfo) : {};
 
@@ -69,10 +72,17 @@ const createRecipe = async (req, res) => {
             nutritionalInfo,
             approvalStatus
         });
-        res.status(200).json(recipe);
+
+        if(!recipe) {
+            // NOTE: RETURNS ERROR IF COULDN'T CREATE RECIPE
+            return res.status(409).json({ error: 'The request could not be completed due to a conflict with the current state of the resource.' })
+        }
+
+        // NOTE: CREATES RECIPE IF EVERYTHING IS OK
+        return res.status(200).json(recipe);
     } catch (error) {
-        // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
-        res.status(400).json({error: error.message})
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ error: err.message })
     }
 }
 
@@ -80,48 +90,94 @@ const createRecipe = async (req, res) => {
 const deleteRecipe = async (req, res) => {
     const {id} = req.params
 
-    // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such recipe exists'})
-    }
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({error: 'Invalid recipe ID.'})
+        }
 
-    const recipe = await recipeModel.findOneAndDelete({_id: id})
-    
-    // NOTE: CHECKS IF RECIPE EXISTS IN DB
-    if (!recipe) {
-        return res.status(400).json({error: 'No recipe found'})
+        const recipe = await recipeModel.findOneAndDelete({_id: id})
+        
+        // NOTE: CHECKS IF RECIPE EXISTS IN DB
+        if (!recipe) {
+            return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
+        
+        // NOTE: DELETES RECIPE IF STATUS IS OK
+        return res.status(200).json(recipe)
+    } catch(err) {
+        // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
+        return res.status(500).json({ error: err.message })
     }
-    
-    // NOTE: DELETES RECIPE IF STATUS IS OK
-    res.status(200).json(recipe)
 }
 
 // UPDATE RECIPE ----------------------------------------------------------------------------------
 const updateRecipe = async (req, res) => {
     const {id} = req.params
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({error: 'Invalid recipe ID.'})
+        }
+
+        const recipe = await recipeModel.findOneAndUpdate({_id: id}, {
+            ...req.body
+        })
+
+        // NOTE: CHECKS IF RECIPE EXISTS IN DB
+        if (!recipe) {
+            return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
+
+        // NOTE: UPDATES RECIPE IF STATUS IS OK
+        return res.status(200).json(recipe)
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ error: err.message })
+    }
+}
+
+// ADD COMMENTS -----------------------------------------------------------------------------------
+const addComment = async (req, res) => {
+    const { name, content, timestamp } = req.body;
+    const { id } = req.params;
 
     // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such recipe exists'})
+        return res.status(400).json({error: 'Invalid recipe ID.'})
     }
 
-    const recipe = await recipeModel.findOneAndUpdate({_id: id}, {
-        ...req.body
-    })
+    try {
+        const recipe = await recipeModel.findById(id);
+        // NOTE: CHECKS IF RECIPE EXISTS IN DB
+        if (!recipe) {
+            return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
 
-    // NOTE: CHECKS IF RECIPE EXISTS IN DB
-    if (!recipe) {
-        return res.status(400).json({error: 'No recipe found'})
+        // NOTE: ADDS A NEW COMMENT TO THE ALREADY ESTABLISHED ARRAY OF COMMENTS
+        recipe.comments.push({
+            name,
+            content,
+            timestamp
+        });
+        await recipe.save();
+
+        // NOTE: CREATES COMMENT IF EVERYTHING IS OK
+        return res.status(201).json({ message: "Comment has been added!" })
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ message: err.message })
     }
-
-    // NOTE: UPDATES RECIPE IF STATUS IS OK
-    res.status(200).json(recipe)
 }
 
+// NOTE: EXPORTS FUNCTIONS ------------------------------------------------------------------------
 module.exports = {
     getAllRecipes,
     getSingleRecipe,
     createRecipe,
     deleteRecipe,
-    updateRecipe
+    updateRecipe,
+    addComment
 }
+
+// END OF DOCUMENT --------------------------------------------------------------------------------
