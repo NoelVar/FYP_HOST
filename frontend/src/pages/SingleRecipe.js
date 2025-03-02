@@ -34,35 +34,103 @@ const SingleRecipe = ({ setShowNavbar }) => {
     }, [])
 
     return (
-        <div className='single-recipe'>
+        <div className='recipe-discussion-box'>
             {recipe
                 ? 
-                <div className='single-recipe-details'>
+                <div className='single-recipe-page'>
                     <RecipeCommunitySwitch key={recipe._id} recipe={recipe} active={'recipe'}/>
-                    <div className='information'>
-                        <h1>{recipe.title}</h1>
+                    <div className='single-recipe'>
                         <div className='single-recipe-middle'>
-                            {recipe.image
-                                ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
-                                : <img src='ED2_LOGOV5.png' />
-                            }
+                            <div className='single-recipe-img'>
+                                {recipe.image
+                                    ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
+                                    : <img src='ED2_LOGOV5.png' />
+                                }
+                            </div>
                             <div className='single-recipe-info'>
-                                <p><b>Time:</b> Preparation: {recipe.prepTime} minute, Cooking: {recipe.cookTime} minute</p>
-                                <p><b>Difficulty:</b> {recipe.difficulty}</p>
-                                <div><b>Ingredients: </b> 
-                                    {recipe.ingredients.map((ingredient) => (
-                                        ingredient.quantity + ' ' + ingredient.measurement + ' ' + ingredient.ingredient + ", "
-                                    ))}
+                                <h1>{recipe.title}</h1>
+                                <span className='hr'></span>
+                                <div className='quick-info'>
+                                    <p>
+                                        <b><i className='fa fa-clock'></i></b>
+                                        {recipe.prepTime + recipe.cookTime} min
+                                    </p>
+                                    <p>
+                                        <b><i className="fa-solid fa-chart-simple"></i></b> 
+                                        {recipe.difficulty}
+                                    </p>
+                                    <p>
+                                        <b><i className="fa-solid fa-kitchen-set"></i></b> 
+                                        {recipe.servingSize} serving/s
+                                    </p>
+                                    <p>
+                                        <b><i className="fa-solid fa-earth-americas"></i></b>
+                                         {recipe.origin}
+                                    </p>
+                                    <p>
+                                        <b><i className="fa-solid fa-bowl-food"></i></b>
+                                         {recipe.mealType}
+                                    </p>
                                 </div>
-                                <p><b>Serving Size:</b> {recipe.servingSize}</p>
-                                <p><b>Preparation:</b> {recipe.origin}</p>
-                                <p><b>Meal type:</b> {recipe.mealType}</p>
+                                <span className='hr'></span>
+                                <table>
+                                    <tr>
+                                        <th colSpan={3}>Ingredients</th> 
+                                    </tr>
+                                    {recipe.ingredients.map((ingredient) => (
+                                        <tr>
+                                            <td>{ingredient.quantity}</td> 
+                                            <td>{ingredient.measurement}</td>  
+                                            <td>{ingredient.ingredient}</td>
+                                        </tr>
+                                    ))}
+                                </table>
                             </div>
                         </div>
-                        <p><b>Preparation Instructions:</b> {recipe.prepInstructions}</p>
-                        <p><b>Cooking Instructions:</b> {recipe.cookIntructions}</p>
-                        <div><b>Nutritional Info: </b> 
-                            {recipe.nutritionalInfo.totalKcal + 'Kcal, ' + recipe.nutritionalInfo.totalCarbs + ' carbs, ' + recipe.nutritionalInfo.totalFat + ' fat, ' + recipe.nutritionalInfo.totalProtein + " protein"}
+                        <div className='instruction-container'>
+                            <div className='prep-instructions'>
+                                <ol>
+                                <p><b>prepInstructions Instructions:</b> {recipe.prepInstructions}</p>
+                                </ol>     
+                            </div>
+                            <div className='cook-instructions'>
+                                <p><b>Cooking Instructions:</b> {recipe.cookIntructions}</p>
+                            </div>                                                        
+                        </div>
+                        <h3>Nutritional Info per Serving</h3> 
+                        <div className='nutri-info'>      
+                            <div className='nutri-card'>
+                            <div className='nutri-amount'>
+                                    <p>{recipe.nutritionalInfo.totalKcal}g</p>  
+                                </div>  
+                                <div className='nutri-details'>
+                                    <p>Calories</p>
+                                </div>
+                            </div>
+                            <div className='nutri-card'>
+                            <div className='nutri-amount'>
+                                    <p>{recipe.nutritionalInfo.totalCarbs}g</p>  
+                                </div>  
+                                <div className='nutri-details'>
+                                    <p>Carbs</p>
+                                </div>
+                            </div>
+                            <div className='nutri-card'>
+                                <div className='nutri-amount'>
+                                    <p>{recipe.nutritionalInfo.totalFat}g</p>  
+                                </div>                              
+                                <div className='nutri-details'>
+                                    <p>Fat</p>
+                                </div>
+                            </div>
+                            <div className='nutri-card'>
+                            <div className='nutri-amount'>
+                                    <p>{recipe.nutritionalInfo.totalProtein}g</p>  
+                                </div>                                 
+                                <div className='nutri-details'>
+                                    <p>Protein</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

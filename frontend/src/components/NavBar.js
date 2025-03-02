@@ -13,17 +13,19 @@ const NavBar = () => {
         <header>
             <div className='navbar-container'>
                 <div className='logo-container'>
-                    <Link to='/'><img src='title.png' alt='EdibleEducation' /></Link>
+                    <Link to='/'><img src='ED2_LOGOV6.png' alt='EdibleEducation logo' /></Link>
                     <i className='fa fa-bars menu-toggle'></i>
                 </div>
                 <ul>
-                    <li>
-                        <Link to='/'>Home</Link>
-                    </li>
-                    <li>
-                        <Link to='/recipes'>Recipes</Link>
-                    </li>
-                    <li>
+                    <div className='navigation-left'>
+                        <li>
+                            <Link to='/'>Home</Link>
+                        </li>
+                        <li>
+                            <Link to='/recipes'>Recipes</Link>
+                        </li>
+                    </div>
+                    <li className='right'>
                         <Link to='/login'>
                             <i className='fa fa-user'></i>
                             &nbsp;

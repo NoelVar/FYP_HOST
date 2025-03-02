@@ -20,7 +20,7 @@ const Recipe = ({setShowNavbar}) => {
     const [recipes, setRecipes] = useState(null);
     const [filteredRecipes, setFilteredRecipes] = useState(null);
     const [isLoading, setLoading] = useState(true);
-    const [toggle, setToggle] = useState(false);
+    const [toggle, setToggle] = useState(true);
     const [searchIngred, setSearchIngred] = useState([])
     const [pickedIngred, setPickedIngred] = useState([])
 
@@ -106,51 +106,51 @@ const Recipe = ({setShowNavbar}) => {
 
     // NOTE: DISPLAYING RECIPES -------------------------------------------------------------------
     return (
-        <div className='content-container'>
-            <h1 className='page-title'>RECIPES</h1>
-            <p className='page-description'>Find an inspiration for your next big hit!</p>
-            <form>
-                <div className='search-options'>
-                    <input 
-                        type="text"
-                        className='search-field'
-                        placeholder='Search for a recipe title...'
-                    />
-                    <button className='search-filter' onClick={handleToggle}><i className='fa fa-bars menu-toggle'></i></button>
+        <div className='main-container'>
+            <div className='filter-container'>
+                <div className='ingredient-search'>
+                    <Select 
+                        options={searchIngred} 
+                        isMulti={true} 
+                        isSearchable={true} 
+                        isClearable={true}
+                        hideSelectedOptions={true}
+                        placeholder='Select Ingredients...'
+                        onChange={e => setPickedIngred(e)}
+                        theme={(theme) => ({
+                            ...theme,
+                            borderRadius: 10,
+                        })}
+                    />         
+                    <button onClick={handleSearch}>Search</button>
                 </div>
-                {/* https://react-select.com/home */}
-                {toggle
-                    ? <div className='ingredient-search'>
-                            <Select 
-                                options={searchIngred} 
-                                isMulti={true} 
-                                isSearchable={true} 
-                                isClearable={true}
-                                hideSelectedOptions={true}
-                                placeholder='Select Ingredients...'
-                                onChange={e => setPickedIngred(e)}
-                                theme={(theme) => ({
-                                    ...theme,
-                                    borderRadius: 10,
-                                })}
-                            />         
-                             <button onClick={handleSearch}>Search</button>
-                      </div>
-                    : <p>&nbsp;</p>
-                }
-            </form>
-            <div className='add-recipe-container'>
-                <button onClick={reDirect}>+ Add new recipe</button>
             </div>
-            <div className='recipes-container'>
-            {isLoading 
-                // RESEARCH / REFERENCE: REPEATING DISPLAY INSPIRED BY: https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx-and-lodash
-                ? Array.from({length: 10 }, (_, i) => <Loading key={i}/>)
-                : filteredRecipes
-                    ? filteredRecipes.map((recipe) => ( <RecipeDetails key={recipe._id} recipe={recipe}/>))
-                    : <p>Couldn't display recipes.</p>
-                
-            }
+            <div className='content-container'>
+                <h1 className='page-title'>BROWSE RECIPES</h1>
+                {/* <p className='page-description'>Find an inspiration for your next big hit!</p> */}
+                <form>
+                    <div className='search-options'>
+                        <input 
+                            type="text"
+                            className='search-field'
+                            placeholder='Search for a recipe title...'
+                        />
+                        {/* <button className='search-filter' onClick={handleToggle}><i className='fa fa-bars menu-toggle'></i></button> */}
+                    </div>
+                </form>
+                <div className='add-recipe-container'>
+                    <button onClick={reDirect}>+ Add new recipe</button>
+                </div>
+                <div className='recipes-container'>
+                {isLoading 
+                    // RESEARCH / REFERENCE: REPEATING DISPLAY INSPIRED BY: https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx-and-lodash
+                    ? Array.from({length: 10 }, (_, i) => <Loading key={i}/>)
+                    : filteredRecipes
+                        ? filteredRecipes.map((recipe) => ( <RecipeDetails key={recipe._id} recipe={recipe}/>))
+                        : <p>Couldn't display recipes.</p>
+                    
+                }
+                </div>
             </div>
         </div>
     )

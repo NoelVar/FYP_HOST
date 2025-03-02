@@ -40,7 +40,7 @@ const Discussions = ({ setShowNavbar }) => {
 
         const UserName = 'userName'
         const currentDate = Date.now()
-        console.log(recipe.comments)
+        // console.log(recipe.comments)
         
         // TODO: CHANGE TO REFERENCED DATA MODEL
         await axios.post(`${urlname}/comments`, {
@@ -58,18 +58,20 @@ const Discussions = ({ setShowNavbar }) => {
         })
     }
 
+
     return (
-        <div>
+        <div className="recipe-discussion-box">
             {recipe
                 ? 
                 <div>
                     <RecipeCommunitySwitch key={recipe._id} recipe={recipe} active={'discussion'}/>
-                    <div className="information">
-                        <h1>{recipe.title} Discussion</h1>
+                    <div className="discussion-page">
+                        <h1>Discussion board for {recipe.title}</h1>
+                        <span className='hr'></span>
+                        <h2>Leave a comment!</h2>
                         <form>
-                            <input
-                                type="text"
-                                placeholder="comment"
+                            <textarea
+                                placeholder="Share your thoughts..."
                                 onChange={e => setContent(e.target.value)}
                             />
                             <button onClick={handleSubmit}>Post</button>
@@ -77,9 +79,11 @@ const Discussions = ({ setShowNavbar }) => {
                         <div className="discussion-box">
                             {recipe.comments.map((comment) => (
                                 <div className="discussion-card">
-                                    <h3>{comment.name}</h3>
+                                    <div className="comment-header">
+                                    <h3>{comment.name}</h3> 
+                                    <i>{new Date(comment.timestamp).toDateString()}</i>
+                                    </div>
                                     <p>{comment.content}</p>
-                                    <p>{comment.timeStamp}</p>
                                 </div>
                             ))}
                         </div>

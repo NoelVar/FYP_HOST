@@ -8,7 +8,8 @@
   --primary-color: #071320;
   --secondary-color: #ff7800;
   --side-panel-color: #fff;
-  --main-color: #dcdcdc;
+  --main-color: #F5E9DF;
+  --side-panel: #F2E3D7;
 }
 
 /*ADDING UNIVERSAL PROPERTIES*/
@@ -47,78 +48,96 @@ body {
 
 /*NOTE: STYLING NAVIGATION ----------------------------------------------------------------------*/
 /* RESEARCH / REFERENCE & INSPIRED BY https://www.youtube.com/watch?v=zxkz-wPEYbE */
+/* STYLING OVERALL NAVIGATION BAR */
 header .navbar-container {
   background-color: var(--side-panel-color);
   height: 80px;
+  width: 100vw;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
+  position: fixed;
+  z-index: 1;
 }
 
+/* STYLING THE NAVIGATION ANCHORS (OTHER THEN PROFILE) */
+header .navigation-left {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+
 header .logo-container {
+  /* STYLING FOR MOBILE VIEW */
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  /* LOGO GAP FROM SIDE */
+  margin-left: 30px;
 }
 
 header .logo-container img {
-  width: 250px;
-  padding-left: 15px;
+  /* SIZING LOGO IMAGE */
+  width: 60px;
 }
 
 header .menu-toggle {
+  /* NOT SHOWING MOBILE TOGGLE */
   display: none;
 }
 
+/* STYLING THE LIST ITEMS IN THE NAVIGATION BAR */
 header ul {
   display: flex;
   flex-direction: row;
   list-style-type: none;
   align-items: center;
+  width: 100%;
+  justify-content: space-between;
 }
 
-header ul li {
-  position: relative;
-}
-
+/* STYLING ANCHORS */
 header ul li a {
   color: var(--secondary-color);
   font-weight: bold;
-}
-
-header ul li ul {
-  position: absolute;
-  width: 100%;
-  display: none;
-}
-
-header ul li:hover ul {
-  display: block;
-}
-
-header ul li ul li a {
-  padding: 10px;
-  top: 80px;
-  color: var(--secondary-color);
-  background-color: var(--side-panel-color);
-}
-
-header ul li ul li a:hover {
-  background-color: #ffc28d;
-}
-
-header ul li a {
   display: block;
   padding: 21px;
   font-size: 1.1em;
   transition: .2s ease;
 }
 
+/* STYLING ANCHORS ON HOVER */
 header ul li a:hover {
   background-color: #ffc28d;
   transition: .2s ease;
+}
+
+/* STYLING PROFILE POP UP (NOT SHOWING) */
+header ul li ul {
+  position: absolute;
+  width: 100%;
+  display: none;
+}
+
+/* STYLING PROFILE POP UP (SHOWING ON HOVER) */
+header ul li:hover ul {
+  display: block;
+}
+
+/* STYLING ANCHORS FOR POP UP */
+header ul li ul li a {
+  padding: 10px;
+  color: var(--secondary-color);
+  background-color: var(--side-panel-color);
+}
+
+/* STYLING POP UP ANCHORS ON HOVER */
+header ul li ul li a:hover {
+  background-color: #ffc28d;
 }
 
 /*HOME PAGE STYLING -----------------------------------------------------------------------------*/
@@ -173,69 +192,126 @@ header ul li a:hover {
 }
 
 /*RECIPE PAGE STYLING ---------------------------------------------------------------------------*/
+/* MOST OUTER CONTAINER */
+.main-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
 
-.search-options {
+/* STYLING SEARCH FILTER BOX */
+.filter-container {
+  position: fixed;
+  left: 0;
+  top: 80px;
+  background-color: var(--side-panel);
+  border: 1px solid #C4B5A9;
+  width: 30%;
+  height: 100vh;
+}
+
+/* STYLING RECIPE CONTAINER */
+.recipes-container {
+  margin: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* STYLING CONTENT CONTAINER (INCLUDES TITLE, SEARCH FIELD AND RECIPES)*/
+.content-container {
+  margin-top: 100px;
+  margin-left: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70%;
+}
+
+/* STYLING PAGE TITLE */
+.page-title {
+  color: var(--secondary-color);
+  font-size: 2.5em;
+  margin: 1rem 0;
+}
+
+/* STYLING PAGE DESCRIPTION */
+/* .page-description {
+  font-style: italic;
+} */
+
+/* .search-options {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
-} 
+}  */
 
+/* SEARCH FIELD (FOR TITLE) */
 .search-field {
   padding: 10px;
   border-radius: 10px;
-  width: 500px;
+  width: 600px;
+  box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
+  margin-bottom: 2rem;
 }
 
-.search-filter {
+/* .search-filter {
   color: var(--secondary-color);
   font-size: 1.5em;
   background-color: inherit;
   transition: .2s ease;
-}
+} */
 
-.search-filter:hover {
+/* .search-filter:hover {
   transform: scale(1.1);
   transition: .2s ease;
   cursor: pointer;
-}
-
+} */
+/* 
 .search-filter:active {
   transform: .2s ease;
   transform: rotate(180deg);
-}
+} */
 
+/* SEARCH FIELD (FOR RECIPES) */
 .ingredient-search {
-  margin: 10px 50px;
+  margin: 30px 20px;
 }
 
+/* STYLING INDIVIDUAL RECIPE CARD */
 .recipe-details {
-  width: 20%;
-  height: 60vh;
-  border: none;
+  width: 200px;
+  height: 40vh;
+  border: 1px solid #A9551D;
   border-radius: 10px;
   padding: 5px;
   transition: .2s ease;
   background-color: var(--side-panel-color);
-  box-shadow: 0 1px 25px rgba(0,0,0,0.2);
   overflow: hidden;
   position: relative;
 }
 
+/* STYLING INDIVIDUAL RECIPE CARD ON HOVER */
 .recipe-details:hover {
   transform: translateY(-5px) scale(1.02);
   transition: .2s ease;
   cursor: pointer;
 }
 
+/* STYLING INDIVIDUAL RECIPE CARD ON HOVER */
 .recipe-details:hover .delete-recipe-btn {
   top: 10px;
   transition: .3s ease;
 }
 
+/* STYLING INDIVIDUAL RECIPE IMG */
 .recipe-details img {
   width: 100%;
-  height: 100%;
+  height: 80%;
   border-radius: 10px;
   object-fit: contain;
   overflow: hidden;
@@ -243,24 +319,32 @@ header ul li a:hover {
   transition: .2s ease-out;
 }
 
+/* STYLING INDIVIDUAL RECIPE IMG ON HOVER */
 .recipe-details img:hover {
   transition: .2s ease;
-  transform: scale(1.2);
+  transform: scale(1.4);
 }
 
+/* STYLING INDIVIDUAL RECIPE INFORMATION */
 .recipe-info {
   position: absolute;
   bottom: 0;
   left: 0;
   padding: 5px;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--side-panel-color);
+  color: var(--primary-color);
+  font-weight: 200;
 }
 
+/* STYLING INDIVIDUAL RECIPE TITLE */
 .recipe-info h2 {
   text-transform: uppercase;
+  font-size: 1.2em;
+  margin-bottom: 2px;
 }
 
+/* STYLING INDIVIDUAL RECIPE DELETE BUTTON */
 .delete-recipe-btn {
   position: absolute;
   top: -50px;
@@ -275,121 +359,313 @@ header ul li a:hover {
   transition: .2s ease;
 }
 
+/* STYLING INDIVIDUAL RECIPE DELETE BUTTON ON HOVER */
 .delete-recipe-btn:hover {
   background-color: red;
   transition: .2s ease;
   cursor: pointer;
 }
 
-.recipes-container {
-  width: 90%;
-  margin: auto;
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.content-container {
-  display: flex;
-  margin-top: 5rem;
-  flex-direction: column;
-  align-items: center;
-}
-
-.page-title {
-  color: var(--secondary-color);
-  font-size: 3em;
-}
-
-.page-description {
-  font-style: italic;
-}
-
 /* STYLING RECIPE AND COMMUNITY SWITCH BUTTON -------------------------------------------------- */
+/* STYLING POSITION */
 .switch-menu {
-  background-color: var(--secondary-color);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
 }
 
+/* STYLING OVERALL LOOK */
 .switch-menu a {
   color: var(--side-panel-color);
   font-weight: bold;
   background-color: var(--secondary-color);
+  box-shadow: inset 0px 4px 10px 1px rgba(169, 85, 29, .8);
   padding: 15px;
   width: 100%;
   text-align: center;
 }
 
+/* STYLING ACTIVE LINK */
 .switch-menu .active {
   background-color: var(--main-color);
   color: var(--primary-color);
+  box-shadow: none;
 }
 
 /* SINGLE INGREDIENT PAGE ---------------------------------------------------------------------- */
-.single-recipe {
+/* STYLING OUTER CONTAINER FOR RECIPE AND DISCUSSION PAGEs */
+.recipe-discussion-box {
   width: 100%;
   overflow: hidden;
+  padding-top: 80px;
 }
 
-.single-recipe img {
-  width: 300px;
-}
-
-.information {
+/* HOLDS ALL THE INFORMATION REGARDING THE RECIPE */
+.single-recipe {
   margin: 50px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 50px;
 }
 
+/* HOLDS THE IMAGE OF THE RECIPE */
+.single-recipe-img {
+  width: 50%;
+  text-align: center;
+}
+
+/* STYLING IMG */
+.single-recipe-img img {
+  width: 300px;
+  border-radius: 15px;
+  box-shadow: 2px 2px 5px 5px rgba(169, 85, 29, .5);
+}
+
+/* HOLDS EVERYTHING BUT PREPARATION AND COOKING INSTRUCTION */
 .single-recipe-middle {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 50px;
+  width: 100%;
 }
 
+/* STYLING THE QUICK RECIPE INFORMATION SECTION */
+.quick-info {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* STYLING ICON FOR QUICK INFO */
+.quick-info b {
+  color: var(--secondary-color);
+  margin-right: 5px;
+}
+
+/* STYLING INGREDIENT TABLE */
+.single-recipe-middle table {
+  background-color: white;
+  box-shadow: 2px 2px 5px 5px rgba(169, 85, 29, .5);
+  border-radius: 5px;
+  border-collapse: collapse;
+}
+
+/* ADDING BORDER TO TABLE */
+.single-recipe-middle table th, table td {
+  border: 1px solid rgba(169, 85, 29, .5);
+}
+
+/* REMOVING TOP AND BOTTOM BORDERS */
+.single-recipe-middle table tr:first-child th {
+  border-top: 0;
+}
+.single-recipe-middle table tr:last-child td {
+  border-bottom: 0;
+}
+/* ADDING EXTRA STYLING  BASED ON LAST END FIRST COLS*/
+.single-recipe-middle table tr td:first-child,
+.single-recipe-middle table tr th:first-child {
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+.single-recipe-middle table tr td:last-child,
+.single-recipe-middle table tr th:last-child {
+  font-weight: bold;
+}
+
+/* REMOVING RIGHT AND LEFT BORDERS */
+.single-recipe table th,
+table td {
+  border-right: 0;
+  border-left: 0;
+}
+
+/* STYLING TABLE HEADER */
+.single-recipe-middle th {
+  font-size: 1.2em;
+  padding: 15px;
+}
+
+
+/* STYLING TABLE CELLS */
+.single-recipe-info td {
+  padding: 10px;
+  text-align: center;
+}
+
+/* HOLDS MAIN INFORMATION */
 .single-recipe-info {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 10px;
+  width: 50%;
+}
+
+/* STYLING TITLE */
+.single-recipe-info h1 {
+  margin: 0 auto;
+  font-weight: bold;
+  color: #DB681C;
+}
+
+/* STYLING HORIZONTAL LINE */
+.hr {
+  margin: 0 auto;
+  background-color: rgba(169, 85, 29, .5);
+  width: 80%;
+  height: 1px;
+  border: none;
+}
+
+/* STYLING NUTRITIONAL INFO TITLE */
+.single-recipe h3 {
+  text-align: center;
+  color: #DB681C;
+}
+
+/* STYLING NUTRITIONAL INFO */
+.nutri-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* STYLING NUTRITIONAL INFO */
+.nutri-card {
+  padding: 10px;
+  border: 1px solid #A9551D;
+  border-radius: 15px;
+  height: 20vh;
+  width: 100px;
+  background-color: #d2d2d2;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+/* STYLING NUTRITIONAL INFO */
+.nutri-amount {
+  background-color: var(--side-panel-color);
+  border-radius: 15px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* STYLING NUTRITIONAL INFO */
+.nutri-details {
+  padding: 10px;
+}
+
+/* STYLING INSTRUCTIONS */
+.instruction-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background-color: #C4B5A9;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #A9551D;
+  border-radius: 10px;
 }
 
 /* RECIPE DISCUSSION ----------------------------------------------------------------------------*/
-.discussion-box {
-  background-color: var(--side-panel-color);
+.discussion-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.discussion-page h1 {
+  margin-top: 2rem;
+  color: #DB681C;
+}
+
+.discussion-page h2 {
+  color: var(--secondary-color);
+}
+
+.discussion-page form {
+  display: flex;
+  flex-direction: row;
+  width: 60%;
+  padding: 10px;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.discussion-page textarea {
   width: 80%;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border: 1px solid #A9551D;
+  border-radius: 15px;
+}
+
+.discussion-page button {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: var(--secondary-color);
+  color: var(--side-panel-color);
+  box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
+  transition: .2s ease;
+}
+
+.discussion-page button:hover {
+  box-shadow: none;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.discussion-box {
+  margin: auto;
+  width: 80%;
+}
+
+.comment-header {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.comment-header h3 {
+  color: var(--secondary-color);
+}
+
+.comment-header i {
+  color: #8f8f8f;
 }
 
 .discussion-card {
-  background-color: var(--main-color);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+  gap: 10px;
+  width: 80%;
+  border-top: 1px solid #A9551D;
+  padding-top: 25px;
+  margin: 20px auto;
 }
 
 /*STYLING ADD RECIPE ----------------------------------------------------------------------------*/
 .add-recipe-container {
-  width: 80%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
+  position: fixed;
   padding: 5px;
+  bottom: 10px;
+  right: 10px;
+  text-align: center;
+  z-index: 1;
 }
 
 .add-recipe-form {
@@ -421,17 +697,20 @@ header ul li a:hover {
 }
 
 .add-recipe-container button {
-  width: 20%;
+  width: 80%;
   margin: auto;
   background-color: var(--secondary-color);
-  padding: 5px;
+  padding: 15px;
+  font-weight: bold;
+  border: 2px solid #A9551D;
   border-radius: 5px;
   color: var(--side-panel-color);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
 }
 
 .add-recipe-container button:hover {
-  box-shadow: none;
+  background-color: white;
+  color: var(--secondary-color);
   cursor: pointer;
 }
 
