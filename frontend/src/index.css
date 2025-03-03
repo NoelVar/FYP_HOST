@@ -119,8 +119,8 @@ header ul li a:hover {
 /* STYLING PROFILE POP UP (NOT SHOWING) */
 header ul li ul {
   position: absolute;
-  width: 100%;
   display: none;
+  background-color: var(--side-panel-color);
 }
 
 /* STYLING PROFILE POP UP (SHOWING ON HOVER) */
@@ -138,6 +138,18 @@ header ul li ul li a {
 /* STYLING POP UP ANCHORS ON HOVER */
 header ul li ul li a:hover {
   background-color: #ffc28d;
+}
+
+/* LOGOUT BUTTON */
+.logout-button {
+  padding: 10px;
+  background-color: var(--secondary-color);
+  color: var(--side-panel-color);
+}
+
+.logout-button:hover {
+  background-color: #DB681C;
+  cursor: pointer;
 }
 
 /*HOME PAGE STYLING -----------------------------------------------------------------------------*/
@@ -204,10 +216,104 @@ header ul li ul li a:hover {
   position: fixed;
   left: 0;
   top: 80px;
+  bottom: 0;
+  padding-bottom: 20px;
   background-color: var(--side-panel);
   border: 1px solid #C4B5A9;
   width: 30%;
-  height: 100vh;
+  overflow: scroll;
+}
+
+/* STYLING INGREDIENT SEARCH FILTER SECTION */
+.ingredient-search {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* STYLING INGREDIENT SEARCH FORM */
+.ingred-select {
+  width: 100%;
+}
+
+/* STYLING INGREDIENT SEARCH BUTTON */
+.ingredient-search button {
+  padding: 5px 10px;
+  box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
+  font-weight: bold;
+  background-color: var(--secondary-color);
+  color: var(--side-panel-color);
+  border-radius: 5px;
+  margin-top: 20px;
+  transition: .2s ease;
+}
+
+/* STYLING BUTTON HOVER */
+.ingredient-search button:hover {
+  cursor: pointer;
+  box-shadow: none;
+  transition: .2s ease;
+}
+
+/* STYLING FILTER TITTLE */
+.filter-container h2 {
+  text-align: center;
+  color: var(--secondary-color);
+  margin-top: 20px;
+}
+
+/* STYLING FILTER FORM */
+.filters form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+/* STYLING FILTER DROPDOWN */
+.filters select {
+  border: 1px solid #A9551D;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: var(--side-panel-color);
+}
+
+/* SEARCH FILTER - RADIO STYLING */
+.difficulty-filter-radio {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: baseline;
+  align-items: center;
+  width: 80%;
+}
+
+/* https://moderncss.dev/pure-css-custom-styled-radio-buttons/ */
+.difficulty-filter-radio input {
+  appearance: none;
+  background-color: var(--side-panel-color);
+  margin: 0;
+  font: inherit;
+  width: 1.5em;
+  height: 2em;
+  border: 1px solid #A9551D;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+}
+
+.difficulty-filter-radio input::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--secondary-color);
+}
+
+.difficulty-filter-radio input:checked::before {
+  transform: scale(1);
 }
 
 /* STYLING RECIPE CONTAINER */
@@ -581,6 +687,7 @@ table td {
 }
 
 /* RECIPE DISCUSSION ----------------------------------------------------------------------------*/
+/* DISPLAYING ELEMENT UNDER EACHOTHER */
 .discussion-page {
   display: flex;
   flex-direction: column;
@@ -588,15 +695,18 @@ table td {
   gap: 20px;
 }
 
+/* STYLING TITLE */
 .discussion-page h1 {
   margin-top: 2rem;
   color: #DB681C;
 }
 
+/* STYLING SUB-TITLE */
 .discussion-page h2 {
   color: var(--secondary-color);
 }
 
+/* ALIGNING TEXT FIELD AND BUTTON */
 .discussion-page form {
   display: flex;
   flex-direction: row;
@@ -606,6 +716,7 @@ table td {
   align-items: center;
 }
 
+/* STYLING TEXT FIELD */
 .discussion-page textarea {
   width: 80%;
   padding: 15px;
@@ -613,6 +724,7 @@ table td {
   border-radius: 15px;
 }
 
+/* STYLING BUTTON */
 .discussion-page button {
   padding: 5px 10px;
   border-radius: 5px;
@@ -622,31 +734,37 @@ table td {
   transition: .2s ease;
 }
 
+/* STYLING BUTTON HOVER EFFECT */
 .discussion-page button:hover {
   box-shadow: none;
   cursor: pointer;
   transition: .2s ease;
 }
 
+/* STYLING CONTAINER HOUSING ALREADY MADE COMMENTS */
 .discussion-box {
   margin: auto;
   width: 80%;
 }
 
+/* STYLING USERNAME AND DATA BOX */
 .comment-header {
   display: flex;
   flex-direction: row;
   gap: 5px;
 }
 
+/* STYLING USERNAME */
 .comment-header h3 {
   color: var(--secondary-color);
 }
 
+/* STYLING DATE */
 .comment-header i {
   color: #8f8f8f;
 }
 
+/* STYLING COMMENT MAIN CONTAINER */
 .discussion-card {
   display: flex;
   flex-direction: column;
@@ -668,26 +786,58 @@ table td {
   z-index: 1;
 }
 
+/* STYLING EACH INPUT */
+.single-input {
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+  align-items: baseline;
+}
+
+/* MOVING DOWN THE ADD RECIPE FORM TO NOT BE COVERED BY NAVBAR */
+.add-recipe-box {
+  padding-top: 80px;
+}
+
+/* CUSTOMIZING ADD RECIPE FORM */
 .add-recipe-form {
   display: flex;
   flex-direction: column;
   gap: 25px;
-  width: 500px;
-  padding: 15px;
+  align-items: center;
+  justify-content: center;
   border: none;
   border-radius: 5px;
   background-color: var(--side-panel-color);
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 
-.add-recipe-form input{
-  background-color: var(--main-color);
-  font-size: 1em;
-  padding: 2px;
-  border-radius: 2px;
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+.add-recipe-form h1 {
+  padding-top: 50px;
+  color: #DB681C;
 }
 
+.add-recipe-form a {
+  color: var(--secondary-color);
+}
+
+.add-recipe-form a:hover {
+  color: #A9551D;
+}
+
+/* CUSTOMIZING INPUT FIELDS AND TEXTAREAS */
+.add-recipe-form input, 
+.add-recipe-form textarea, 
+.add-recipe-form select{
+  background-color: var(--main-color);
+  font-size: 1em;
+  padding: 10px;
+  border: 1px solid #A9551D;
+  border-radius: 5px;
+  width: 60vw;
+}
+
+/* CUSTOMIZING SELECTS */
 .add-recipe-container select {
   width: 20%;
   margin: auto;
@@ -696,6 +846,37 @@ table td {
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* ADDING STYLING TO REQUIRED ELEMENTS */
+.required {
+  color: red;
+}
+
+/* STYLING IMAGE INPUT AREA */
+input[type="file"] {
+  display: none;
+}
+.file-input {
+  border: 2px dashed #A9551D;
+  border-radius: 5px;
+  padding: 40px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: rgba(169, 85, 29, .8);
+}
+
+/* STYLING HOVER  */
+.file-input:hover {
+  cursor: pointer;
+}
+
+.file-input:active {
+  border: 2px dashed var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+/* STYLING BUTTON */
 .add-recipe-container button {
   width: 80%;
   margin: auto;
@@ -705,15 +886,47 @@ table td {
   border: 2px solid #A9551D;
   border-radius: 5px;
   color: var(--side-panel-color);
-  box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
+  box-shadow: 2px 2px 10px 5px rgba(0, 0, 0, 0.5);
 }
 
+/* STYLING BUTTON ON HOVER */
 .add-recipe-container button:hover {
-  background-color: white;
+  background-color: var(--side-panel-color);
   color: var(--secondary-color);
   cursor: pointer;
 }
 
+/* STYLING BUTTON */
+.add-recipe-form button {
+  padding: 10px;
+  background-color: var(--secondary-color);
+  color: var(--side-panel-color);
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
+  width: 100px;
+}
+
+.add-recipe-form button:hover {
+  cursor: pointer;
+  box-shadow: none;
+}
+
+/* STYLING ADDED INGREDIENT */
+.display-added {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.added-ing {
+  padding: 5px;
+  background-color: #C4B5A9;
+  border-radius: 10px;
+  border: 1px solid #A9551D;
+  text-align: center;
+}
+
+/* STYLING INGREDIENT ADDING */
 .add-ingredient {
   display: flex;
   flex-direction: column;

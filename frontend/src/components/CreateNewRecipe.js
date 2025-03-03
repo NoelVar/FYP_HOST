@@ -1,6 +1,6 @@
 // NOTE: IMPORTS ----------------------------------------------------------------------------------
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useLayoutEffect } from "react";
 
     /* TODO: - REMOVE CAPITAL LETTER WHEN SAVING
@@ -117,179 +117,193 @@ const CreateNewRecipe = ({setShowNavbar}) => {
 
     // NOTE: DISPLAYING FORM ----------------------------------------------------------------------
     return (
-        <form onSubmit={handleSubmit} className="add-recipe-form">
-            {/*NOTE: TITLE*/}
-            <div className="single-input">
-                <label>Title:* </label>
-                <input 
-                    type="text"
-                    value={title}
-                    placeholder="Title"
-                    onChange={(e) => setTitle(e.target.value)}
-                />
-            </div>
-            {/*NOTE: IMAGE*/}
-            {/* RESEARCH / REFERENCE https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95*/}
-            <div className="single-input">
-                <label>Image: </label>
-                <input 
-                    type="file"
-                    accept=".png, .jpg, .jpeg"
-                    name="file"
-                    onChange={(e) => setFile(e.target.files[0])}
-                />
-            </div>
-            {/*NOTE: PREPARATION TIME*/}
-            <div className="single-input">
-                <label>Preparation Time:* </label>
-                <input 
-                    type="number"
-                    value={prepTime}
-                    placeholder="Prep"
-                    onChange={(e) => setPrepTime(e.target.value)}
-                />
-            </div>
-            {/*NOTE: COOK TIME*/}
-            <div className="single-input">
-                <label>Cook Time:* </label>
-                <input 
-                    type="number"
-                    value={cookTime}
-                    placeholder="cook"
-                    onChange={(e) => setCookTime(e.target.value)}
-                />
-            </div>
-            {/*NOTE: SERVING SIZE*/}
-            <div className="single-input">
-                <label>Serving Size:* </label>
-                <input 
-                    type="number"
-                    value={serving}
-                    placeholder="size"
-                    onChange={(e) => setServingSize(e.target.value)}
-                />
-            </div>
-            {/*NOTE: DIFFICULTY*/}
-            {/* RESEARCH / REFERENCE https://legacy.reactjs.org/docs/forms.html#the-select-tag */}
-            <div className="single-input">
-                <label>Difficulty: *</label>
-                <select onChange={(e) => handleDifficultyChange(e)}>
-                    <option value="none" selected disabled hidden>Select a difficulty</option>
-                    <option value="easy">Easy</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="hard">Hard</option>
-                </select>
-            </div>
-            {/*NOTE: ORIGIN OF DISH*/}
-            <div className="single-input">
-                <label>Dish Origin: *</label>
-                <input 
-                    type="text"
-                    value={origin}
-                    placeholder="Origin"
-                    onChange={(e) => setOrigin(e.target.value)}
-                />
-            </div>
-            {/*NOTE: MEAL TYPE*/}
-            <div className="single-input">
-                <label>Meal Type: *</label>
-                <select onChange={(e) => handleMealChange(e)}>
-                    <option value="none" selected disabled hidden>Select a meal type</option>
-                    <option value="breakfast">Breakfast</option>
-                    <option value="brunch">Brunch</option>
-                    <option value="lunch">Lunch</option>
-                    <option value="dinner">Dinner</option>
-                    <option value="dish">Dish</option>
-                    <option value="snack">Snack</option>
-                    <option value="drink">Drink</option>
-                    <option value="dessert">Dessert</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            {/*NOTE: PREPARATION INSTRUCTIONS*/}
-            <div className="single-input">
-                <label>Preparation Instructions: *</label>
-                <input 
-                    type="text"
-                    value={prepInst}
-                    placeholder="prep"
-                    onChange={(e) => setPrepInst(e.target.value)}
-                />
-            </div>
-            {/*NOTE: COOKING INSTRUCTIONS*/}
-            <div className="single-input">
-                <label>Cooking Instructions: *</label>
-                <input 
-                    type="text"
-                    value={cookInst}
-                    placeholder="cook"
-                    onChange={(e) => setCookInst(e.target.value)}
-                />
-            </div>
-            {/*NOTE: INGREDIENTS*/}
-            {/* RESEARCH / REFERENCE https://stackoverflow.com/questions/71880151/updating-an-array-with-usestate-in-a-form */}
-            <div className="add-ingredient">
-                <label>Ingredients: *</label>
-                <input 
-                    type="text" 
-                    id="inputItem"
-                    name="ingredient"
-                    placeholder="Enter a Ingredinet"
-                    onChange={handleNewIngredient}
-                />
-                <label>Quantity: </label>
-                <input 
-                    type="number" 
-                    id="inputItem"
-                    name="quantity"
-                    placeholder="Enter the quantity"
-                    onChange={handleNewIngredient}
-                />
-                <label>Measurement: </label>
-                <input 
-                    type="text"
-                    id="inputItem"
-                    name="measurement"
-                    placeholder="Enter the measurement"
-                    onChange={handleNewIngredient}
-                />
-                <button onClick={addIngredient}>Add Ingredient</button>
-            </div>
-            {ingredients.map((ing) => (ing.ingredient + " "))}
-            {/*NOTE: NUTRITIONAL INFO*/}
-            <div className="add-ingredient">
-                <label>Total Kcal: </label>
-                <input 
-                    type="text" 
-                    name="totalKcal"
-                    placeholder="nut"
-                    onChange={handleNutrition}
-                />
-                <label>Total Carbs: </label>
-                <input 
-                    type="text" 
-                    name="totalCarbs"
-                    placeholder="nut"
-                    onChange={handleNutrition}
-                />
-                <label>Total Fat: </label>
-                <input 
-                    type="text" 
-                    name="totalFat"
-                    placeholder="nut"
-                    onChange={handleNutrition}
-                />
-                <label>Total Protein: </label>
-                <input 
-                    type="text" 
-                    name="totalProtein"
-                    placeholder="nut"
-                    onChange={handleNutrition}
-                />
-            </div>
+        <div className="add-recipe-box">
+            <form onSubmit={handleSubmit} className="add-recipe-form">
+                <h1>Share your recipe with others!</h1>
+                <p>By submitting a recipe you agree to the <Link>Terms and conditions</Link></p>
+                {/*NOTE: TITLE*/}
+                <div className="single-input">
+                    <label>Title: <span className="required">*</span> </label>
+                    <input 
+                        type="text"
+                        value={title}
+                        placeholder="Title"
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                    />
+                </div>
+                {/*NOTE: IMAGE*/}
+                {/* RESEARCH / REFERENCE https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95*/}
+                <div className="single-input">
+                    <label>Image: </label>
+                    <label for="file" className="file-input">Browse and select your file +</label>
+                    <input 
+                        type="file"
+                        id="file"
+                        accept=".png, .jpg, .jpeg"
+                        name="file"
+                        onChange={(e) => setFile(e.target.files[0])}
+                    />
+                </div>
+                {/*NOTE: PREPARATION TIME*/}
+                <div className="single-input">
+                    <label>Preparation Time: <span className="required">*</span> </label>
+                    <input 
+                        type="number"
+                        value={prepTime}
+                        placeholder="Prep"
+                        onChange={(e) => setPrepTime(e.target.value)}
+                        required
+                    />
+                </div>
+                {/*NOTE: COOK TIME*/}
+                <div className="single-input">
+                    <label>Cook Time: <span className="required">*</span> </label>
+                    <input 
+                        type="number"
+                        value={cookTime}
+                        placeholder="cook"
+                        onChange={(e) => setCookTime(e.target.value)}
+                        required
+                    />
+                </div>
+                {/*NOTE: SERVING SIZE*/}
+                <div className="single-input">
+                    <label>Serving Size: <span className="required">*</span> </label>
+                    <input 
+                        type="number"
+                        value={serving}
+                        placeholder="size"
+                        onChange={(e) => setServingSize(e.target.value)}
+                        required
+                    />
+                </div>
+                {/*NOTE: DIFFICULTY*/}
+                {/* RESEARCH / REFERENCE https://legacy.reactjs.org/docs/forms.html#the-select-tag */}
+                <div className="single-input">
+                    <label>Difficulty: <span className="required">*</span></label>
+                    <select onChange={(e) => handleDifficultyChange(e)} required>
+                        <option value="none" selected disabled hidden>Select a difficulty</option>
+                        <option value="easy">Easy</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                {/*NOTE: ORIGIN OF DISH*/}
+                <div className="single-input">
+                    <label>Dish Origin: <span className="required">*</span></label>
+                    <input 
+                        type="text"
+                        value={origin}
+                        placeholder="Origin"
+                        onChange={(e) => setOrigin(e.target.value)}
+                        required
+                    />
+                </div>
+                {/*NOTE: MEAL TYPE*/}
+                <div className="single-input">
+                    <label>Meal Type: <span className="required">*</span></label>
+                    <select onChange={(e) => handleMealChange(e)} required>
+                        <option value="none" selected disabled hidden>Select a meal type</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="brunch">Brunch</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="dish">Dish</option>
+                        <option value="snack">Snack</option>
+                        <option value="drink">Drink</option>
+                        <option value="dessert">Dessert</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                {/*NOTE: PREPARATION INSTRUCTIONS*/}
+                <div className="single-input">
+                    <label>Preparation Instructions: <span className="required">*</span></label>
+                    <textarea                         
+                        value={prepInst}
+                        placeholder="prep"
+                        onChange={(e) => setPrepInst(e.target.value)}
+                        required
+                    />
+                </div>
+                {/*NOTE: COOKING INSTRUCTIONS*/}
+                <div className="single-input">
+                    <label>Cooking Instructions: <span className="required">*</span></label>
+                    <textarea
+                        value={cookInst}
+                        placeholder="cook"
+                        onChange={(e) => setCookInst(e.target.value)}
+                        required
+                    />
+                </div>
+                {/*NOTE: INGREDIENTS*/}
+                {/* RESEARCH / REFERENCE https://stackoverflow.com/questions/71880151/updating-an-array-with-usestate-in-a-form */}
+                <div className="add-ingredient">
+                    <label>Ingredients: <span className="required">*</span></label>
+                    <input 
+                        type="text" 
+                        id="inputItem"
+                        name="ingredient"
+                        placeholder="Enter a Ingredinet"
+                        onChange={handleNewIngredient}
+                        required
+                    />
+                    <label>Quantity: </label>
+                    <input 
+                        type="number" 
+                        id="inputItem"
+                        name="quantity"
+                        placeholder="Enter the quantity"
+                        onChange={handleNewIngredient}
+                    />
+                    <label>Measurement: </label>
+                    <input 
+                        type="text"
+                        id="inputItem"
+                        name="measurement"
+                        placeholder="Enter the measurement"
+                        onChange={handleNewIngredient}
+                    />
+                    <button onClick={addIngredient}>Add Ingredient</button>
+                </div>
+                <div className="display-added">
+                    {ingredients.map((ing) => (<span className="added-ing">{ing.ingredient}</span>))}
+                </div>
+                {/*NOTE: NUTRITIONAL INFO*/}
+                <div className="add-ingredient">
+                    <label>Total Kcal: </label>
+                    <input 
+                        type="text" 
+                        name="totalKcal"
+                        placeholder="nut"
+                        onChange={handleNutrition}
+                    />
+                    <label>Total Carbs: </label>
+                    <input 
+                        type="text" 
+                        name="totalCarbs"
+                        placeholder="nut"
+                        onChange={handleNutrition}
+                    />
+                    <label>Total Fat: </label>
+                    <input 
+                        type="text" 
+                        name="totalFat"
+                        placeholder="nut"
+                        onChange={handleNutrition}
+                    />
+                    <label>Total Protein: </label>
+                    <input 
+                        type="text" 
+                        name="totalProtein"
+                        placeholder="nut"
+                        onChange={handleNutrition}
+                    />
+                </div>
 
-            <button type="submit">Submit</button>
-        </form>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
     )
 }
 

@@ -29,7 +29,7 @@ const NavBar = () => {
                         <Link to='/login'>
                             <i className='fa fa-user'></i>
                             &nbsp;
-                            Noel Varga
+                            Username
                             &nbsp;
                             <i className='fa fa-chevron-down'></i>
                         </Link>
@@ -38,7 +38,7 @@ const NavBar = () => {
                                 <Link to='/asd'>Profile</Link>
                             </li>
                             <li>
-                                <button onClick={handleClick}>Logout</button>
+                                <button onClick={handleClick} className='logout-button'>Logout</button>
                             </li>
                         </ul>
                     </li>
