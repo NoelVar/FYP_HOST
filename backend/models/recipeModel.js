@@ -41,14 +41,8 @@ const recipeSchema = new Schema({
         enum: ['breakfast', 'brunch', 'lunch', 'dinner', 'dish', 'snack', 'drink', 'dessert', 'other'],
         require: true   // NOTE: 'mealType' MUST BE ENETERED
     },
-    prepInstructions: {
-        type: String,
-        require: true   // NOTE: 'prepIntructions' MUST BE ENTERED
-    },
-    cookIntructions: {
-        type: String,
-        require: true   // NOTE: 'cookInstructions' MUST BE ENTERED
-    },
+    prepInstructions: [String],
+    cookInstructions: [String],
     ingredients: [{
         // NOTE: SINGLE INGREDIENT
         ingredient: {

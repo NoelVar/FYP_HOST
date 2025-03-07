@@ -23,11 +23,13 @@ const CreateNewRecipe = ({setShowNavbar}) => {
     const [prepTime, setPrepTime] = useState(0);
     const [cookTime, setCookTime] = useState(0);
     const [serving, setServingSize] = useState(0);
-    const [difficulty, setDificulty] = useState('');
+    const [difficulty, setDifficulty] = useState('');
     const [origin, setOrigin] = useState('');
     const [mealType, setMealType] = useState('');
-    const [prepInst, setPrepInst] = useState('');
-    const [cookInst, setCookInst] = useState('');
+    const [prepStep, setPrepStep] = useState('');
+    const [prepInst, setPrepInst] = useState([]);
+    const [cookingStep, setCookingStep] = useState('');
+    const [cookInst, setCookInst] = useState([]);
     const [singleIngredient, setSingleIngredient] = useState({
             ingredient: '',
             quantity: 0,
@@ -43,7 +45,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
     
     // NOTE: HANDLING OPTION CHANGE ---------------------------------------------------------------
     const handleDifficultyChange = (e) => {
-        setDificulty(e.target.value)
+        setDifficulty(e.target.value)
     }
 
     const handleMealChange = (e) => {
@@ -51,10 +53,22 @@ const CreateNewRecipe = ({setShowNavbar}) => {
     }
 
     // NOTE: HANDLING ADDED INGREDIENT ------------------------------------------------------------
-    // RESEARCH / REFERENCE https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95
+    // ADAPTED FROM: https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95
     const handleNewIngredient = (e) => {
         e.preventDefault()
         setSingleIngredient({...singleIngredient, [e.target.name]: e.target.value})
+    }
+
+    // NOTE: HANDLING COOKING INSTRUCTIONS --------------------------------------------------------
+    const handleCookInst = (e) => {
+        e.preventDefault()
+        setCookInst([...cookInst, cookingStep])
+    }
+
+    // NOTE: HANDLING COOKING INSTRUCTIONS --------------------------------------------------------
+    const handlePrepInst = (e) => {
+        e.preventDefault()
+        setPrepInst([...prepInst, prepStep])
     }
 
     // NOTE: HANDLING ADDED NUTRINFO --------------------------------------------------------------
@@ -75,7 +89,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         
         const approvalStatus = 'pending';
 
-        // NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
+        //NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
         const formData = new FormData();
         formData.append('title', title);
         formData.append('file', file); // NOTE: NAME NEEDS TO MATCH MULTER SET UP
@@ -85,8 +99,8 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         formData.append('difficulty', difficulty);
         formData.append('origin', origin);
         formData.append('mealType', mealType);
-        formData.append('prepInst', prepInst);
-        formData.append('cookInst', cookInst);
+        formData.append('prepInstructions', JSON.stringify(prepInst));
+        formData.append('cookInstructions', JSON.stringify(cookInst));
         formData.append('ingredients', JSON.stringify(ingredients)); // NOTE: CONVERTE TO JSON STRING
         formData.append('nutrInfo', JSON.stringify(nutrInfo));
         formData.append('approvalStatus', approvalStatus);
@@ -104,14 +118,16 @@ const CreateNewRecipe = ({setShowNavbar}) => {
             setPrepTime(0)
             setCookTime(0)
             setServingSize(0)
-            setDificulty('')
+            setDifficulty('')
             setOrigin('')
             setMealType('')
-            setPrepInst('')
-            setCookInst('')
+            setPrepInst([])
+            setCookInst([])
             setSingleIngredient([])
             setNutrInfo('')
             navigate('/recipes')
+        } else {
+            console.error('Server Error:', json.error)
         }
     }
 
@@ -133,7 +149,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                     />
                 </div>
                 {/*NOTE: IMAGE*/}
-                {/* RESEARCH / REFERENCE https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95*/}
+                {/* ADAPTED FROM: https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95*/}
                 <div className="single-input">
                     <label>Image: </label>
                     <label for="file" className="file-input">Browse and select your file +</label>
@@ -179,7 +195,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                     />
                 </div>
                 {/*NOTE: DIFFICULTY*/}
-                {/* RESEARCH / REFERENCE https://legacy.reactjs.org/docs/forms.html#the-select-tag */}
+                {/* ADAPTED FROM: https://legacy.reactjs.org/docs/forms.html#the-select-tag */}
                 <div className="single-input">
                     <label>Difficulty: <span className="required">*</span></label>
                     <select onChange={(e) => handleDifficultyChange(e)} required>
@@ -220,24 +236,32 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                 <div className="single-input">
                     <label>Preparation Instructions: <span className="required">*</span></label>
                     <textarea                         
-                        value={prepInst}
+                        value={prepStep}
                         placeholder="prep"
-                        onChange={(e) => setPrepInst(e.target.value)}
+                        onChange={(e) => setPrepStep(e.target.value)}
                         required
                     />
+                    <button onClick={handlePrepInst}>Add step</button>
+                </div>
+                <div className="display-added">
+                    {Array.from({length: prepInst.length }, (_, i) => <p>{prepInst[i]}</p> )}
                 </div>
                 {/*NOTE: COOKING INSTRUCTIONS*/}
                 <div className="single-input">
                     <label>Cooking Instructions: <span className="required">*</span></label>
                     <textarea
-                        value={cookInst}
+                        value={cookingStep}
                         placeholder="cook"
-                        onChange={(e) => setCookInst(e.target.value)}
+                        onChange={(e) => setCookingStep(e.target.value)}
                         required
                     />
+                    <button onClick={handleCookInst}>Add step</button>
+                </div>
+                <div className="display-added">
+                    {Array.from({length: cookInst.length }, (_, i) => <p>{cookInst[i]}</p> )}
                 </div>
                 {/*NOTE: INGREDIENTS*/}
-                {/* RESEARCH / REFERENCE https://stackoverflow.com/questions/71880151/updating-an-array-with-usestate-in-a-form */}
+                {/* ADAPTED FROM: https://stackoverflow.com/questions/71880151/updating-an-array-with-usestate-in-a-form */}
                 <div className="add-ingredient">
                     <label>Ingredients: <span className="required">*</span></label>
                     <input 

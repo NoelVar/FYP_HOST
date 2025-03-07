@@ -12,12 +12,12 @@ const RecipeCommunitySwitch = ({ recipe, active }) => {
                 ? 
                 <div className="switch-menu">
                     <Link to={recipeURL} className="active">Recipe</Link>
-                    <Link to={discussionURL}>Discussion</Link>
+                    <Link to={discussionURL}>{recipe.title} discussion</Link>
                 </div>
                 : 
                 <div className="switch-menu">
                     <Link to={recipeURL}>Recipe</Link>
-                    <Link to={discussionURL} className="active">Discussion</Link>
+                    <Link to={discussionURL} className="active">{recipe.title} discussion</Link>
                 </div>
             }
         </div>

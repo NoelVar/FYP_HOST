@@ -66,7 +66,7 @@ const Discussions = ({ setShowNavbar }) => {
                 <div>
                     <RecipeCommunitySwitch key={recipe._id} recipe={recipe} active={'discussion'}/>
                     <div className="discussion-page">
-                        <h1>Discussion board for {recipe.title}</h1>
+                        <h1>{recipe.title} discussion board</h1>
                         <span className='hr'></span>
                         <h2>Leave a comment!</h2>
                         <form>

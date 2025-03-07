@@ -47,14 +47,17 @@ const getSingleRecipe = async (req, res) => {
 
 // CREATE RECIPE ----------------------------------------------------------------------------------
 const createRecipe = async (req, res) => {
-    const { title, prepTime, cookTime, servingSize, difficulty, origin, mealType, prepInstructions, cookIntructions, approvalStatus } = req.body;
+    const { title, prepTime, cookTime, servingSize, difficulty, origin, mealType, approvalStatus } = req.body;
+    
     // NOTE: HANDLING UPLOADED IMAGE
     const image = req.file ? req.file.filename : null;
 
     // NOTE: PARSE INGREDIENT AND NUTRITIONAL INFO IF THEY ARE SENT AS A JSON STRING
+    const prepInstructions = req.body.cookInstructions ? JSON.parse(req.body.prepInstructions) : [];
+    const cookInstructions = req.body.cookInstructions ? JSON.parse(req.body.cookInstructions) : [];
     const ingredients = req.body.ingredients ? JSON.parse(req.body.ingredients) : [];
     const nutritionalInfo = req.body.nutrInfo ? JSON.parse(req.body.nutrInfo) : {};
-
+    
     // NOTE: ATTEMPTS TO CREATE RECIPE IN DB
     try {
         const recipe = await recipeModel.create({
@@ -67,7 +70,7 @@ const createRecipe = async (req, res) => {
             origin,
             mealType,
             prepInstructions,
-            cookIntructions,
+            cookInstructions,
             ingredients,
             nutritionalInfo,
             approvalStatus
@@ -82,7 +85,8 @@ const createRecipe = async (req, res) => {
         return res.status(201).json(recipe);
     } catch (error) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
-        return res.status(500).json({ error: err.message })
+        console.log('Error occourd')
+        return res.status(500).json({ error: error.message })
     }
 }
 
@@ -138,7 +142,7 @@ const updateRecipe = async (req, res) => {
 }
 
 // ADD COMMENTS -----------------------------------------------------------------------------------
-// RESEARCH / REFERENCE: https://www.geeksforgeeks.org/implement-comments-section-in-mern-blogs-and-news-website/
+// ADAPTED FROM: https://www.geeksforgeeks.org/implement-comments-section-in-mern-blogs-and-news-website/
 const addComment = async (req, res) => {
     const { name, content, timestamp } = req.body;
     const { id } = req.params;

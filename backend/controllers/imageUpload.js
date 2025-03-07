@@ -1,4 +1,4 @@
-// RESEARCH / REFERENCE https://www.youtube.com/watch?v=jfZyqZycjmA -------------------------------
+// ADAPTED FROM: https://www.youtube.com/watch?v=jfZyqZycjmA
 // NOTE: IMPORTING 'multer, path'
 const multer = require('multer');
 const path = require('path');

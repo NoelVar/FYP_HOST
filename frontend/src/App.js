@@ -10,6 +10,7 @@ import NavBar from './components/NavBar';
 import { useState } from 'react';
 import SingleRecipe from './pages/SingleRecipe';
 import Discussions from './pages/Discussions';
+import SuggestVariation from './pages/SuggestVariation';
 
 function App() {  
 
@@ -40,6 +41,10 @@ function App() {
             <Route
               path='recipes/:id/discussion'
               element={<Discussions setShowNavbar={setShowNavbar}/>}
+            />
+             <Route
+              path='recipes/:id/suggest-variation'
+              element={<SuggestVariation setShowNavbar={setShowNavbar}/>}
             />
             <Route 
               path='/login'

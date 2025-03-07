@@ -4,12 +4,12 @@ const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 
-// RESEARCH / REFERENCE: https://youtu.be/MsudBMepwO8
+// ADAPTED FROM: https://youtu.be/MsudBMepwO8
 const createToken = (_id) => {
     return jwt.sign({ _id: _id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
 }
 
-// RESEARCH / REFERENCE: https://mailtrap.io/blog/nodejs-email-validation/
+// ADAPTED FROM: https://mailtrap.io/blog/nodejs-email-validation/
 // NOTE: FOR EMAIL VALIDATION USING REGULAR EXPRESSION (RegEx)
 /*
     ^ "=>" BEGINING OF THE STRING 

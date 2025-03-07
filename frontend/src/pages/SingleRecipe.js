@@ -1,5 +1,6 @@
 // IMPORTS ----------------------------------------------------------------------------------------
 import { useState, useEffect, useLayoutEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import RecipeCommunitySwitch from '../components/RecipeCommunitySwitch';
 
 const SingleRecipe = ({ setShowNavbar }) => {
@@ -10,6 +11,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
     }, [])
 
     // NOTE: STATE VARIABLES
+    const navigate = useNavigate();
     const [recipe, setRecipe] = useState(null)
     const params = window.location.href
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[0]
@@ -23,6 +25,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
 
                 if (response.ok) {
                     setRecipe(json)
+                    console.log(json)
                 }
             } catch (err) {
                 console.log(err)
@@ -32,6 +35,10 @@ const SingleRecipe = ({ setShowNavbar }) => {
         
         fetchRecipe()
     }, [])
+
+    const toSuggestion = () => {
+        navigate('suggest-variation')
+    }
 
     return (
         <div className='recipe-discussion-box'>
@@ -88,13 +95,21 @@ const SingleRecipe = ({ setShowNavbar }) => {
                             </div>
                         </div>
                         <div className='instruction-container'>
-                            <div className='prep-instructions'>
+                            <div className='instructions'>
+                                <h3>Preparation Instructions:</h3>
                                 <ol>
-                                <p><b>prepInstructions Instructions:</b> {recipe.prepInstructions}</p>
+                                    {recipe.prepInstructions.map((inst) => (
+                                        <li>{inst}</li>
+                                    ))}
                                 </ol>     
                             </div>
-                            <div className='cook-instructions'>
-                                <p><b>Cooking Instructions:</b> {recipe.cookIntructions}</p>
+                            <div className='instructions'>
+                                <h3>Cooking Instructions:</h3>
+                                <ol>
+                                    {recipe.cookInstructions.map((inst) => (
+                                        <li>{inst}</li>
+                                    ))}
+                                </ol> 
                             </div>                                                        
                         </div>
                         <h3>Nutritional Info per Serving</h3> 
@@ -132,6 +147,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                                 </div>
                             </div>
                         </div>
+                        <button className='suggestion-btn' onClick={toSuggestion}><i className="fas fa-clone" id='edit-button'></i> Suggest variation</button>
                     </div>
                 </div>
                 :

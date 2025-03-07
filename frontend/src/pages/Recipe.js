@@ -254,7 +254,7 @@ const Recipe = ({setShowNavbar}) => {
                 </div>
                 <div className='recipes-container'>
                 {isLoading 
-                    // RESEARCH / REFERENCE: REPEATING DISPLAY INSPIRED BY: https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx-and-lodash
+                    // ADAPTED FROM: REPEATING DISPLAY INSPIRED BY: https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx-and-lodash
                     ? Array.from({length: 10 }, (_, i) => <Loading key={i}/>)
                     : filteredRecipes
                         ? filteredRecipes.map((recipe) => ( <RecipeDetails key={recipe._id} recipe={recipe}/>))

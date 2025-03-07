@@ -1,4 +1,4 @@
-// RESEARCH / REFERENCE: https://www.youtube.com/playlist?list=PL4cUxeGkcC9g8OhpOZxNdhXggFz2lOuCT
+// ADAPTED FROM: https://www.youtube.com/playlist?list=PL4cUxeGkcC9g8OhpOZxNdhXggFz2lOuCT
 import { useState } from "react"
 import { useAuthContext } from "./useAuthContext"
 
