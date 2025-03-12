@@ -292,7 +292,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                 <span className='hr'></span>
                                 <table>
                                     <tr>
-                                        <th colSpan={3}>Ingredients</th> 
+                                        <th colSpan={4}>Ingredients</th> 
                                     </tr>
                                     {ingredients.map((ingredient, i) => (
                                         <tr>  
@@ -301,41 +301,34 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                             <td>{ingredient.measurement}</td>
                                             <td><button className='delete-btn' onClick={(e) => handleDelete(e, i, 'ingredient')}><i className='fas fa-trash'></i></button></td>
                                         </tr>
-                                    ))}
-                                    <tr>
-                                        <td>
-                                            <input 
-                                                type="text" 
-                                                id="inputItem"
-                                                name="ingredient"
-                                                placeholder="Enter an ingredient..."
-                                                onChange={handleNewIngredient}
-                                                required
-                                            />
-                                        </td>
-                                        <td>
-                                            <input 
-                                                type="number" 
-                                                id="inputItem"
-                                                name="quantity"
-                                                placeholder="Enter the quantity..."
-                                                onChange={handleNewIngredient}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input 
-                                                type="text"
-                                                id="inputItem"
-                                                name="measurement"
-                                                placeholder="Enter the measurement..."
-                                                onChange={handleNewIngredient}
-                                            />
-                                        </td>
-                                        <td>
-                                            <button onClick={addIngredient}>Add Ingredient</button>
-                                        </td>
-                                    </tr>
+                                    ))}                                                               
                                 </table>
+                                <div className='add-ingredient-form'>
+                                    <input 
+                                        type="text" 
+                                        id="inputItem"
+                                        name="ingredient"
+                                        placeholder="Enter an ingredient..."
+                                        onChange={handleNewIngredient}
+                                        required
+                                    />
+
+                                    <input 
+                                        type="number" 
+                                        id="inputItem"
+                                        name="quantity"
+                                        placeholder="Enter the quantity..."
+                                        onChange={handleNewIngredient}
+                                    />
+                                    <input 
+                                        type="text"
+                                        id="inputItem"
+                                        name="measurement"
+                                        placeholder="Enter the measurement..."
+                                        onChange={handleNewIngredient}
+                                    />
+                                    <button onClick={addIngredient}>Add Ingredient</button>
+                                </div> 
                             </div>
                         </div>
                         <div className='instruction-container'>

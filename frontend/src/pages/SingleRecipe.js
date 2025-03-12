@@ -86,9 +86,9 @@ const SingleRecipe = ({ setShowNavbar }) => {
                                     </tr>
                                     {recipe.ingredients.map((ingredient) => (
                                         <tr>
-                                            <td>{ingredient.quantity}</td> 
-                                            <td>{ingredient.measurement}</td>  
                                             <td>{ingredient.ingredient}</td>
+                                            <td>{ingredient.quantity}</td> 
+                                            <td>{ingredient.measurement}</td>                                              
                                         </tr>
                                     ))}
                                 </table>

@@ -23,10 +23,12 @@ const Register = ({setShowNavbar}) => {
     // NOTE: HANDLING LOGIN FUNCTION --------------------------------------------------------------
     const handleLogin = async (e) => {
         e.preventDefault()
-        
         await signup(username, userEmail, password, confirmPassword)
 
-        navigate('/')
+        // FIXME: ADD CHECKING FOR ERRORS
+        if (error === '') {
+            navigate('/')
+        }
     }
 
     return (

@@ -222,6 +222,7 @@ header ul li ul li a:hover {
   border: 1px solid #C4B5A9;
   width: 30%;
   overflow: scroll;
+  font-size: .9em;
 }
 
 /* STYLING INGREDIENT SEARCH FILTER SECTION */
@@ -234,10 +235,11 @@ header ul li ul li a:hover {
 /* STYLING INGREDIENT SEARCH FORM */
 .ingred-select {
   width: 100%;
+  font-size: 1em;
 }
 
 /* STYLING INGREDIENT SEARCH BUTTON */
-.ingredient-search button {
+.ingredient-search button, .filter-btn {
   padding: 5px 10px;
   box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
   font-weight: bold;
@@ -248,8 +250,19 @@ header ul li ul li a:hover {
   transition: .2s ease;
 }
 
+input[type='reset'] {
+  padding: 5px 10px;
+  box-shadow: 2px 2px 5px rgba(169, 85, 29, .5);
+  font-weight: bold;
+  background-color: #cd3106;
+  color: var(--side-panel-color);
+  border-radius: 5px;
+  margin-top: 20px;
+  transition: .2s ease;
+}
+
 /* STYLING BUTTON HOVER */
-.ingredient-search button:hover {
+.ingredient-search button:hover, input[type='reset']:hover, .filter-btn:hover {
   cursor: pointer;
   box-shadow: none;
   transition: .2s ease;
@@ -271,7 +284,7 @@ header ul li ul li a:hover {
 }
 
 /* STYLING FILTER DROPDOWN */
-.filters select {
+.filters select, .filters input[type='number'] {
   border: 1px solid #A9551D;
   border-radius: 5px;
   padding: 5px;
@@ -390,7 +403,7 @@ header ul li ul li a:hover {
 
 /* STYLING INDIVIDUAL RECIPE CARD */
 .recipe-details {
-  width: 200px;
+  width: 180px;
   height: 40vh;
   border: 1px solid #A9551D;
   border-radius: 10px;
@@ -559,6 +572,7 @@ header ul li ul li a:hover {
   box-shadow: 2px 2px 5px 5px rgba(169, 85, 29, .5);
   border-radius: 5px;
   border-collapse: collapse;
+  
 }
 
 /* ADDING BORDER TO TABLE */
@@ -792,6 +806,15 @@ table td {
 .important-info i {
   margin-bottom: 20px;
   animation: breathe 2s infinite;
+}
+
+.add-ingredient-form {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
 }
 
 .single-recipe-info input, select {

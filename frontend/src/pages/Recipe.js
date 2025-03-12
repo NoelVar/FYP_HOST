@@ -22,8 +22,14 @@ const Recipe = ({setShowNavbar}) => {
     const [isLoading, setLoading] = useState(true);
     // const [toggle, setToggle] = useState(true);
     const [searchIngred, setSearchIngred] = useState([]);
+    const [allCountries, setAllCountries] = useState([]);
     const [pickedIngred, setPickedIngred] = useState([]);
     const [searchPrompt, setSearchPrompt] = useState('');
+    const [filterDifficulty, setFilterDifficulty] = useState('');
+    const [filterOrigin, setFilterOrigin] = useState('');
+    const [filterMealType, setFilterMealType] = useState('');
+    const [filterServingSize, setFilterServingSize] = useState(0);
+    const [filterTime, setFilterTime] = useState(0);
 
     // NOTE: ADDING TIME FOR LOADING
     useEffect(() => {
@@ -41,25 +47,52 @@ const Recipe = ({setShowNavbar}) => {
                 setRecipes(json)
                 setFilteredRecipes(json)
 
-                // FIXME: 3 FOR LOOPS IS NOT EFFICIENT
+                // FIXME: 3 FOR LOOPS IS NOT EFFICIENT - DOESNT ADD ALL INGREDIENTS
+                // NOTE: ADDING ALL RECIPES TO DROPDOWN LIST
                 const ingredArray = []
+                const originArray = []
                 var match = false
                 for (var i = 0; i <= json.length-1; i++) {
                     for (var j = 0; j <= json[i].ingredients.length-1; j++) {
                         const ingredientName = json[i].ingredients[j].ingredient
-                        // console.log(ingredientName)
+                        // DEBUG: console.log(ingredientName)
                         const option = {value: ingredientName.toLowerCase(), label: ingredientName.toLowerCase()}
                         for (var v = 0; v < ingredArray.length; v++) {
                             if (ingredArray[v].value === option.value) {
-                                match = true                                
+                                match = true                            
                             }
                         }
                         if (!match) {
-                            ingredArray.push(option) 
+                            // DEBUG: console.log(option)
+                            ingredArray.push(option)
                         }                       
                     }
+
+                    // NOTE: LOGIC TO GET ALL COUNTRIES CONTAINED BY THE RECIPES
+                    if (originArray.length !== 0 ) {
+                        // NOTE: BOOLEAN TO CHECK IF COUNTRY HAS ALREADY BEEN FOUND
+                        var containsCountry = false
+                        // NOTE: GOING THROUGH ALL COUNTRIES THAT HAS BEEN ADDED TO THE 'originArray'
+                        originArray.filter((country) => {
+                            // CHECKING IF THE CURRENT ITERATION OF 'origin' IS IN THE "originArray"
+                            if (json[i].origin === country) {
+                                // IF IT IS CONATINED IN THE ARRAY IT RETURNS THE BOOLEAN VALUE 'true'
+                                containsCountry = true
+                            }
+                        })
+                        // NOTE: MAKING SURE THE COUNTRY ISNT CONTAINED IN THE ARRAY
+                        if (containsCountry === false) {
+                            // THEN ADDING IT TO THE ARRAY
+                            originArray.push(json[i].origin)
+                        }
+                    // IF THE ARRAY IS EMPTY IT ADDS THE FIRST COUNTRY
+                    } else {
+                        originArray.push(json[i].origin)
+                    }
                 }
-                // console.log(ingredArray)
+                // DEBUG: console.log(ingredArray)
+                // DEBUG: console.log(originArray)
+                setAllCountries(originArray)
                 setSearchIngred(ingredArray)
             }
         }
@@ -127,16 +160,39 @@ const Recipe = ({setShowNavbar}) => {
         const filteredItems = recipes.filter((recipe) => 
            recipe.title.toLowerCase().includes(searchPrompt.toLowerCase())
         )
-        console.log(filteredItems)
+        // DEBUG: console.log(filteredItems)
         setFilteredRecipes(filteredItems);
     }
 
     // NOTE: HANDLING FILTERS ---------------------------------------------------------------------
     const handleFilter = (e) => {
-        const filteredIngredients = recipes.filter((recipe) => 
-            recipe.difficulty === e.target.value
-        )
+        e.preventDefault()
+        const filteredIngredients = recipes.filter((recipe) => {          
+            // NOTE: ADAPTED FROM: https://www.geeksforgeeks.org/how-to-implement-multiple-filters-in-react/
+            return (
+                (filterDifficulty === '' ||
+                 recipe.difficulty === filterDifficulty) &&
+                (filterOrigin === '' ||
+                 recipe.origin === filterOrigin) &&
+                (filterMealType === '' ||
+                 recipe.mealType === filterMealType) &&
+                (filterServingSize === 0 ||
+                 recipe.servingSize == filterServingSize) &&
+                (filterTime === 0 || 
+                 (recipe.prepTime + recipe.cookTime) <= filterTime)
+            )
+        })
         setFilteredRecipes(filteredIngredients)
+    }
+
+    // NOTE: HANDLING CLEARING THE FILTERS --------------------------------------------------------
+    const handleClear = (e) => {
+        setFilteredRecipes(recipes)
+        setFilterDifficulty('')
+        setFilterOrigin('')
+        setFilterMealType('')
+        setFilterServingSize(0)
+        setFilterTime(0)
     }
 
     // NOTE: DISPLAYING RECIPES -------------------------------------------------------------------
@@ -171,7 +227,7 @@ const Recipe = ({setShowNavbar}) => {
                                 name='difficulty'
                                 id='easy'
                                 value='easy'
-                                onChange={handleFilter}
+                                onChange={(e) => setFilterDifficulty(e.target.value)}
                             />
                             <span className="radio"></span>
                             <label for='easy'>Easy</label>
@@ -182,7 +238,7 @@ const Recipe = ({setShowNavbar}) => {
                                 name='difficulty'
                                 id='moderate'
                                 value='moderate'
-                                onChange={handleFilter}
+                                onChange={(e) => setFilterDifficulty(e.target.value)}
                             />
                             <span className="radio"></span>
                             <label for='moderate'>Moderate</label>
@@ -193,44 +249,53 @@ const Recipe = ({setShowNavbar}) => {
                                 name='difficulty'
                                 id='hard'
                                 value='hard'
-                                onChange={handleFilter}
+                                onChange={(e) => setFilterDifficulty(e.target.value)}
                             />
                             <span className="radio"></span>
                             <label for='hard'>Hard</label>
                         </div>
                         <span className='hr'></span>
                         <h4>Select a origin country</h4>
-                        <select>
-                            <option selected disabled hidden>Filter by Origin Country</option>
-                            <option>Italy</option>
-                            <option>Hungary</option>
-                            <option>England</option>
+                        <select onChange={(e) => setFilterOrigin(e.target.value)}>
+                            <option selected hidden>Filter by Origin Country</option>
+                            {Array.from({length: allCountries.length}, (_,i) => 
+                                <option value={allCountries[i]}>{allCountries[i]}</option>
+                            )}
                             {/* USE MAP TO ADD ALL COUNTRIES */}
                         </select>
                         <span className='hr'></span>
                         <h4>Select a type of meal</h4>
-                        <select>
-                            <option selected disabled hidden>Filter by meal type</option>
-                            <option>Breakfast</option>
-                            <option>Lunch</option>
-                            <option>Dinner</option>
+                        <select onChange={(e) => setFilterMealType(e.target.value)}>
+                            <option selected hidden>Filter by meal type</option>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="brunch">Brunch</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="dish">Dish</option>
+                            <option value="snack">Snack</option>
+                            <option value="drink">Drink</option>
+                            <option value="dessert">Dessert</option>
+                            <option value="other">Other</option>
                             {/* USE MAP TO ADD ALL COUNTRIES */}
                         </select>
                         <span className='hr'></span>
                         <h4>Select a serving size</h4>
-                        <select>
-                            <option selected disabled hidden>Filter by serving size</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </select>
+                        <input 
+                            type='Number'
+                            min="0"
+                            placeholder='Enter serving size...'
+                            onChange={(e) => setFilterServingSize(e.target.value)}
+                        />
                         <span className='hr'></span>
-                        <h4>Select a total time</h4>
+                        <h4>Select a maximum total time</h4>
                         <input
                             type='Number' 
+                            min="0"
+                            placeholder='Enter maximum total time...'
+                            onChange={(e) => setFilterTime(e.target.value)}
                         />
+                        <input type="reset" onClick={handleClear}></input>
+                        <button className='filter-btn' onClick={handleFilter}>Filter</button>
                     </form>
                 </div>
             </div>
