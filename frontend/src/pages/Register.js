@@ -18,6 +18,7 @@ const Register = ({setShowNavbar}) => {
     const [userEmail, setUserEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [registered, setRegistered] = useState(false);
     const {signup, isLoading, error} = useSignup()
     
     // NOTE: HANDLING LOGIN FUNCTION --------------------------------------------------------------
@@ -26,9 +27,10 @@ const Register = ({setShowNavbar}) => {
         await signup(username, userEmail, password, confirmPassword)
 
         // FIXME: ADD CHECKING FOR ERRORS
-        if (error === '') {
-            navigate('/')
+        if (isLoading === false && !error) {
+            setRegistered(true)
         }
+        console.log(isLoading)
     }
 
     return (
@@ -72,7 +74,8 @@ const Register = ({setShowNavbar}) => {
                             placeholder="Enter password again..."
                         />
                     </div>
-                    {error && <div className="error">{error}</div>}
+                    {error && <div className="error-message">{error}</div>}
+                    {registered && <div className="success-message">You are now registered!</div>}
                     <button 
                         disabled={isLoading}
                         type="submit"

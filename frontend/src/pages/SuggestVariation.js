@@ -1,6 +1,7 @@
 // IMPORTS ----------------------------------------------------------------------------------------
 import { useState, useEffect, useLayoutEffect, use } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const SuggestVariation = ({ setShowNavbar }) => {
 
@@ -32,6 +33,8 @@ const SuggestVariation = ({ setShowNavbar }) => {
     });
     const params = window.location.href
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[1]
+    const [changed, setChanged] = useState(false)
+    const { user } = useAuthContext()
 
     useEffect(() => {
         // NOTE: FETCHING THE RECIPE FROM THE SERVER
@@ -65,14 +68,17 @@ const SuggestVariation = ({ setShowNavbar }) => {
         e.preventDefault()
         if (type === 'prep') {
             setPrepInstructions(prepInst.filter((inst, i) => { 
+                setChanged(true)
                 return i !== index
             }))
         } else if (type === 'cook') {
             setCookInstructions(cookInst.filter((inst, i) => { 
+                setChanged(true)
                 return i !== index
             }))
         } else if (type === 'ingredient') {
             setIngredients(ingredients.filter((ingredient, i) => {
+                setChanged(true)
                 return i !== index
             }))
         }
@@ -89,10 +95,10 @@ const SuggestVariation = ({ setShowNavbar }) => {
         e.preventDefault()
         if (type === 'prep') {
             prepInst.push(newPrepInst)
-            console.log(prepInst)
+            setChanged(true)
         } else if (type === 'cook') {
             cookInst.push(newCookInst)
-            console.log(cookInst)
+            setChanged(true)
         }
     }
 
@@ -100,12 +106,14 @@ const SuggestVariation = ({ setShowNavbar }) => {
     const handleNutrition = (e) => {
         e.preventDefault()
         setNutrInfo({...nutrInfo, [e.target.name]: e.target.value})
+        setChanged(true)
     }
 
     // NOTE: HANDLING ADDED INGREDIENT ------------------------------------------------------------
     const handleNewIngredient = (e) => {
         e.preventDefault()
         setSingleIngredient({...singleIngredient, [e.target.name]: e.target.value})
+        setChanged(true)
     }
 
     // NOTE: ADDING SINGLE INGREDIENT TO LIST OF INGREDIENTS --------------------------------------
@@ -117,74 +125,111 @@ const SuggestVariation = ({ setShowNavbar }) => {
     // NOTE: FUNCTION TO HANDLE THE SUBMITION ----------------------------------------------------
     const handleSubmit = async (e) => {
         e.preventDefault()
-        
-        var variationTitle = recipe.title + " - " + title
-        var file = recipe.image
-        var variationPrepTime = recipe.prepTime
-        var variationCookTime = recipe.cookTime
-        var variationServingSize = recipe.servingSize
-        var variationDifficulty = recipe.difficulty
-        var variationOrigin = recipe.origin
-        var variationMealType = recipe.mealType
-        var variationPrepInst = prepInst
-        var variationCookInst = cookInst
-        var variationIngredients = ingredients
-        var variationNutrInfo = recipe.nutritionalInfo
-        const approvalStatus = 'pending';
+        if (user) {
+            var change = changed
+                    
+            var variationTitle = recipe.title + " - " + title
+            var file = recipe.image
+            var variationPrepTime = recipe.prepTime
+            var variationCookTime = recipe.cookTime
+            var variationServingSize = recipe.servingSize
+            var variationDifficulty = recipe.difficulty
+            var variationOrigin = recipe.origin
+            var variationMealType = recipe.mealType
+            var variationPrepInst = prepInst
+            var variationCookInst = cookInst
+            var variationIngredients = ingredients
+            var variationNutrInfo = recipe.nutritionalInfo
+            const approvalStatus = 'pending';
 
-        // NOTE: CHECKING IF USER ENTERED ANY VALUES
-        // IF THE USER DID, IT WILL BE SENT BACK INSTEAD OF THE ORIGINAL DATA
-        if (serving !== 0) {
-            variationServingSize = serving
-        }
+            // NOTE: CHECKING IF USER ENTERED ANY VALUES
+            // IF THE USER DID, IT WILL BE SENT BACK INSTEAD OF THE ORIGINAL DATA
+            if (title !== '') {
+                change = true
+            }
 
-        if (difficulty !== '') {
-            variationDifficulty = difficulty
-        }
+            if (serving !== 0) {
+                variationServingSize = serving
+                change = true
+            }
 
-        if (origin !== '') {
-            variationOrigin = origin
-        }
+            if (difficulty !== '') {
+                variationDifficulty = difficulty
+                change = true
+            }
 
-        if (mealType !== '') {
-            variationMealType = mealType
-        }
+            if (origin !== '') {
+                variationOrigin = origin
+                change = true
+            }
 
-        if (prepTime !== 0) {
-            variationPrepTime = prepTime
-        }
+            if (mealType !== '') {
+                variationMealType = mealType
+                change = true
+            }
 
-        if (cookTime !== 0) {
-            variationCookTime = cookTime
-        }
-        
-        //NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
-        const formData = new FormData();
-        formData.append('title', variationTitle);
-        formData.append('file', file); // NOTE: NAME NEEDS TO MATCH MULTER SET UP
-        formData.append('prepTime', variationPrepTime);
-        formData.append('cookTime', variationCookTime);
-        formData.append('servingSize', variationServingSize);
-        formData.append('difficulty', variationDifficulty);
-        formData.append('origin', variationOrigin);
-        formData.append('mealType', variationMealType);
-        formData.append('prepInstructions', JSON.stringify(variationPrepInst));
-        formData.append('cookInstructions', JSON.stringify(variationCookInst));
-        formData.append('ingredients', JSON.stringify(variationIngredients)); // NOTE: CONVERTE TO JSON STRING
-        formData.append('nutrInfo', JSON.stringify(variationNutrInfo));
-        formData.append('approvalStatus', approvalStatus);
+            if (prepTime !== 0) {
+                variationPrepTime = prepTime
+                change = true
+            }
 
-        // NOTE: SENDING THE RECIPE TO THE SERVER
-        const response = await fetch('http://localhost:4000/recipes', {
-            method: 'POST',
-            body: formData,
-        });
-        const json = await response.json();
+            if (cookTime !== 0) {
+                variationCookTime = cookTime
+                change = true
+            }
 
-        if (response.ok) {
-            navigate('/recipes')
-        } else {
-            console.error('Server Error:', json.error)
+            if (nutrInfo.totalKcal !== 0) {
+                variationNutrInfo.totalKcal = nutrInfo.totalKcal
+            }
+
+            if (nutrInfo.totalCarbs !== 0) {
+                variationNutrInfo.totalCarbs = nutrInfo.totalCarbs
+            }
+
+            if (nutrInfo.totalFat !== 0) {
+                variationNutrInfo.totalFat = nutrInfo.totalFat
+            }   
+
+            if (nutrInfo.totalProtein !== 0) {
+                variationNutrInfo.totalProtein = nutrInfo.totalProtein  
+            }
+            
+            //NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
+            const formData = new FormData();
+            formData.append('title', variationTitle);
+            formData.append('file', file); // NOTE: NAME NEEDS TO MATCH MULTER SET UP
+            formData.append('prepTime', variationPrepTime);
+            formData.append('cookTime', variationCookTime);
+            formData.append('servingSize', variationServingSize);
+            formData.append('difficulty', variationDifficulty);
+            formData.append('origin', variationOrigin);
+            formData.append('mealType', variationMealType);
+            formData.append('prepInstructions', JSON.stringify(variationPrepInst));
+            formData.append('cookInstructions', JSON.stringify(variationCookInst));
+            formData.append('ingredients', JSON.stringify(variationIngredients)); // NOTE: CONVERTE TO JSON STRING
+            formData.append('nutrInfo', JSON.stringify(variationNutrInfo));
+            formData.append('approvalStatus', approvalStatus);
+
+            // NOTE: SENDING THE RECIPE TO THE SERVER IF THE USER HAS MADE A CHANGE
+            if (change) {
+                const response = await fetch('http://localhost:4000/recipes', {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    method: 'POST',
+                    body: formData,
+                });
+                const json = await response.json();
+
+                if (response.ok) {
+                    navigate('/recipes')
+                } else {
+                    console.error('Server Error:', json.error)
+                }
+            } else {
+                console.log(change)
+                console.log("Atleast one change needs to be made")
+            }
         }
     }
 

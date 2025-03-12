@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import RecipeDetails from '../components/RecipeDetails';
 import Loading from '../components/Loading';
 import Select from 'react-select'
+import { useAuthContext } from '../hooks/useAuthContext';
 
 // NOTE: SETTING BACKEND URL
 // const BACKEND = process.env.BACKEND_URL;
@@ -30,6 +31,7 @@ const Recipe = ({setShowNavbar}) => {
     const [filterMealType, setFilterMealType] = useState('');
     const [filterServingSize, setFilterServingSize] = useState(0);
     const [filterTime, setFilterTime] = useState(0);
+    const { user } = useAuthContext()
 
     // NOTE: ADDING TIME FOR LOADING
     useEffect(() => {
@@ -195,6 +197,8 @@ const Recipe = ({setShowNavbar}) => {
         setFilterTime(0)
     }
 
+    // TODO: FETCH USER TO RECIEVE USERTYPE -------------------------------------------------------
+
     // NOTE: DISPLAYING RECIPES -------------------------------------------------------------------
     return (
         <div className='main-container'>
@@ -314,9 +318,11 @@ const Recipe = ({setShowNavbar}) => {
                         {/* <button className='search-filter' onClick={handleToggle}><i className='fa fa-bars menu-toggle'></i></button> */}
                     </div>
                 </form>
-                <div className='add-recipe-container'>
-                    <button onClick={reDirect}>+ Add new recipe</button>
-                </div>
+                {user && (
+                    <div className='add-recipe-container'>
+                        <button onClick={reDirect}>+ Add new recipe</button>
+                    </div>
+                )}
                 <div className='recipes-container'>
                 {isLoading 
                     // ADAPTED FROM: REPEATING DISPLAY INSPIRED BY: https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx-and-lodash

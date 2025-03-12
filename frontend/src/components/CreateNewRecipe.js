@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLayoutEffect } from "react";
+import { useAuthContext } from "../hooks/useAuthContext";
 
     /* TODO: - REMOVE CAPITAL LETTER WHEN SAVING
              - STYLE PAGE
@@ -42,6 +43,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         totalFat: 0,
         totalProtein: 0
     });
+    const { user } = useAuthContext()
     
     // NOTE: HANDLING OPTION CHANGE ---------------------------------------------------------------
     const handleDifficultyChange = (e) => {
@@ -105,29 +107,35 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         formData.append('nutrInfo', JSON.stringify(nutrInfo));
         formData.append('approvalStatus', approvalStatus);
 
-        // NOTE: SENDING THE RECIPE TO THE SERVER
-        const response = await fetch('http://localhost:4000/recipes', {
-            method: 'POST',
-            body: formData,
-        });
-        const json = await response.json();
+        // CHECKING IF USER IS LOGGED IN
+        if (user) {
+            // NOTE: SENDING THE RECIPE TO THE SERVER AND THE AUTH TOKEN TO GET ACCESS TO THE ENDPOINT
+            const response = await fetch('http://localhost:4000/recipes', {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                },
+                method: 'POST',
+                body: formData,
+            });
+            const json = await response.json();
 
-        if (response.ok) {
-            setTitle('')
-            setFile()
-            setPrepTime(0)
-            setCookTime(0)
-            setServingSize(0)
-            setDifficulty('')
-            setOrigin('')
-            setMealType('')
-            setPrepInst([])
-            setCookInst([])
-            setSingleIngredient([])
-            setNutrInfo('')
-            navigate('/recipes')
-        } else {
-            console.error('Server Error:', json.error)
+            if (response.ok) {
+                setTitle('')
+                setFile()
+                setPrepTime(0)
+                setCookTime(0)
+                setServingSize(0)
+                setDifficulty('')
+                setOrigin('')
+                setMealType('')
+                setPrepInst([])
+                setCookInst([])
+                setSingleIngredient([])
+                setNutrInfo('')
+                navigate('/recipes')
+            } else {
+                console.error('Server Error:', json.error)
+            }
         }
     }
 

@@ -1,14 +1,20 @@
+// NOTE: IMPORTS ----------------------------------------------------------------------------------
 import { Link } from 'react-router-dom';
 import { useLogout } from '../hooks/useLogout';
+import { useAuthContext } from '../hooks/useAuthContext';
 
+// NOTE: NAVBAR -----------------------------------------------------------------------------------
 const NavBar = () => {
 
+    // NOTE: VARIABLES
     const { logout } = useLogout()
+    const { user } = useAuthContext()
 
     const handleClick = () => {
         logout()
     }
 
+    // NOTE: NAVIGATION BAR RENDERING -------------------------------------------------------------
     return (
         <header>
             <div className='navbar-container'>
@@ -25,23 +31,31 @@ const NavBar = () => {
                             <Link to='/recipes'>Recipes</Link>
                         </li>
                     </div>
-                    <li className='right'>
-                        <Link to='/login'>
-                            <i className='fa fa-user'></i>
-                            &nbsp;
-                            Username
-                            &nbsp;
-                            <i className='fa fa-chevron-down'></i>
-                        </Link>
-                        <ul>
-                            <li>
-                                <Link to='/asd'>Profile</Link>
-                            </li>
-                            <li>
-                                <button onClick={handleClick} className='logout-button'>Logout</button>
-                            </li>
-                        </ul>
-                    </li>
+                    {/* ONLY SHOWING IF USER IS NOT LOGGED IN */}
+                    {!user && (
+                        <li className='right'>
+                            <Link to='login'>
+                                Login
+                            </Link>
+                        </li>
+                    )}
+                    {/* ONLY SHOWING IF USER IS LOGGED IN */}
+                    {user && (
+                        <li className='right'>
+                            <Link to='/login'>
+                                <i className='fa fa-user'></i>
+                                &nbsp;
+                                {user.username}
+                                &nbsp;
+                                <i className='fa fa-chevron-down'></i>
+                            </Link>
+                            <ul>
+                                <li>
+                                    <button onClick={handleClick} className='logout-button'>Logout</button>
+                                </li>
+                            </ul>
+                        </li>
+                    )}
                 </ul>
             </div>
         </header>

@@ -9,6 +9,8 @@ const {
     addComment
 } = require('../controllers/recipeController')
 const { upload } = require('../controllers/imageUpload')
+// IMPORTING MIDDLEWARE
+const requireAuth = require('../middleware/requireAuth')
 
 // NOTE: CREATING ROUTER COMPONENT
 const router = express.Router()
@@ -18,6 +20,9 @@ router.get('/', getAllRecipes)
 
 // NOTE: GET SINGLE RECIPE
 router.get('/:id', getSingleRecipe)
+
+// REQUIRE AUTHENTICATION FOR SPECIFIC RECIPE ROUTES
+router.use(requireAuth)
 
 // NOTE: POST NEW RECIPE
 router.post('/', upload.single('file'), createRecipe)

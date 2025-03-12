@@ -15,14 +15,20 @@ const Login = ({setShowNavbar}) => {
     const navigate = useNavigate();
     const [email, setUserEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loggedIn, setLoggedIn] = useState(false);
     const {login, isLoading, error} = useLogin()
     
     // NOTE: HANDLING LOGIN FUNCTION --------------------------------------------------------------
     const handleLogin = async (e) => {
         e.preventDefault()
         
+        // FIXME: ADD CHECKING FOR ERRORS
         await login(email, password)
-        navigate('/')
+        if (isLoading === false && !error) {
+            setLoggedIn(true)
+            setTimeout(() => navigate('/'), 2000)
+        }
+        console.log(isLoading)
     }
 
     return (
@@ -48,7 +54,8 @@ const Login = ({setShowNavbar}) => {
                             placeholder="Enter your password"
                         />
                     </div>
-                    {error && <div className="error">{error}</div>}
+                    {error && <div className="error-message">{error}</div>}
+                    {loggedIn && <div className="success-message">You are now logged in! Redirecting to Home.</div>}
                     <button 
                         disabled={isLoading}
                         type="submit"

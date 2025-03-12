@@ -2,6 +2,7 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecipeCommunitySwitch from '../components/RecipeCommunitySwitch';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const SingleRecipe = ({ setShowNavbar }) => {
 
@@ -13,6 +14,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
     // NOTE: STATE VARIABLES
     const navigate = useNavigate();
     const [recipe, setRecipe] = useState(null)
+    const { user } = useAuthContext()
     const params = window.location.href
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[0]
 
@@ -147,7 +149,9 @@ const SingleRecipe = ({ setShowNavbar }) => {
                                 </div>
                             </div>
                         </div>
-                        <button className='suggestion-btn' onClick={toSuggestion}><i className="fas fa-clone" id='edit-button'></i> Suggest variation</button>
+                        {user && (
+                            <button className='suggestion-btn' onClick={toSuggestion}><i className="fas fa-clone" id='edit-button'></i> Suggest variation</button>
+                        )}
                     </div>
                 </div>
                 :

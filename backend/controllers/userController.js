@@ -73,7 +73,7 @@ const registerUser = async (req, res) => {
         const token = createToken(user._id)
 
         // NOTE: CREATES USER IF EVERYTHING IS OK
-        res.status(201).json({ email, token })
+        res.status(201).json({ email, username, token  })
     
     } catch (err) {
          // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
@@ -100,7 +100,7 @@ const loginUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'Couldn\'t find user with matching email address.' })
         }
-
+        const username = user.username
         const match = await bcrypt.compare(password, user.password)
 
         if (!match) {
@@ -111,7 +111,7 @@ const loginUser = async (req, res) => {
         const token = createToken(user._id)
 
         // NOTE: RETURNS USER IF STATUS IS OK
-        return res.status(200).json({ email, token })
+        return res.status(200).json({ email, username, token })
     } catch(err) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
         return res.status(500).json({ error: err.message })
