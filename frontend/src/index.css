@@ -951,6 +951,8 @@ table td {
 .discussion-box {
   margin: auto;
   width: 80%;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 /* STYLING USERNAME AND DATA BOX */
@@ -1254,6 +1256,144 @@ input[type="file"] {
   color: white;
   border-left: 5px solid green;
   background-color: rgb(98, 201, 98);
+}
+
+/*ALL USERS PAGE AND USER PROFILE ---------------------------------------------------------------*/
+
+.add-recipe-box h1{
+  text-align: center;
+  margin: 20px 0;
+  color: #DB681C;
+}
+
+/* STYLING THE CONTAINER AROUND ALL USER PROFILE CARDS */
+.all-users-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 90%;
+  margin: 2rem auto;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* STYLING USER PROFILE CARDS */
+.user-info-container {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 2px 2px 3px 3px rgba(169, 85, 29, .5);
+  padding: 40px 50px;
+}
+
+.username {
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+.role-style-user,
+.role-style-moderator,
+.role-style-admin {
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.role-style-user {
+  background-color: rgb(21, 172, 111);
+}
+
+.role-style-moderator {
+  background-color: rgb(240, 164, 49);
+}
+
+.role-style-admin {
+  background-color: rgb(240, 90, 49);
+}
+
+.action-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.action-container button {
+  background-color: var(--secondary-color);
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.action-container .del-btn {
+  background-color: #ff3700;
+}
+
+.action-container button:hover {
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.action-container button:disabled {
+  background-color: #d2d2d2;
+  box-shadow: none;
+  cursor: default;
+}
+
+/*MANAGE RECIPE PAGE ----------------------------------------------------------------------------*/
+.all-recipes-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 10px 20%;
+}
+
+.recipe-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 2px 2px 3px 3px rgba(169, 85, 29, .5);
+  padding: 40px 50px;
+}
+
+.recipe-info-container .action-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.recipe-info-container img{
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+.status-style-pending,
+.status-style-approved,
+.status-style-denied {
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.status-style-pending {
+  background-color: rgb(240, 164, 49);
+}
+
+.status-style-approved {
+  background-color: rgb(21, 172, 111);
+}
+.status-style-denied {
+  background-color: rgb(240, 90, 49);
 }
 
 /*PAGE NOT FOUND --------------------------------------------------------------------------------*/

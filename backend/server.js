@@ -14,7 +14,7 @@ app.use(cors({
     credentials: true
 }))
 
-// NOTE: MIDDLE WARE
+// NOTE: MIDDLEWARE
 app.use(express.json());
 app.use(express.static('public'));
 

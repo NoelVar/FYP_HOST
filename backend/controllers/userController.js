@@ -118,10 +118,73 @@ const loginUser = async (req, res) => {
     }
 }
 
+// GET ALL USERS ----------------------------------------------------------------------------------
+const getAllUsers = async (req, res) => {
+    // NOTE: FETCHES ALL USERS FROM DB
+    try {
+        const users = await userModel.find({})
+        
+        // NOTE: VALIDATES IF THE USERS EXIST IN DB
+        if (!users) {
+            return res.status(404).json({ error: 'No users found.' })
+        }
+
+        // NOTE: ONLY RETURNING INFORMATION ABOUT USER THAT IS NEEDED (NO PASSWORD)
+        const allUsers= []
+        users.map((user) => {
+            const singleUser = {
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt
+            }
+
+            allUsers.push(singleUser)
+        })
+            
+
+        // NOTE: RETURNS USERS IF STATUS IS OK
+        res.status(200).json(allUsers)
+    } catch(err) {
+        return res.status(500).json({ error: err.message })
+    }
+}
+
+// GET SINGLE USER --------------------------------------------------------------------------------
+const getSingleUser = async (req, res) => {
+    const { email } = req.body
+
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (email === '') {
+            return res.status(400).json({ error: 'Email cannot be empty' })
+        }
+
+        const user = await userModel.findOne({ email })
+        
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+        const userInfo = {
+            username: user.username,
+            userEmail: user.email,
+            role: user.role
+        }
+
+        // NOTE: RETURNS USER IF STATUS IS OK
+        res.status(200).json(userInfo)
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ error: err.message })
+    }
+}
 
 module.exports = {
     loginUser,
-    registerUser
+    registerUser,
+    getAllUsers,
+    getSingleUser
 }
 
 // END OF DOCUMENT --------------------------------------------------------------------------------
@@ -154,48 +217,9 @@ module.exports = {
 //     }
 // }
 
-// // GET ALL USERS ----------------------------------------------------------------------------------
-// const getAllUsers = async (req, res) => {
-//     // NOTE: FETCHES ALL USERS FROM DB
-//     try {
-//         const users = await userModel.find({})
-        
-//         // NOTE: VALIDATES IF THE USERS EXIST IN DB
-//         if (!users) {
-//             return res.status(404).json({ error: 'No users found.' })
-//         }
+// 
 
-//         // NOTE: RETURNS USERS IF STATUS IS OK
-//         res.status(200).json(users)
-//     } catch(err) {
-//         return res.status(500).json({ error: err.message })
-//     }
-// }
-
-// // GET SINGLE USER --------------------------------------------------------------------------------
-// const getSingleUser = async (req, res) => {
-//     const { id } = req.params
-
-//     try {
-//         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
-//         if (!mongoose.Types.ObjectId.isValid(id)) {
-//             return res.status(400).json({ error: 'Invalid user ID.' })
-//         }
-
-//         const user = await userModel.findById(id)
-        
-//         // NOTE: CHECKS IF USER EXISTS IN DB
-//         if (!user) {
-//             return res.status(404).json({ error: 'Couldn\'t find user.' })
-//         }
-
-//         // NOTE: RETURNS USER IF STATUS IS OK
-//         res.status(200).json(user)
-//     } catch(err) {
-//         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
-//         return res.status(500).json({ error: err.message })
-//     }
-// }
+// 
 // // DELETE USER ------------------------------------------------------------------------------------
 // const deleteUser = async (req, res) => {
 //     const {id} = req.params

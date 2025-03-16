@@ -117,7 +117,9 @@ const deleteRecipe = async (req, res) => {
 
 // UPDATE RECIPE ----------------------------------------------------------------------------------
 const updateRecipe = async (req, res) => {
-    const {id} = req.params
+    const { id } = req.params
+    const { status } = req.body
+    console.log(status)
     try {
         // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -125,7 +127,7 @@ const updateRecipe = async (req, res) => {
         }
 
         const recipe = await recipeModel.findOneAndUpdate({_id: id}, {
-            ...req.body
+            approvalStatus: status
         })
 
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
@@ -150,6 +152,10 @@ const addComment = async (req, res) => {
     // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({error: 'Invalid recipe ID.'})
+    }
+
+    if (content === '') {
+        return res.status(400).json({ error: 'Field cannot be empty.' })
     }
 
     try {

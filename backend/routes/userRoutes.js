@@ -3,7 +3,8 @@ const express = require('express')
 const {
     loginUser,
     registerUser,
-    logoutUser
+    getAllUsers,
+    getSingleUser
 } = require('../controllers/userController')
 
 // NOTE: CREATING ROUTER COMPONENT
@@ -15,7 +16,11 @@ router.post('/login', loginUser)
 // NOTE: REGISTER USER
 router.post('/register', registerUser)
 
-// NOTE: LOG USER OUT
+// NOTE: GET ALL USERS
+router.get('/all-users', getAllUsers)
+
+// NOTE: GET SINGLE USER INFO
+router.post('/single-user', getSingleUser)
 
 module.exports = router
 

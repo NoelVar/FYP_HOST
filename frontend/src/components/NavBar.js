@@ -2,9 +2,10 @@
 import { Link } from 'react-router-dom';
 import { useLogout } from '../hooks/useLogout';
 import { useAuthContext } from '../hooks/useAuthContext';
+import { useEffect, useState } from 'react';
 
 // NOTE: NAVBAR -----------------------------------------------------------------------------------
-const NavBar = () => {
+const NavBar = ({ role }) => {
 
     // NOTE: VARIABLES
     const { logout } = useLogout()
@@ -30,6 +31,16 @@ const NavBar = () => {
                         <li>
                             <Link to='/recipes'>Recipes</Link>
                         </li>
+                        {user && (role === 'admin' || role === 'moderator') &&
+                            <li>
+                                <Link to='/manage-recipes'>Manage recipes</Link>
+                            </li>
+                        }
+                        {user && role === 'admin' &&
+                            <li>
+                                <Link to='/all-users'>User Profiles</Link>
+                            </li>
+                        }
                     </div>
                     {/* ONLY SHOWING IF USER IS NOT LOGGED IN */}
                     {!user && (
@@ -42,7 +53,7 @@ const NavBar = () => {
                     {/* ONLY SHOWING IF USER IS LOGGED IN */}
                     {user && (
                         <li className='right'>
-                            <Link to='/login'>
+                            <Link to='/my-profile'>
                                 <i className='fa fa-user'></i>
                                 &nbsp;
                                 {user.username}

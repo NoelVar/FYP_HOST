@@ -9,7 +9,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 // const BACKEND = process.env.BACKEND_URL;
 
 // NOTE: RECIPE PAGE LOGIC ------------------------------------------------------------------------
-const Recipe = ({setShowNavbar}) => {
+const Recipe = ({ setShowNavbar, role }) => {
 
     // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
     useLayoutEffect(() => {
@@ -328,7 +328,7 @@ const Recipe = ({setShowNavbar}) => {
                     // ADAPTED FROM: REPEATING DISPLAY INSPIRED BY: https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx-and-lodash
                     ? Array.from({length: 10 }, (_, i) => <Loading key={i}/>)
                     : filteredRecipes
-                        ? filteredRecipes.map((recipe) => ( <RecipeDetails key={recipe._id} recipe={recipe}/>))
+                        ? filteredRecipes.map((recipe) => ( <RecipeDetails key={recipe._id} recipe={recipe} role={role}/>))
                         : <p>Couldn't display recipes.</p>
                     
                 }

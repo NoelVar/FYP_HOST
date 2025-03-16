@@ -3,11 +3,14 @@ import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 
 export const useAuthContext = () => {
+    // CONSUME AUTH CONTEXT
     const context = useContext(AuthContext)
 
+    // CHECKING IF 'context' IS NOT USED OUTSIDE OF SCOPE (APP)
     if (!context) {
         throw Error('useAuthContext must be used inside an AuthContextProvider')
     }
 
+    // RETURNS CONTEXT
     return context
 }

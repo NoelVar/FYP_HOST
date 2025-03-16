@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuthContext } from '../hooks/useAuthContext';
 
 // NOTE: RECIPE DETAILS ---------------------------------------------------------------------------
-const RecipeDetails = ({ recipe }) => {
+const RecipeDetails = ({ recipe, role}) => {
 
     // NOTE: URL 
     const urlName = recipe._id
@@ -40,7 +40,9 @@ const RecipeDetails = ({ recipe }) => {
                     <p><i className="fa-solid fa-bowl-food"></i> {recipe.servingSize} servings</p>
                     <p><i className="fa-solid fa-kitchen-set"></i> {recipe.difficulty}</p>
                 </div>
-                <button className="delete-recipe-btn" onClick={handleDelete}>X</button>
+                {role && (role === 'admin' || role === 'moderator') &&
+                    <button className="delete-recipe-btn" onClick={handleDelete}>X</button>
+                }
             </Link>
         </div>
     )

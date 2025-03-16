@@ -43,6 +43,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         totalFat: 0,
         totalProtein: 0
     });
+    const [error, setError] = useState('')
     const { user } = useAuthContext()
     
     // NOTE: HANDLING OPTION CHANGE ---------------------------------------------------------------
@@ -90,6 +91,20 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         e.preventDefault()
         
         const approvalStatus = 'pending';
+
+        if (title === '' ||
+            prepTime === 0 ||
+            cookTime === 0 ||
+            serving === 0 ||
+            difficulty === '' ||
+            origin === '' ||
+            mealType === '' ||
+            prepInst.length === 0 ||
+            cookInst.length === 0 ||
+            ingredients.length === 0
+        ) {
+            setError('Required fields cannot be empty!')
+        }
 
         //NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
         const formData = new FormData();
@@ -332,7 +347,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                         onChange={handleNutrition}
                     />
                 </div>
-
+                {error && <div className="error-message">{error}</div>}
                 <button type="submit">Submit</button>
             </form>
         </div>
