@@ -180,43 +180,47 @@ const getSingleUser = async (req, res) => {
     }
 }
 
+// UPDATE USER ------------------------------------------------------------------------------------
+const updateUser = async (req, res) => {
+    const { id } = req.params
+    const { role } = req.body
+    
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({error: 'Invalid user ID.'})
+        }
+        
+        // SETTING 'role' TO NEW STATUS USING ID
+        const user = await userModel.findOneAndUpdate(
+            {_id: id},
+            {role: role}, 
+            {new: true})
+
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({error: 'Couldn\'t find user.'})
+        }
+
+        // NOTE: UPDATES USER IF STATUS IS OK
+        return res.status(200).json(user)
+    } catch(err) {
+        // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
+        return res.status(500).json({ error: err.message })
+    }
+}
+
 module.exports = {
     loginUser,
     registerUser,
     getAllUsers,
-    getSingleUser
+    getSingleUser,
+    updateUser
 }
 
 // END OF DOCUMENT --------------------------------------------------------------------------------
 
 // DEBUG: IN CASE ITS NEEDED
-// // UPDATE USER ------------------------------------------------------------------------------------
-// const updateUser = async (req, res) => {
-//     const {id} = req.params
-
-//     try {
-//         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
-//         if (!mongoose.Types.ObjectId.isValid(id)) {
-//             return res.status(400).json({ error: 'Invalid user ID.' })
-//         }
-
-//         const user = await userModel.findOneAndUpdate({_id: id}, {
-//             ...req.body
-//         })
-
-//         // NOTE: CHECKS IF USER EXISTS IN DB
-//         if (!user) {
-//             return res.status(404).json({ error: 'Couldn\'t find user.' })
-//         }
-
-//         // NOTE: UPDATES USER IF STATUS IS OK
-//         res.status(200).json(user)
-//     } catch(err) {
-//         // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
-//         return res.status(500).json({ error: err.message })
-//     }
-// }
-
 // 
 
 // 

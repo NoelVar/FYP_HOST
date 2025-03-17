@@ -52,11 +52,11 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
     // NOTE: HANDLING CHANGE IN STATUS ------------------------------------------------------------
     const handleChange = async (e, id) => {
         e.preventDefault()
-        console.log(status)
         try {
             const response = await fetch('http://localhost:4000/recipes/' + id, {
                 headers: {
-                    'Authorization': `Bearer ${user.token}`
+                    'Authorization': `Bearer ${user.token}`,
+                    'Content-Type': 'application/json'
                 },
                 method: 'PATCH',
                 body: JSON.stringify({status})

@@ -4,7 +4,8 @@ const {
     loginUser,
     registerUser,
     getAllUsers,
-    getSingleUser
+    getSingleUser,
+    updateUser
 } = require('../controllers/userController')
 
 // NOTE: CREATING ROUTER COMPONENT
@@ -21,6 +22,8 @@ router.get('/all-users', getAllUsers)
 
 // NOTE: GET SINGLE USER INFO
 router.post('/single-user', getSingleUser)
+
+router.patch('/update-status', updateUser)
 
 module.exports = router
 

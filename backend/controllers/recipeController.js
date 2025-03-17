@@ -119,16 +119,18 @@ const deleteRecipe = async (req, res) => {
 const updateRecipe = async (req, res) => {
     const { id } = req.params
     const { status } = req.body
-    console.log(status)
+    
     try {
         // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({error: 'Invalid recipe ID.'})
         }
-
-        const recipe = await recipeModel.findOneAndUpdate({_id: id}, {
-            approvalStatus: status
-        })
+        
+        // SETTING 'approvalStatus' TO NEW STATUS USING ID
+        const recipe = await recipeModel.findOneAndUpdate(
+            {_id: id},
+            {approvalStatus: status}, 
+            {new: true})
 
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
         if (!recipe) {
