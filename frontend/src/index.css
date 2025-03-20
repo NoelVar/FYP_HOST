@@ -225,6 +225,11 @@ header ul li ul li a:hover {
   font-size: .9em;
 }
 
+.filter-container h4 {
+  margin-top: 10px;
+  text-align: center;
+}
+
 /* STYLING INGREDIENT SEARCH FILTER SECTION */
 .ingredient-search {
   display: flex;
@@ -1007,6 +1012,11 @@ table td {
   padding-top: 80px;
 }
 
+.add-recipe-box .important-info {
+  margin: 10px;
+  width: 80%;
+}
+
 /* CUSTOMIZING ADD RECIPE FORM */
 .add-recipe-form {
   display: flex;
@@ -1016,7 +1026,6 @@ table td {
   justify-content: center;
   border: none;
   border-radius: 5px;
-  background-color: var(--side-panel-color);
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -1045,6 +1054,17 @@ table td {
   width: 60vw;
 }
 
+/* CUSTOMIZING LABELS FOR INSTRUCTIONS */
+.add-recipe-form .instruction-label {
+  margin: auto;
+}
+
+/* CUSTOMIZING TEXT AREA */
+.add-recipe-form textarea {
+  margin: 20px auto;
+  resize: none;
+}
+
 /* CUSTOMIZING SELECTS */
 .add-recipe-container select {
   width: 20%;
@@ -1052,6 +1072,64 @@ table td {
   padding: 2px;
   border-radius: 2px;
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* STYLING TITLE, IMG, AND BASIC INFO */
+.basic-information {
+  width: 80%;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #A9551D;
+  background-color: var(--side-panel-color);
+}
+
+/* STYLING TITLE, IMG, AND BASIC INFO */
+.basic-information p {
+  text-align: center;
+  color: #A9551D;
+  margin-bottom: 50px;
+}
+
+/* STYLING TITLE, IMG, AND BASIC INFO */
+.basic-information h2 {
+  text-align: center;
+  color: #DB681C;
+  margin-bottom: 10px;
+}
+
+/* STYLING TITLE, IMG, AND BASIC INFO */
+.basic-info-main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+}
+
+/* STYLING TITLE, IMG, AND BASIC INFO */
+.basic-info-section1 {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+/* STYLING TITLE, IMG, AND BASIC INFO */
+.basic-info-section2 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* STYLING TITLE, IMG, AND BASIC INFO */
+.basic-info-section1 input, 
+.basic-info-section1 select {
+  width: 100%;
+}
+
+/* STYLING TITLE, IMG, AND BASIC INFO */
+.basic-info-section2 input, 
+.basic-info-section2 select {
+  width: 100%;
 }
 
 /* ADDING STYLING TO REQUIRED ELEMENTS */
@@ -1067,7 +1145,7 @@ input[type="file"] {
   border: 2px dashed #A9551D;
   border-radius: 5px;
   padding: 40px;
-  width: 100%;
+  width: 80%;
   text-align: center;
   font-size: 1.2em;
   font-weight: bold;
@@ -1077,6 +1155,8 @@ input[type="file"] {
 /* STYLING HOVER  */
 .file-input:hover {
   cursor: pointer;
+  border: 2px dashed var(--secondary-color);
+  color: var(--secondary-color);
 }
 
 .file-input:active {
@@ -1128,10 +1208,19 @@ input[type="file"] {
 }
 .added-ing {
   padding: 5px;
-  background-color: #C4B5A9;
   border-radius: 10px;
   border: 1px solid #A9551D;
   text-align: center;
+}
+
+/* STYLING INGREDIENT REMOVING BUTTON */
+.added-ing button {
+  background-color: transparent;
+  padding: 0;
+  margin-left: 10px;
+  width: 10px;
+  box-shadow: none;
+  color: #ff3700;
 }
 
 /* STYLING INGREDIENT ADDING */
@@ -1140,6 +1229,59 @@ input[type="file"] {
   flex-direction: column;
   align-items: center;
   gap: 5px;
+}
+
+/* STYLING ADDED INGREDIENTS */
+.added-instruction-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.basic-information ol {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 1.1em;
+  list-style: none; /*REMOVING DEFAULT NUMBERING*/
+}
+
+/* ADDING CUSTOM ORDERING */
+.basic-information ol li:before {
+  margin-right: 10px;
+  content: counter(i);
+  background: var(--secondary-color);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* STYLING LIST ITEMS */
+.basic-information ol li {
+  box-shadow: 1px 1px 5px 2px rgba(169, 85, 29, .5);
+  background-color: #F2E3D7;
+  border-radius: 5px;
+  padding: 5px;
+  height: 50px;
+  display: flex;
+  margin: 20px 0;
+  align-items: center;
+  counter-increment: i;
+}
+
+/* STYLING DELETE BUTTON */
+.added-instruction button{
+  background-color: transparent;
+  padding: 0;
+  margin-left: 10px;
+  width: 10px;
+  box-shadow: none;
+  color: #ff3700;
+}
+
+.instruction-btn {
+  margin: 20px auto;
 }
 
 /*AUTH STYLING ----------------------------------------------------------------------------------*/

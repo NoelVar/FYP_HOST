@@ -53,21 +53,29 @@ const Recipe = ({ setShowNavbar, role }) => {
                 // NOTE: ADDING ALL RECIPES TO DROPDOWN LIST
                 const ingredArray = []
                 const originArray = []
+                // SETTING MATCH TO FALSE
                 var match = false
+                // ITERATING THROUGH RETURNED RECIPES
                 for (var i = 0; i <= json.length-1; i++) {
+                    // ITERATING THROUGH EACH RECIPES INGREDIENTS
                     for (var j = 0; j <= json[i].ingredients.length-1; j++) {
+                        // MAKING SURE MATCH IS FALSE FOR EACH ITTERATION
+                        match = false
+                        // STORING INGREDIENTS NAME IN 'ingredientName'
                         const ingredientName = json[i].ingredients[j].ingredient
                         // DEBUG: console.log(ingredientName)
+                        // SETTING THE DROPDOWN OPTION WITH THE CURRENT INGREDIENT
                         const option = {value: ingredientName.toLowerCase(), label: ingredientName.toLowerCase()}
-                        for (var v = 0; v < ingredArray.length; v++) {
-                            if (ingredArray[v].value === option.value) {
-                                match = true                            
-                            }
+
+                        // CHECKING IF INGREDIENT IS ALREADY STORED IN THE 'ingredArray'
+                        if (ingredArray.some(ing => ing.value === option.value)) {
+                            match = true
                         }
+                        // IF IT IS NOT STORED IN THE ARRAY --> ADDS INGREDIENT TO ARRAY
                         if (!match) {
-                            // DEBUG: console.log(option)
                             ingredArray.push(option)
-                        }                       
+                        }
+
                     }
 
                     // NOTE: LOGIC TO GET ALL COUNTRIES CONTAINED BY THE RECIPES
@@ -203,7 +211,8 @@ const Recipe = ({ setShowNavbar, role }) => {
     return (
         <div className='main-container'>
             <div className='filter-container'>
-                <h2>Filter Search</h2>
+                <h2>Search Filters</h2>
+                <h4>Search for recipes using ingredients</h4>
                 <div className='ingredient-search'>
                     <Select 
                         options={searchIngred} 
@@ -283,19 +292,19 @@ const Recipe = ({ setShowNavbar, role }) => {
                             {/* USE MAP TO ADD ALL COUNTRIES */}
                         </select>
                         <span className='hr'></span>
-                        <h4>Select a serving size</h4>
+                        <h4>Enter serving size</h4>
                         <input 
                             type='Number'
                             min="0"
-                            placeholder='Enter serving size...'
+                            placeholder='Enter number of people...'
                             onChange={(e) => setFilterServingSize(e.target.value)}
                         />
                         <span className='hr'></span>
-                        <h4>Select a maximum total time</h4>
+                        <h4>Enter maximum recipe time</h4>
                         <input
                             type='Number' 
                             min="0"
-                            placeholder='Enter maximum total time...'
+                            placeholder='Enter number of minutes...'
                             onChange={(e) => setFilterTime(e.target.value)}
                         />
                         <input type="reset" onClick={handleClear}></input>
