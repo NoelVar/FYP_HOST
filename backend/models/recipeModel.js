@@ -85,6 +85,7 @@ const recipeSchema = new Schema({
             type: Date
         }
     }],
+    rating: [Number],
     approvalStatus: {
         type: String,
         enum: ['approved', 'denied', 'pending'],

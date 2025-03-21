@@ -3,6 +3,7 @@ import { useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecipeCommunitySwitch from '../components/RecipeCommunitySwitch';
 import { useAuthContext } from '../hooks/useAuthContext';
+import axios from 'axios';
 
 const SingleRecipe = ({ setShowNavbar }) => {
 
@@ -17,6 +18,9 @@ const SingleRecipe = ({ setShowNavbar }) => {
     const { user } = useAuthContext()
     const params = window.location.href
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[0]
+    const [rating, setRating] = useState(null)
+    const [hover, setHover] = useState(null)
+    const [message, setMessage] = useState(null)
 
     useEffect(() => {
         // NOTE: FETCHING THE RECIPE FROM THE SERVER
@@ -27,7 +31,6 @@ const SingleRecipe = ({ setShowNavbar }) => {
 
                 if (response.ok) {
                     setRecipe(json)
-                    console.log(json)
                 }
             } catch (err) {
                 console.log(err)
@@ -37,6 +40,32 @@ const SingleRecipe = ({ setShowNavbar }) => {
         
         fetchRecipe()
     }, [])
+
+    // NOTE: ADD RATING ---------------------------------------------------------------------------
+    const handleRating = async () => {
+        if (user) {
+            console.log(rating)
+            await axios.post(`${urlname}/rating`, {
+                rating: rating
+            }, { 
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                } 
+            })
+            .then((response) => {
+                if(response.ok) {
+                    console.log(response.data.message)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        } else {
+            // TODO: ADD MESSAGE AND REDIRECT AFTER 2 Seconds
+            setMessage('You need to login to use this functionality!')
+            setTimeout(() => navigate('/login'), 3000)
+        }
+    }
 
     const toSuggestion = () => {
         navigate('suggest-variation')
@@ -148,6 +177,37 @@ const SingleRecipe = ({ setShowNavbar }) => {
                                     <p>Protein</p>
                                 </div>
                             </div>
+                        </div>
+                        <div className='rating-container'>
+                            <h3>Rate the recipe</h3>
+                            {user 
+                                ?
+                                Array.from({length: 5 }, (_, i) => {
+                                    const currentRating = i + 1
+
+                                    return (
+                                        <label>
+                                            <input 
+                                                type='radio'
+                                                name='rating'
+                                                value={currentRating}
+                                                onClick={() => setRating(currentRating)}
+                                            />
+                                            <i 
+                                                className='fas fa-star' 
+                                                id='start' 
+                                                style={{color: currentRating <= (hover || rating) ? "#ff7800" : "#d2d2d2"}}
+                                                onMouseEnter={() => setHover(currentRating)}
+                                                onMouseLeave={() => setHover(null)}
+                                            ></i>
+                                        </label>
+                                    )
+                                })
+                                :
+                                <p>Please log in to rate the recipes</p>
+                            }
+                            <br></br>
+                            {user && <button className='btn' onClick={handleRating}>Submit Rating</button>}
                         </div>
                         {user && (
                             <button className='suggestion-btn' onClick={toSuggestion}><i className="fas fa-clone" id='edit-button'></i> Suggest variation</button>

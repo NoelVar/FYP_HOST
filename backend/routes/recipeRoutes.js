@@ -6,7 +6,8 @@ const {
     createRecipe,
     deleteRecipe,
     updateRecipe,
-    addComment
+    addComment,
+    addRating
 } = require('../controllers/recipeController')
 const { upload } = require('../controllers/imageUpload')
 // IMPORTING MIDDLEWARE
@@ -35,6 +36,9 @@ router.patch('/:id', updateRecipe)
 
 // NOTE: ADDING COMMENT
 router.post('/:id/comments', addComment)
+
+// NOTE: ADDING RATING
+router.post('/:id/rating', addRating)
 
 // NOTE: EXPORTING ROUTER
 module.exports = router

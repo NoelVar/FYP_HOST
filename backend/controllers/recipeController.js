@@ -183,6 +183,39 @@ const addComment = async (req, res) => {
     }
 }
 
+// NOTE: ADD RATING -------------------------------------------------------------------------------
+const addRating = async (req, res) => {
+    const { rating } = req.body;
+    const { id } = req.params;
+
+    // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({error: 'Invalid recipe ID.'})
+    }
+
+    if (!rating) {
+        return res.status(400).json({ error: 'Field cannot be empty.' })
+    }
+
+    try {
+        const recipe = await recipeModel.findById(id);
+        // NOTE: CHECKS IF RECIPE EXISTS IN DB
+        if (!recipe) {
+            return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
+
+        // NOTE: ADDS A NEW RATING TO THE ALREADY ESTABLISHED ARRAY OF RATING
+        recipe.rating.push(rating)
+        await recipe.save();
+
+        // NOTE: ADDS RATING IF EVERYTHING IS OK
+        return res.status(201).json({ message: "Rating has been added!" })
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ message: err.message })
+    }
+}
+
 // NOTE: EXPORTS FUNCTIONS ------------------------------------------------------------------------
 module.exports = {
     getAllRecipes,
@@ -190,7 +223,8 @@ module.exports = {
     createRecipe,
     deleteRecipe,
     updateRecipe,
-    addComment
+    addComment,
+    addRating
 }
 
 // END OF DOCUMENT --------------------------------------------------------------------------------
