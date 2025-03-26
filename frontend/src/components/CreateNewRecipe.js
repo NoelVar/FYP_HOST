@@ -122,6 +122,8 @@ const CreateNewRecipe = ({setShowNavbar}) => {
             setError('Required fields cannot be empty!')
         }
 
+        const email = user.email
+
         //NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
         const formData = new FormData();
         formData.append('title', title);
@@ -137,6 +139,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         formData.append('ingredients', JSON.stringify(ingredients)); // NOTE: CONVERTE TO JSON STRING
         formData.append('nutrInfo', JSON.stringify(nutrInfo));
         formData.append('approvalStatus', approvalStatus);
+        formData.append('email', email);
 
         // CHECKING IF USER IS LOGGED IN
         if (user) {

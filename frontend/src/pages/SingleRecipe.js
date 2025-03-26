@@ -21,6 +21,9 @@ const SingleRecipe = ({ setShowNavbar }) => {
     const [rating, setRating] = useState(null)
     const [hover, setHover] = useState(null)
     const [message, setMessage] = useState(null)
+    const [posted, setPostedBy] = useState(null)
+    const [avarageRating, setAvarageRating] = useState(null)
+    const [roundedRating, setRoundedRating] = useState(null)
 
     useEffect(() => {
         // NOTE: FETCHING THE RECIPE FROM THE SERVER
@@ -41,24 +44,64 @@ const SingleRecipe = ({ setShowNavbar }) => {
         fetchRecipe()
     }, [])
 
+    // NOTE: FUNCTION TO RETRIEVE USERNAMES -------------------------------------------------------
+    const fetchUser = async (userId) => {
+        try {
+            const response = await fetch('http://localhost:4000/user/single-user-id', {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify({ id: userId })
+            });
+            const json = await response.json();
+
+            if (response.ok) {
+                // ADDS USERNAME TO 'setPostedBy' STATE OBJECT
+                setPostedBy(json)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        if (recipe && recipe.postedBy) {
+            // FINDING THE USER WHO POSTED THE RECIPE
+            fetchUser(recipe.postedBy)
+
+            var totalRating = 0
+            // CALCULATING TOTAL RATING FOR RECIPE
+            for (var i = 0; recipe.rating.length > i; i++) {
+                totalRating += recipe.rating[i].value
+            }
+
+            // CALCULATING AVARAGE RATING
+            var avarage = totalRating/recipe.rating.length
+            // ROUNDING AVARAGE RATING
+            setAvarageRating(avarage)
+            setRoundedRating(Math.round(avarage))
+        }
+
+    }, [recipe])
+
     // NOTE: ADD RATING ---------------------------------------------------------------------------
     const handleRating = async () => {
         if (user) {
-            console.log(rating)
             await axios.post(`${urlname}/rating`, {
-                rating: rating
+                value: rating,
+                email: user.email
             }, { 
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 } 
             })
             .then((response) => {
-                if(response.ok) {
-                    console.log(response.data.message)
+                // SETTING MESSAGE FOR USER
+                if(response.status == 200 || response.status == 201) {
+                    setMessage(response.data.message)
                 }
             })
             .catch((err) => {
-                console.log(err)
+                setMessage(err)
             })
         } else {
             // TODO: ADD MESSAGE AND REDIRECT AFTER 2 Seconds
@@ -87,6 +130,21 @@ const SingleRecipe = ({ setShowNavbar }) => {
                             </div>
                             <div className='single-recipe-info'>
                                 <h1>{recipe.title}</h1>
+                                <span className='poster'><b>Posted By:</b> {posted}</span>
+                                <div className='avarage-rating-container'>
+                                    <h4>Rating: </h4>
+                                    <p>{avarageRating && avarageRating.toFixed(1)}</p>
+                                    <div className='star-container'>
+                                        {Array.from({ length: 5 }, (_, i) => 
+                                            <i 
+                                            className='fas fa-star'
+                                            id='avarage-rating'
+                                            style={{color: roundedRating > i ? "#ff7800" : "#d2d2d2"}}
+                                            ></i>
+                                        )}
+                                    </div>
+                                    <span>({recipe.rating.length})</span>
+                                </div>
                                 <span className='hr'></span>
                                 <div className='quick-info'>
                                     <p>
@@ -179,7 +237,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                             </div>
                         </div>
                         <div className='rating-container'>
-                            <h3>Rate the recipe</h3>
+                            <h3>Rate Recipe</h3>
                             {user 
                                 ?
                                 Array.from({length: 5 }, (_, i) => {
@@ -207,6 +265,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                                 <p>Please log in to rate the recipes</p>
                             }
                             <br></br>
+                            {message && <p>{message}</p>}
                             {user && <button className='btn' onClick={handleRating}>Submit Rating</button>}
                         </div>
                         {user && (

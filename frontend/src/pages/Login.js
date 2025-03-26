@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useLayoutEffect } from "react";
-import { useLogin } from "../hooks/useLogin";
+import { useAuthContext } from "../hooks/useAuthContext"
 
 const Login = ({setShowNavbar}) => {
 
@@ -16,19 +16,43 @@ const Login = ({setShowNavbar}) => {
     const [email, setUserEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
-    const {login, isLoading, error} = useLogin()
+    const [isLoading, setIsLoading] = useState(null)
+    const [error, setError] = useState(null)
+    const { dispatch } = useAuthContext()
     
     // NOTE: HANDLING LOGIN FUNCTION --------------------------------------------------------------
     const handleLogin = async (e) => {
         e.preventDefault()
-        
-        // FIXME: ADD CHECKING FOR ERRORS
-        await login(email, password)
-        if (isLoading === false && !error) {
-            setLoggedIn(true)
-            setTimeout(() => navigate('/'), 2000)
+
+        try {
+            const response = await fetch('http://localhost:4000/user/login', {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            const json = await response.json()
+
+            // VALIDATING RESPONSE
+            if (!response.ok) {
+                setIsLoading(false)
+                setError(json.error)
+            }
+            if (response.ok) {
+                // NOTE: SAVE THE USER TO LOCAL STORAGE
+                localStorage.setItem('user', JSON.stringify(json))
+
+                // NOTE: UPDATE AUTH CONTEXT
+                dispatch({ type: 'LOGIN', payload: json })
+
+                // SETTING STATE VARIABLES
+                setIsLoading(false)
+                setLoggedIn(true)
+                setError(null)
+                setTimeout(() => navigate('/'), 2000)
+            } 
+        } catch (error) {
+            setError(error)
         }
-        console.log(isLoading)
     }
 
     return (

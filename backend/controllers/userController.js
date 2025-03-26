@@ -180,6 +180,32 @@ const getSingleUser = async (req, res) => {
     }
 }
 
+// GET SINGLE USER BY ID --------------------------------------------------------------------------
+const getUserById = async (req, res) => {
+    const { id } = req.body
+    console.log("ID: " + id)
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({error: 'Invalid user ID.'})
+        }
+
+        // GETS USER FROM DB
+        const user = await userModel.findById(id)
+        
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
+        // NOTE: RETURNS USER IF STATUS IS OK
+        res.status(200).json(user.username)
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ error: err.message })
+    }
+}
+
 // UPDATE USER ------------------------------------------------------------------------------------
 const updateUser = async (req, res) => {
     const { id } = req.params
@@ -215,6 +241,7 @@ module.exports = {
     registerUser,
     getAllUsers,
     getSingleUser,
+    getUserById,
     updateUser
 }
 

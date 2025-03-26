@@ -75,8 +75,9 @@ const recipeSchema = new Schema({
         }
     },
     comments: [{
-        name: {
-            type: String
+        user: {
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'User'
         },
         content: {
             type: String
@@ -85,11 +86,24 @@ const recipeSchema = new Schema({
             type: Date
         }
     }],
-    rating: [Number],
+    rating: [{
+        value: {
+            type: Number
+        },
+        postedBy: {
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'User'
+        }
+
+    }],
     approvalStatus: {
         type: String,
         enum: ['approved', 'denied', 'pending'],
         required: true
+    },
+    postedBy: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User'
     }
 },
     {timestamps: true} // NOTE: AUTOMATICALLY ADDS CREATED DATE AND UPDATE DATE FIELDS

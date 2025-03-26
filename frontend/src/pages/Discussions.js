@@ -15,10 +15,12 @@ const Discussions = ({ setShowNavbar }) => {
     const navigate = useNavigate()
     const [recipe, setRecipe] = useState(null);
     const [content, setContent] = useState('');
-    const [message, setMessage] = useState(null)
+    const [message, setMessage] = useState(null);
+    const [commenter, setCommenter] = useState(null)
     const { user } = useAuthContext()
     const params = window.location.href
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[1]
+    const [commentUsers, setCommentUsers] = useState({});
     
     useEffect(() => {
         // NOTE: FETCHING THE RECIPE FROM THE SERVER
@@ -44,13 +46,13 @@ const Discussions = ({ setShowNavbar }) => {
         e.preventDefault()
         if (user) {
 
-            const UserName = user.username
+            const email = user.email
             const currentDate = Date.now()
             // DEBUG: console.log(recipe.comments)
         
             // TODO: CHANGE TO REFERENCED DATA MODEL
             await axios.post(`${urlname}/comments`, {
-                name: UserName,
+                email: email,
                 content: content,
                 timestamp: currentDate
             }, { 
@@ -74,6 +76,39 @@ const Discussions = ({ setShowNavbar }) => {
     }
 
 
+    // NOTE: FUNCTION TO RETRIEVE USERNAMES -------------------------------------------------------
+    const fetchUser = async (userId) => {
+        try {
+            const response = await fetch('http://localhost:4000/user/single-user-id', {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify({ id: userId })
+            });
+            const json = await response.json();
+
+            if (response.ok) {
+                // ADDS USERNAME TO 'commentUsers' STATE OBJECT
+                setCommentUsers(prev => ({
+                    ...prev,
+                    [userId]: json
+                }));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // USER EFFECT TO FETCH USERNAMES WHEN COMMENTS LOAD
+    useEffect(() => {
+        if (recipe && recipe.comments) {
+            recipe.comments.forEach(comment => {
+                if (comment.user && !commentUsers[comment.user]) {
+                    fetchUser(comment.user);
+                }
+            });
+        }
+    }, [recipe]);
+
     return (
         <div className="recipe-discussion-box">
             {recipe
@@ -94,11 +129,12 @@ const Discussions = ({ setShowNavbar }) => {
                             </form>
                         {message && <div className="error-message">{message}</div>}
                         <div className="discussion-box">
-                            {recipe.comments.map((comment) => (
-                                <div className="discussion-card">
+                            {recipe.comments.map((comment) => (  
+                                <div className="discussion-card" key={comment._id}>                                                             
                                     <div className="comment-header">
-                                    <h3>{comment.name}</h3> 
-                                    <i>{new Date(comment.timestamp).toDateString()}</i>
+                                        {/* DISPLAYING USERNAMES OR 'Loading...' IF THEY HAVE NOT LOADED COMPLETELY */}
+                                        <h3>{commentUsers[comment.user] || 'Loading...'}</h3> 
+                                        <i>{new Date(comment.timestamp).toDateString()}</i>
                                     </div>
                                     <p>{comment.content}</p>
                                 </div>

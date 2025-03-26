@@ -1,6 +1,7 @@
 // BACKEND LOGIC FOR ROUTES
 const recipeModel = require('../models/recipeModel.js')
 const mongoose = require('mongoose')
+const userModel = require('../models/userModel.js')
 
 // GET ALL RECIPES --------------------------------------------------------------------------------
 const getAllRecipes = async (req, res) => {
@@ -30,6 +31,7 @@ const getSingleRecipe = async (req, res) => {
             return res.status(400).json({ error: 'Invalid recipe ID.' })
         }
 
+        // GETS RECIPE FROM DB
         const recipe = await recipeModel.findById(id)
         
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
@@ -47,8 +49,8 @@ const getSingleRecipe = async (req, res) => {
 
 // CREATE RECIPE ----------------------------------------------------------------------------------
 const createRecipe = async (req, res) => {
-    const { title, prepTime, cookTime, servingSize, difficulty, origin, mealType, approvalStatus } = req.body;
-    
+    const { title, prepTime, cookTime, servingSize, difficulty, origin, mealType, approvalStatus, email } = req.body;
+
     // NOTE: HANDLING UPLOADED IMAGE
     const image = req.file ? req.file.filename : null;
 
@@ -57,9 +59,24 @@ const createRecipe = async (req, res) => {
     const cookInstructions = req.body.cookInstructions ? JSON.parse(req.body.cookInstructions) : [];
     const ingredients = req.body.ingredients ? JSON.parse(req.body.ingredients) : [];
     const nutritionalInfo = req.body.nutrInfo ? JSON.parse(req.body.nutrInfo) : {};
-    
+        
     // NOTE: ATTEMPTS TO CREATE RECIPE IN DB
     try {
+
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (email === '') {
+            return res.status(400).json({ error: 'Email cannot be empty' })
+        }
+
+        // GETS USER FROM DB
+        const user = await userModel.findOne({ email })
+
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
+        // ADDS USER REFERENCE TO RECIPE
         const recipe = await recipeModel.create({
             title,
             image,
@@ -73,7 +90,8 @@ const createRecipe = async (req, res) => {
             cookInstructions,
             ingredients,
             nutritionalInfo,
-            approvalStatus
+            approvalStatus,
+            postedBy: user
         });
 
         if(!recipe) {
@@ -85,7 +103,7 @@ const createRecipe = async (req, res) => {
         return res.status(201).json(recipe);
     } catch (error) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
-        console.log('Error occourd')
+        console.log('Error occourd' + error)
         return res.status(500).json({ error: error.message })
     }
 }
@@ -100,6 +118,7 @@ const deleteRecipe = async (req, res) => {
             return res.status(400).json({error: 'Invalid recipe ID.'})
         }
 
+        // GETS RECIPE FROM DB
         const recipe = await recipeModel.findOneAndDelete({_id: id})
         
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
@@ -148,7 +167,7 @@ const updateRecipe = async (req, res) => {
 // ADD COMMENTS -----------------------------------------------------------------------------------
 // ADAPTED FROM: https://www.geeksforgeeks.org/implement-comments-section-in-mern-blogs-and-news-website/
 const addComment = async (req, res) => {
-    const { name, content, timestamp } = req.body;
+    const { email, content, timestamp } = req.body;
     const { id } = req.params;
 
     // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
@@ -156,12 +175,28 @@ const addComment = async (req, res) => {
         return res.status(400).json({error: 'Invalid recipe ID.'})
     }
 
+    // CHECKS IF CONTENT IS EMPTY
     if (content === '') {
         return res.status(400).json({ error: 'Field cannot be empty.' })
     }
 
     try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (email === '') {
+            return res.status(400).json({ error: 'Email cannot be empty' })
+        }
+
+        // GETS USER FROM DB
+        const user = await userModel.findOne({ email })
+
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
+        // GETS RECIPE FROM DB
         const recipe = await recipeModel.findById(id);
+        
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
         if (!recipe) {
             return res.status(404).json({error: 'Couldn\'t find recipe.'})
@@ -169,7 +204,7 @@ const addComment = async (req, res) => {
 
         // NOTE: ADDS A NEW COMMENT TO THE ALREADY ESTABLISHED ARRAY OF COMMENTS
         recipe.comments.push({
-            name,
+            user,
             content,
             timestamp
         });
@@ -185,7 +220,7 @@ const addComment = async (req, res) => {
 
 // NOTE: ADD RATING -------------------------------------------------------------------------------
 const addRating = async (req, res) => {
-    const { rating } = req.body;
+    const { value, email } = req.body;
     const { id } = req.params;
 
     // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
@@ -193,19 +228,49 @@ const addRating = async (req, res) => {
         return res.status(400).json({error: 'Invalid recipe ID.'})
     }
 
-    if (!rating) {
+    // NOTE: CHECKS IF VALUE IS EMPTY
+    if (!value) {
         return res.status(400).json({ error: 'Field cannot be empty.' })
     }
 
     try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (email === '') {
+            return res.status(400).json({ error: 'Email cannot be empty' })
+        }
+
+        // NOTE: ATTEMPTS TO FIND USER BY EMAIL ADDRESS
+        const user = await userModel.findOne({ email })
+
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
         const recipe = await recipeModel.findById(id);
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
         if (!recipe) {
             return res.status(404).json({error: 'Couldn\'t find recipe.'})
         }
 
+        var match = false
+        // CHECKS IF USER HAS ALREADY RATED THE RECIPE
+        recipe.rating.map((singleRating) => {
+            if (singleRating.postedBy.toString() === user._id.toString()) {
+                match = true
+            }
+        })
+
+        // IF THE USER ALREADY HAS RATED THE RECIPE THE RATING WILL NOT BE ADDED
+        if (match) {
+            return res.json({ message: "You have already rated the recipe!" })
+        }
+
         // NOTE: ADDS A NEW RATING TO THE ALREADY ESTABLISHED ARRAY OF RATING
-        recipe.rating.push(rating)
+        recipe.rating.push({
+            value,
+            postedBy: user
+        })
         await recipe.save();
 
         // NOTE: ADDS RATING IF EVERYTHING IS OK

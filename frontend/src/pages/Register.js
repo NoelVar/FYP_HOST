@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useLayoutEffect } from "react";
-import { useSignup } from "../hooks/useSignup";
-import axios from 'axios';
+import { useAuthContext } from "../hooks/useAuthContext"
 
 const Register = ({setShowNavbar}) => {
 
@@ -19,18 +18,44 @@ const Register = ({setShowNavbar}) => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [registered, setRegistered] = useState(false);
-    const {signup, isLoading, error} = useSignup()
+    const [isLoading, setIsLoading] = useState(null)
+    const [error, setError] = useState(null)
+    const { dispatch } = useAuthContext()
     
     // NOTE: HANDLING LOGIN FUNCTION --------------------------------------------------------------
     const handleLogin = async (e) => {
         e.preventDefault()
-        await signup(username, userEmail, password, confirmPassword)
 
-        // FIXME: ADD CHECKING FOR ERRORS
-        if (isLoading === false && !error) {
-            setRegistered(true)
+        try {
+            // SENDING REQUEST TO BACKEND API
+            const response = await fetch('http://localhost:4000/user/register', {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify({ username, email: userEmail, password, confirmPassword })
+            })
+            const json = await response.json()
+
+            // VALIDATING RESPONSE
+            if (!response.ok) {
+                setIsLoading(false)
+                setError(json.error)
+            }
+            if (response.ok) {
+                // NOTE: SAVE THE USER TO LOCAL STORAGE
+                localStorage.setItem('user', JSON.stringify(json))
+
+                // NOTE: UPDATE AUTH CONTEXT
+                dispatch({ type: 'LOGIN', payload: json })
+
+                // SETTING STATE VARIABLES
+                setIsLoading(false)
+                setRegistered(true)
+                setError(null)
+                setTimeout(() => navigate('/'), 2000)
+            }
+        } catch (error) {
+            setError(error)
         }
-        console.log(isLoading)
     }
 
     return (
@@ -75,7 +100,7 @@ const Register = ({setShowNavbar}) => {
                         />
                     </div>
                     {error && <div className="error-message">{error}</div>}
-                    {registered && <div className="success-message">You are now registered!</div>}
+                    {registered && <div className="success-message">You are now registered! Redirecting to Home!</div>}
                     <button 
                         disabled={isLoading}
                         type="submit"

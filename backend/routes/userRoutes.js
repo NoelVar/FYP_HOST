@@ -5,6 +5,7 @@ const {
     registerUser,
     getAllUsers,
     getSingleUser,
+    getUserById,
     updateUser
 } = require('../controllers/userController')
 
@@ -23,6 +24,10 @@ router.get('/all-users', getAllUsers)
 // NOTE: GET SINGLE USER INFO
 router.post('/single-user', getSingleUser)
 
+// NOTE: GET SINGLE USER INFO BY ID
+router.post('/single-user-id', getUserById)
+
+// NOTE: UPDATE USER STATUS
 router.patch('/update-status', updateUser)
 
 module.exports = router
