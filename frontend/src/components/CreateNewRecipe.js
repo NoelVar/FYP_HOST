@@ -123,6 +123,10 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         }
 
         const email = user.email
+        const variation = {
+            status: false,
+            recipe: null
+        }
 
         //NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
         const formData = new FormData();
@@ -140,6 +144,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         formData.append('nutrInfo', JSON.stringify(nutrInfo));
         formData.append('approvalStatus', approvalStatus);
         formData.append('email', email);
+        formData.append('variation', JSON.stringify(variation))
 
         // CHECKING IF USER IS LOGGED IN
         if (user) {

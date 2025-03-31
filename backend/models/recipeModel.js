@@ -104,6 +104,15 @@ const recipeSchema = new Schema({
     postedBy: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User'
+    },
+    variationOfRecipe: {
+        status: {
+            type: Boolean
+        },
+        recipe: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Recipe'
+        }
     }
 },
     {timestamps: true} // NOTE: AUTOMATICALLY ADDS CREATED DATE AND UPDATE DATE FIELDS

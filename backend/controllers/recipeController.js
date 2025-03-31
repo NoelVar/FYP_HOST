@@ -59,7 +59,8 @@ const createRecipe = async (req, res) => {
     const cookInstructions = req.body.cookInstructions ? JSON.parse(req.body.cookInstructions) : [];
     const ingredients = req.body.ingredients ? JSON.parse(req.body.ingredients) : [];
     const nutritionalInfo = req.body.nutrInfo ? JSON.parse(req.body.nutrInfo) : {};
-        
+    const variationOfRecipe = req.body.variation ? JSON.parse(req.body.variation) : {};
+    
     // NOTE: ATTEMPTS TO CREATE RECIPE IN DB
     try {
 
@@ -67,7 +68,7 @@ const createRecipe = async (req, res) => {
         if (email === '') {
             return res.status(400).json({ error: 'Email cannot be empty' })
         }
-
+    
         // GETS USER FROM DB
         const user = await userModel.findOne({ email })
 
@@ -91,7 +92,8 @@ const createRecipe = async (req, res) => {
             ingredients,
             nutritionalInfo,
             approvalStatus,
-            postedBy: user
+            postedBy: user,
+            variationOfRecipe
         });
 
         if(!recipe) {

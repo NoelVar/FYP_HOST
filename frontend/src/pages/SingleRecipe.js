@@ -1,6 +1,6 @@
 // IMPORTS ----------------------------------------------------------------------------------------
 import { useState, useEffect, useLayoutEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import RecipeCommunitySwitch from '../components/RecipeCommunitySwitch';
 import { useAuthContext } from '../hooks/useAuthContext';
 import axios from 'axios';
@@ -24,8 +24,10 @@ const SingleRecipe = ({ setShowNavbar }) => {
     const [posted, setPostedBy] = useState(null)
     const [avarageRating, setAvarageRating] = useState(null)
     const [roundedRating, setRoundedRating] = useState(null)
+    const [variations, setVariations] = useState(null)
 
     useEffect(() => {
+        var singleRecipe
         // NOTE: FETCHING THE RECIPE FROM THE SERVER
         const fetchRecipe = async () => {
             try {
@@ -33,6 +35,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                 const json = await response.json()
 
                 if (response.ok) {
+                    singleRecipe = json
                     setRecipe(json)
                 }
             } catch (err) {
@@ -40,8 +43,29 @@ const SingleRecipe = ({ setShowNavbar }) => {
             }
             
         }
+
+        const fetchRecipes = async () => {
+            // console.log(BACKEND)
+            const response = await fetch('http://localhost:4000/recipes') // FIXME: REMOVE FULL URL
+            const json = await response.json()
+
+            // CHECKING IF RESPONSE IS OKAY
+            if (response.ok) {
+                const recipeArray = []
+                // CHECKS ALL RECIPES IF THE RECIPES STATUS IS NOT DENIED
+                for (var i = 0; i < json.length; i++) {
+                    if (singleRecipe && json[i].approvalStatus !== 'denied' && json[i].variationOfRecipe.recipe === singleRecipe._id) {
+                        recipeArray.push(json[i])
+                    }
+                }
+                if (recipeArray.length !== 0) {
+                    setVariations(recipeArray)
+                }
+            }
+        }
         
         fetchRecipe()
+        fetchRecipes()
     }, [])
 
     // NOTE: FUNCTION TO RETRIEVE USERNAMES -------------------------------------------------------
@@ -268,6 +292,25 @@ const SingleRecipe = ({ setShowNavbar }) => {
                             {message && <p>{message}</p>}
                             {user && <button className='btn' onClick={handleRating}>Submit Rating</button>}
                         </div>
+                        {variations &&
+                            <div className='variation-box'>
+                                <h3>Variations of {recipe.title}</h3>
+                                <div className='variation-container'>
+                                    {variations.map((variation) => {
+                                        const url = '/recipes/' + variation._id
+                                        return (
+                                            <Link to={url} onClick={() => {window.location.href=url}} className='variation-card'>
+                                                {variation.image
+                                                    ? <img src={`http://localhost:4000/images/` + variation.image} alt='Recipe cover' />
+                                                    : <img src='../ED2_LOGOV5.png' alt='Coulnt find img' />
+                                                }
+                                                <p>{variation.title}</p>
+                                            </Link>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        }
                         {user && (
                             <button className='suggestion-btn' onClick={toSuggestion}><i className="fas fa-clone" id='edit-button'></i> Suggest variation</button>
                         )}

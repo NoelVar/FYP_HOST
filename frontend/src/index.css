@@ -874,6 +874,40 @@ table td {
   margin-top: 20px;
 }
 
+.variation-box {
+  background-color: var(--side-panel-color);
+  padding: 20px;
+  width: 80%;
+  margin: auto;
+  border: 1px solid #A9551D;
+  border-radius: 5px;
+}
+
+.variation-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow: scroll;
+  align-items: center;
+  justify-content: center;
+}
+
+/* STYLING VARIATIONS */
+.variation-card {
+  margin: 20px;
+  text-align: center;
+  width: 300px;
+  border: 1px solid #A9551D;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.variation-card img{
+  width: 200px;
+  height: 200px;
+}
+
+
 /* RECIPE SUGGESTION PAGE -----------------------------------------------------------------------*/
 /* ADDING DELETE BUTTON */
 .delete-btn {

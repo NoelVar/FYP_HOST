@@ -193,6 +193,11 @@ const SuggestVariation = ({ setShowNavbar }) => {
             if (nutrInfo.totalProtein !== 0) {
                 variationNutrInfo.totalProtein = nutrInfo.totalProtein  
             }
+            const email = user.email
+            const variation = {
+                status: true,
+                recipe: recipe._id
+            }
             
             //NOTE: CREATING A FORM DATA OBJECT TO INCLUDE FILES
             const formData = new FormData();
@@ -209,6 +214,8 @@ const SuggestVariation = ({ setShowNavbar }) => {
             formData.append('ingredients', JSON.stringify(variationIngredients)); // NOTE: CONVERTE TO JSON STRING
             formData.append('nutrInfo', JSON.stringify(variationNutrInfo));
             formData.append('approvalStatus', approvalStatus);
+            formData.append('email', email);
+            formData.append('variation', JSON.stringify(variation))
 
             // NOTE: SENDING THE RECIPE TO THE SERVER IF THE USER HAS MADE A CHANGE
             if (change) {
