@@ -45,9 +45,18 @@ const Recipe = ({ setShowNavbar, role }) => {
             const response = await fetch('http://localhost:4000/recipes') // FIXME: REMOVE FULL URL
             const json = await response.json()
 
+            // CHECKING IF RESPONSE IS OKAY
             if (response.ok) {
-                setRecipes(json)
-                setFilteredRecipes(json)
+                const recipeArray = []
+                // CHECKS ALL RECIPES IF THE RECIPES STATUS IS NOT DENIED
+                for (var i = 0; i < json.length; i++) {
+                    if (json[i].approvalStatus !== 'denied') {
+                        recipeArray.push(json[i])
+                    }
+                    // ADDING ALL RECIPES THAT HAS A STATUS PENDING OR APPROVED
+                    setFilteredRecipes(recipeArray)
+                    setRecipes(recipeArray)
+                }
 
                 // FIXME: 3 FOR LOOPS IS NOT EFFICIENT - DOESNT ADD ALL INGREDIENTS
                 // NOTE: ADDING ALL RECIPES TO DROPDOWN LIST
