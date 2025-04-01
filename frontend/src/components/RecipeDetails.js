@@ -5,7 +5,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 const RecipeDetails = ({ recipe, role}) => {
 
     // NOTE: URL 
-    const urlName = recipe._id
+    const urlName = '/recipes/' + recipe._id
 
     // VARIABLE TO STORE LOGGED IN USER
     const { user } = useAuthContext()

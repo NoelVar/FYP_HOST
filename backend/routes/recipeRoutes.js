@@ -7,7 +7,8 @@ const {
     deleteRecipe,
     updateRecipe,
     addComment,
-    addRating
+    addRating,
+    popularRecipe
 } = require('../controllers/recipeController')
 const { upload } = require('../controllers/imageUpload')
 // IMPORTING MIDDLEWARE
@@ -21,6 +22,9 @@ router.get('/', getAllRecipes)
 
 // NOTE: GET SINGLE RECIPE
 router.get('/:id', getSingleRecipe)
+
+// NOTE: RETRIEVING MOST POPULAR RECIPE
+router.get('/recipe/popular', popularRecipe)
 
 // REQUIRE AUTHENTICATION FOR SPECIFIC RECIPE ROUTES
 router.use(requireAuth)

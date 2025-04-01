@@ -283,6 +283,83 @@ const addRating = async (req, res) => {
     }
 }
 
+// NOTE: ACCESSING HIGHLIGHTED RECIPES ------------------------------------------------------------
+const popularRecipe = async (req, res) => {
+    try {
+        // FETCHING ALL RECIPES
+        const recipes = await recipeModel.find({})
+        
+        // NOTE: VALIDATES IF THE RECIPES EXIST IN DB
+        if (!recipes) {
+            return res.status(404).json({ error: 'No recipes found.' })
+        }
+
+        // CREATING VARIABLES/ARRAY FOR CALCULATIONS
+        const popularRecipes = []
+        var mostRated = recipes[0]
+        var bestRated = recipes[0]
+        var mostComments = recipes[0]
+        var latestRecipe = recipes[0]
+
+        // MAPPING ALL RECIPES
+        recipes.map((recipe) => {
+            var avarageRating = 0 
+            var popularAvarage = 0
+            var totalRating = 0
+            var popularTotal = 0
+
+            // CALCULATING TOTAL RATING ON RECIPE
+            for (var i = 0; i < recipe.rating.length; i++) {
+                totalRating += recipe.rating[i].value
+            }
+            // CALCULATING AVARAGE RATING ON RECIPE
+            avarageRating = totalRating / recipe.rating.length
+
+            // CALCULATING TOTAL RATING ON BEST RATED RECIPE
+            for (var i = 0; i < bestRated.rating.length; i++) {
+                popularTotal += bestRated.rating[i].value
+            }
+            // CALCULATING AVARAGE RATING ON BEST RATED RECIPE
+            popularAvarage = popularTotal / bestRated.rating.length
+
+            // CHECKING IF AVARAGE RECIPE RATING IS GREATER THAN THE BEST RATED ONE
+            if (popularAvarage < avarageRating) {
+                bestRated = recipe
+            // MAKING SURE BEST RATED RECIPE WILL NOT STAY NAN FOR THE NEXT RECIPE
+            } else if (isNaN(popularAvarage)) {
+                bestRated = recipe
+            }
+
+            // IDENTIFYING THE MOST RATED RECIPE 
+            if (mostRated.rating.length < recipe.rating.length) {
+                mostRated = recipe
+            } 
+
+            // IDENTIFYING THE MOST COMMENTS ON RECIPE 
+            if (mostComments.comments.length < recipe.comments.length) {
+                mostComments = recipe
+            } 
+
+            // IDENTIFYING THE LATEST RECIPE
+            if (recipe.approvalStatus !== 'denied' && recipe.variationOfRecipe.status !== true) {
+                latestRecipe = recipe
+            }
+
+        })
+
+        // ADDING RECIPES TO ARRAY
+        popularRecipes.push(mostRated)
+        popularRecipes.push(bestRated)
+        popularRecipes.push(mostComments)
+        popularRecipes.push(latestRecipe)
+
+        // // NOTE: RETURNS RECIPES IF STATUS IS OK
+        return res.status(200).json(popularRecipes)
+    } catch (err) {
+        return res.status(500).json({ error: err.message })
+    }
+}
+
 // NOTE: EXPORTS FUNCTIONS ------------------------------------------------------------------------
 module.exports = {
     getAllRecipes,
@@ -291,7 +368,8 @@ module.exports = {
     deleteRecipe,
     updateRecipe,
     addComment,
-    addRating
+    addRating,
+    popularRecipe
 }
 
 // END OF DOCUMENT --------------------------------------------------------------------------------
