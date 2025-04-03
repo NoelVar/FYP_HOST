@@ -133,6 +133,7 @@ const getAllUsers = async (req, res) => {
         const allUsers= []
         users.map((user) => {
             const singleUser = {
+                _id: user._id,
                 username: user.username,
                 email: user.email,
                 role: user.role,
@@ -183,7 +184,7 @@ const getSingleUser = async (req, res) => {
 // GET SINGLE USER BY ID --------------------------------------------------------------------------
 const getUserById = async (req, res) => {
     const { id } = req.body
-    console.log("ID: " + id)
+
     try {
         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -236,42 +237,41 @@ const updateUser = async (req, res) => {
     }
 }
 
+// DELETE USER ------------------------------------------------------------------------------------
+const deleteUser = async (req, res) => {
+    const { id } = req.params
+    console.log("ID: " + id)
+
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({error: 'Invalid user ID.'})
+        }
+
+        // GETS USER FROM DB
+        const user = await userModel.findOneAndDelete({_id: id})
+        
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({error: 'Couldn\'t find user.'})
+        }
+        
+        // NOTE: DELETES USER IF STATUS IS OK
+        return res.status(200).json(user)
+    } catch(err) {
+        // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
+        return res.status(500).json({ error: err.message })
+    }
+}
+
 module.exports = {
     loginUser,
     registerUser,
     getAllUsers,
     getSingleUser,
     getUserById,
-    updateUser
+    updateUser,
+    deleteUser
 }
 
 // END OF DOCUMENT --------------------------------------------------------------------------------
-
-// DEBUG: IN CASE ITS NEEDED
-// 
-
-// 
-// // DELETE USER ------------------------------------------------------------------------------------
-// const deleteUser = async (req, res) => {
-//     const {id} = req.params
-
-//     try {
-//         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
-//         if (!mongoose.Types.ObjectId.isValid(id)) {
-//             return res.status(400).json({error: 'Invalid user ID.'})
-//         }
-
-//         const user = await userModel.findOneAndDelete({_id: id})
-        
-//         // NOTE: CHECKS IF USER EXISTS IN DB
-//         if (!user) {
-//             return res.status(404).json({error: 'Couldn\'t find user.'})
-//         }
-        
-//         // NOTE: DELETES USER IF STATUS IS OK
-//         res.status(200).json(user)
-//     } catch(err) {
-//         // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
-//         return res.status(500).json({ error: err.message })
-//     }
-// }

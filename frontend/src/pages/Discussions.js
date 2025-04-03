@@ -3,6 +3,7 @@ import RecipeCommunitySwitch from "../components/RecipeCommunitySwitch";
 import axios from "axios";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const Discussions = ({ setShowNavbar }) => {
 
@@ -144,6 +145,7 @@ const Discussions = ({ setShowNavbar }) => {
                 </div>
                 : <p>No discussion found!</p>
             }
+            <Footer />
         </div>
     )
 }

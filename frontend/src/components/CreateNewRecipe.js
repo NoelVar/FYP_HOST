@@ -186,7 +186,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                 <div className='important-info'>
                     <i className='fas fa-circle-info'></i>
                     <p><b>Note:</b> All the fields that have a <span className="required">*</span> infront of them are required to fill in.</p>
-                    <p>By submitting a recipe you agree to our <Link>Terms and conditions</Link></p>
+                    <p>By submitting a recipe you agree to our <Link to='terms-and-conditions'>Terms and conditions</Link></p>
                 </div>
                 <div className="basic-information">
                     <h2>Basic information</h2>

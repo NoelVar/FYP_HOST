@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuthContext } from '../hooks/useAuthContext';
+import { useEffect, useState } from 'react';
 
 // NOTE: RECIPE DETAILS ---------------------------------------------------------------------------
 const RecipeDetails = ({ recipe, role}) => {
@@ -9,6 +10,7 @@ const RecipeDetails = ({ recipe, role}) => {
 
     // VARIABLE TO STORE LOGGED IN USER
     const { user } = useAuthContext()
+    const [hasVariation, setHasVariation] = useState(false)
 
     // NOTE: HANDLING DELETE ----------------------------------------------------------------------
     const handleDelete = async () => {
@@ -26,6 +28,29 @@ const RecipeDetails = ({ recipe, role}) => {
         }
     } 
 
+    useEffect(() => {
+        const fetchRecipes = async () => {
+            const response = await fetch('http://localhost:4000/recipes') // FIXME: REMOVE FULL URL
+            const json = await response.json()
+
+            // CHECKING IF RESPONSE IS OKAY
+            if (response.ok) {
+                const recipeArray = []
+                // CHECKS ALL RECIPES IF THE RECIPES STATUS IS NOT DENIED
+                for (var i = 0; i < json.length; i++) {
+                    if (recipe && json[i].approvalStatus !== 'denied' && json[i].variationOfRecipe.recipe === recipe._id) {
+                        recipeArray.push(json[i])
+                    }
+                }
+                if (recipeArray.length !== 0) {
+                    setHasVariation(true)
+                }
+            }
+        }
+
+        fetchRecipes()
+    }, [])
+
     // NOTE: RETURNING INDIVIDUAL RECIPE DETAILS --------------------------------------------------
     return (
         <div className="recipe-details">
@@ -36,13 +61,27 @@ const RecipeDetails = ({ recipe, role}) => {
                 }
                 <div className="recipe-info">
                     <h2>{recipe.title}</h2>
-                    <p><i className="fa-regular fa-clock"></i> {recipe.prepTime + recipe.cookTime} minutes</p>
-                    <p><i className="fa-solid fa-bowl-food"></i> {recipe.servingSize} servings</p>
-                    <p><i className="fa-solid fa-kitchen-set"></i> {recipe.difficulty}</p>
+                    <table className='recipe-first-detail'>
+                        <tr>
+                            <td><i className="fa-regular fa-clock"></i> </td>
+                            <td>{recipe.prepTime + recipe.cookTime} minutes</td>
+                            {recipe && hasVariation === true &&
+                                <td className='variation-symbol' rowSpan={3}><img src='../ED2_LOGOV6.png' alt='Has variations'></img></td>
+                            }
+                        </tr>
+                        <tr>
+                            <td><i className="fa-solid fa-bowl-food"></i></td>
+                            <td>{recipe.servingSize} servings</td>
+                        </tr>
+                        <tr>
+                            <td><i className="fa-solid fa-kitchen-set"></i></td>
+                            <td>{recipe.difficulty}</td>
+                        </tr>
+                    </table>
                 </div>
-                {role && (role === 'admin' || role === 'moderator') &&
+                {/* {role && (role === 'admin' || role === 'moderator') &&
                     <button className="delete-recipe-btn" onClick={handleDelete}>X</button>
-                }
+                } */} 
             </Link>
         </div>
     )

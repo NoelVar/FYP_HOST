@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import RecipeCommunitySwitch from '../components/RecipeCommunitySwitch';
 import { useAuthContext } from '../hooks/useAuthContext';
 import axios from 'axios';
+import Footer from '../components/Footer';
 
 const SingleRecipe = ({ setShowNavbar }) => {
 
@@ -120,7 +121,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
             })
             .then((response) => {
                 // SETTING MESSAGE FOR USER
-                if(response.status == 200 || response.status == 201) {
+                if(response.status === 200 || response.status === 201) {
                     setMessage(response.data.message)
                 }
             })
@@ -149,7 +150,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                             <div className='single-recipe-img'>
                                 {recipe.image
                                     ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
-                                    : <img src='ED2_LOGOV5.png' />
+                                    : <img src='ED2_LOGOV5.png' alt='Recipe cover'/>
                                 }
                             </div>
                             <div className='single-recipe-info'>
@@ -320,6 +321,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                 <p>No recipe found</p>
                 
             }
+            <Footer />
         </div>
     )
 }

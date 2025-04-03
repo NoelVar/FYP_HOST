@@ -6,7 +6,8 @@ const {
     getAllUsers,
     getSingleUser,
     getUserById,
-    updateUser
+    updateUser,
+    deleteUser
 } = require('../controllers/userController')
 
 // NOTE: CREATING ROUTER COMPONENT
@@ -28,7 +29,10 @@ router.post('/single-user', getSingleUser)
 router.post('/single-user-id', getUserById)
 
 // NOTE: UPDATE USER STATUS
-router.patch('/update-status', updateUser)
+router.patch('/update-status/:id', updateUser)
+
+// NOTE: DELETE USER
+router.delete('/delete-user/:id', deleteUser)
 
 module.exports = router
 

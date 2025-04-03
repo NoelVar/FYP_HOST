@@ -268,6 +268,17 @@ const addRating = async (req, res) => {
             return res.json({ message: "You have already rated the recipe!" })
         }
 
+        // CHECKING IF USER OWNS THE RECIPE
+        var ownedRecipe = false
+        if (recipe.postedBy.toString() === user._id.toString()) {
+            ownedRecipe = true
+        }
+
+        // IF THE USER OWNS THE RECIPE THE RATING WILL NOT BE ADDED
+        if (ownedRecipe) {
+            return res.json({ message: "You cannot rate your own recipe!" })
+        }
+
         // NOTE: ADDS A NEW RATING TO THE ALREADY ESTABLISHED ARRAY OF RATING
         recipe.rating.push({
             value,

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLayoutEffect, useEffect, useState } from "react";
 import RecipeDetails from "../components/RecipeDetails";
+import Footer from "../components/Footer";
 
 const Home = ({ setShowNavbar }) => {
 
@@ -43,19 +44,42 @@ const Home = ({ setShowNavbar }) => {
                     <img src='eye-catcher-dish.png' alt='Home made Lobster with Stake' />
                 </div>
             </div>
+            <div id="about-container">
+                <h2>What is EdibleEducation?</h2>
+                <p>
+                    EdibleEducation is a community driven platform that provides an opportunity for it's users
+                    to share their own recipes, create variations of others' recipes, and star discussions
+                    related to recipes. These all aim to bring people closer to food, since it's a way of 
+                    expressing culture, family tradition, and individuality, while also making an impact on the world
+                    around us.
+                </p>
+            </div>
             { popularRecipe &&
             <div className="recipe-of-the-week">
                 <h2>Highlighted recipes</h2>
                 <div className="suggestions">
                     <div className="suggestion">
-                            {popularRecipe.map((recipe) => (
-                                <RecipeDetails key={recipe._id} recipe={recipe}/>
-                            )
-                            )}
+                            <table className="highlights">
+                                <tr className="highlight-headers">
+                                    <th>Most rated</th>
+                                    <th>Best rated</th>
+                                    <th>Most comments</th>
+                                    <th>Latest</th>
+                                </tr>
+                                <tr className='highlight-recipes'>
+                                {popularRecipe.map((recipe) => (
+                                    <td>
+                                    <RecipeDetails key={recipe._id} recipe={recipe}/>
+                                    </td>
+                                )
+                                )}
+                                </tr>
+                            </table>
                     </div>
                 </div>
             </div>
             }
+            <Footer />
         </div>
     )
 }
