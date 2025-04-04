@@ -7,7 +7,9 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
     const [recipes, setRecipes] = useState(null)
     const [filteredRecipes, setFilteredRecipes] = useState(null)
     const [status, setStatus] = useState(false)
+    const [popUp, setPopUp] = useState(false)
     const [filterStatus, setFilterStatus] = useState('')
+    const [selectedId, setSelectedId] = useState(null)
     
 
     // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
@@ -49,6 +51,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
 
             if (response.ok) {
                 console.log("Deleted: " + id)
+                setPopUp(false)
             }
         }
     } 
@@ -128,11 +131,23 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                     </form>
                     <div className="action-container">
                         <button className="edit-btn" onClick={(e) => handleChange(e, recipe._id)}><i className="fas fa-edit"></i> Edit status</button>
-                        <button className="del-btn" onClick={(e) => handleDelete(e, recipe._id)}><i className="fas fa-trash"></i> Delete recipe</button>
+                        <button className="del-btn" onClick={(e) => setPopUp(true) + setSelectedId(recipe._id)}><i className="fas fa-trash"></i> Delete recipe</button>
                     </div>
                 </div>
             ))}
             </div>
+            {popUp && 
+                <div className="pop-up-background">
+                    <div className="pop-up-message">
+                        <h3>Deleting recipe</h3>
+                        <p>Are you sure you would like to delete the recipe?</p>
+                        <div className="action-container">
+                            <button className='del-btn' onClick={(e) => handleDelete(e, selectedId)}>Yes, delete the recipe</button>
+                            <button onClick={(e) => setPopUp(false)}>No, keep the recipe</button>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     )
 }

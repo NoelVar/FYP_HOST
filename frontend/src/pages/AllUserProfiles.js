@@ -9,6 +9,8 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
     const [selectedStatus, setSelectedStatus] = useState(null)
     const [filteredUsers, setFilteredUsers] = useState(null)
     const [filterStatus, setFilterStatus] = useState('')
+    const [selectedId, setSelectedId] = useState(null)
+    const [popUp, setPopUp] = useState(false)
     
     // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
     useLayoutEffect(() => {
@@ -47,6 +49,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
 
                 if (response.ok) {
                     console.log(json)
+                    setPopUp(false)
                 }
             } catch (err) {
                 console.log(err)
@@ -131,12 +134,24 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                     :
                     <div className="action-container">
                         <button className="edit-btn" onClick={(e) => handleChange(e, user._id)}><i className="fas fa-edit"></i> Edit role</button>
-                        <button className="del-btn" onClick={(e) => handleDelete(e, user._id)}><i className="fas fa-trash"></i> Delete user</button>
+                        <button className="del-btn" onClick={(e) => setPopUp(true) + setSelectedId(user._id)}><i className="fas fa-trash"></i> Delete user</button>
                     </div>
                     }
                 </div>
             ))}
             </div>
+            {popUp && 
+                <div className="pop-up-background">
+                    <div className="pop-up-message">
+                        <h3>Deleting user</h3>
+                        <p>Are you sure you would like to delete this user?</p>
+                        <div className="action-container">
+                            <button className='del-btn' onClick={(e) => handleDelete(e, selectedId)}>Yes, delete the user</button>
+                            <button onClick={(e) => setPopUp(false)}>No, keep the user</button>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     )
 }

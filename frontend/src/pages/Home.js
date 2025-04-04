@@ -51,8 +51,11 @@ const Home = ({ setShowNavbar }) => {
                     to share their own recipes, create variations of others' recipes, and star discussions
                     related to recipes. These all aim to bring people closer to food, since it's a way of 
                     expressing culture, family tradition, and individuality, while also making an impact on the world
-                    around us.
+                    around us. <br></br>
+                    <b>Note for your journey: </b>Every recipe that contain the EdibleEducation logo 
+                    indicates that these recipes have variations, find them and EXPLORE them!
                 </p>
+                <img src='../ED2_LOGOV6.png' alt='Has variations'></img>
             </div>
             { popularRecipe &&
             <div className="recipe-of-the-week">

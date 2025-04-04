@@ -168,6 +168,7 @@ const getSingleUser = async (req, res) => {
             return res.status(404).json({ error: 'Couldn\'t find user.' })
         }
         const userInfo = {
+            _id: user._id,
             username: user.username,
             userEmail: user.email,
             role: user.role
