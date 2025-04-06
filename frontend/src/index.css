@@ -75,6 +75,56 @@ body {
   }
 }
 
+@keyframes disappearIn{
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(280px);
+  }
+}
+
+/* ALERT MESSAGE STYLING */
+.alert-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 50px;
+  padding: 10px;
+  position: fixed;
+  top: 100px;
+  left: 0;
+  font-weight: bold;
+  color: red;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  border-right: 5px solid red;
+  background-color: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  animation: from-left 1s, from-left 1s 3.2s reverse;
+}
+
+.alert-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 50px;
+  padding: 10px;
+  position: fixed;
+  top: 100px;
+  left: 0;
+  font-weight: bold;
+  color: green;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  border-right: 5px solid green;
+  background-color: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  animation: from-left 1s, from-left 1s 3.2s reverse;
+}
+
 /*NOTE: STYLING NAVIGATION ----------------------------------------------------------------------*/
 /* ADAPTED FROM: https://www.youtube.com/watch?v=zxkz-wPEYbE */
 /* STYLING OVERALL NAVIGATION BAR */
@@ -1709,6 +1759,7 @@ input[type="file"] {
   gap: 20px;
   align-items: center;
   justify-content: center;
+  animation: appear 1s ease;
 }
 
 /* STYLING USER PROFILE CARDS */
@@ -1726,7 +1777,7 @@ input[type="file"] {
   gap: 20px;
 }
 
-.single-user-info i {
+.single-user-info .fa-user {
   background-color: var(--main-color);
   border: 1px solid #A9551D;
   color: #A9551D;

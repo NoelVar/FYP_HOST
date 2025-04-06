@@ -1,20 +1,31 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { Link } from "react-router-dom";
+import { useRecipeContext } from "../hooks/useRecipeContext";
+import Loading from "../components/Loading";
 
 const ControllRecipes = ({ setShowNavbar, role }) => {
     const { user } = useAuthContext()
-    const [recipes, setRecipes] = useState(null)
+    const { recipes, dispatch } = useRecipeContext()
+    // const [recipes, setRecipes] = useState(null)
     const [filteredRecipes, setFilteredRecipes] = useState(null)
-    const [status, setStatus] = useState(false)
+    const [status, setStatus] = useState(null)
     const [popUp, setPopUp] = useState(false)
-    const [filterStatus, setFilterStatus] = useState('')
+    const [filterStatus, setFilterStatus] = useState(null)
     const [selectedId, setSelectedId] = useState(null)
+    const [message, setMessage] = useState(null)
+    const [error, setError] = useState(null)
+    const [isLoading, setLoading] = useState(true);
     
 
     // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
     useLayoutEffect(() => {
         setShowNavbar(true);
+    }, [])
+
+     // NOTE: ADDING TIME FOR LOADING
+     useEffect(() => {
+        setTimeout(() => setLoading(false), 1000)
     }, [])
 
     useEffect(() => {
@@ -23,13 +34,18 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
             const json = await response.json()
 
             if (response.ok) {
-                setRecipes(json)
-                setFilteredRecipes(json)
+                // setRecipes(json)
+                dispatch({type: 'SET_RECIPES', payload: json})
             }
         }
 
+        // const filteredRecipes = () => {
+        //     setFilteredRecipes(recipes)
+        // }
+
         if (role && (role === 'admin' || role === 'moderator')) {
             fetchRecipes()
+            // filteredRecipes()
         }
     }, [])
 
@@ -49,28 +65,44 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                 method: 'DELETE',
             });
 
+            const json = await response.json()
+
+            if (!response.ok) {
+                setError(json.error || "Could not delete recipe!")
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
+            }
+
             if (response.ok) {
-                console.log("Deleted: " + id)
+                console.log(json)
+                dispatch({type: "DELETE_RECIPE", payload: json})
+                setMessage("Recipe has been deleted successfully!")
+                setTimeout(() => {
+                    setMessage(null)
+                }, 4000)
+                setStatus(null)
                 setPopUp(false)
             }
         }
     } 
 
-    // NOTE: FILTER RECIPES -----------------------------------------------------------------------
-    const filterRecipes = (e) => {
-        e.preventDefault()
-        var filteredArray = []
-        recipes.map((recipe) => {
-            if (recipe.approvalStatus === filterStatus) {
-                filteredArray.push(recipe)
-            }
-        })
-        setFilteredRecipes(filteredArray)
-    }
+    // // NOTE: FILTER RECIPES -----------------------------------------------------------------------
+    // const filterRecipes = (e) => {
+    //     e.preventDefault()
+    //     var filteredArray = []
+    //     recipes.map((recipe) => {
+    //         if (recipe.approvalStatus === filterStatus) {
+    //             filteredArray.push(recipe)
+    //         }
+    //     })
+    //     setFilteredRecipes(filteredArray)
+    // }
     
     // NOTE: CLEARING FILTERS ---------------------------------------------------------------------
     const handleClear = () => {
-        setFilteredRecipes(recipes)
+        // setFilteredRecipes(recipes)
+        setFilterStatus(null)
     }
 
     // NOTE: HANDLING CHANGE IN STATUS ------------------------------------------------------------
@@ -86,9 +118,27 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                 body: JSON.stringify({status})
             })
 
-            if (response.ok) {
-                console.log(response.json())
+            const json = await response.json()
+
+            if (!response.ok) {
+                console.log(json)
+                setError(json.error || "Could not update status!")
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
             }
+
+            if (response.ok) {
+                console.log(json)
+                setMessage("Recipe Status Updated")
+                setTimeout(() => {
+                    setMessage(null)
+                }, 4000)
+                setStatus(null)
+                dispatch({type: "UPDATE_RECIPE", payload: json})
+            }
+
+
         } catch (err) {
             console.error(err)
         }
@@ -105,36 +155,71 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                     <option value='denied'>denied</option>
                 </select>
                 <div className="filter-action">
-                    <button className='filter-btn' onClick={filterRecipes}>Filter</button>
+                    {/* <button className='filter-btn' onClick={filterRecipes}>Filter</button> */}
                     <input type="reset" onClick={handleClear}></input>
                 </div>
             </form>
             <div className="all-recipes-container">
-            {filteredRecipes && filteredRecipes.map((recipe) => (
-                <div className="recipe-info-container">
-                    <Link to={'/recipes/' + recipe._id}>
-                        {recipe.image
-                            ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
-                            : <img src='ED2_LOGOV5.png' />
-                        }
-                        <h3 className='username'>{recipe.title}</h3>
-                    </Link>
-                    <p><b>Created at: </b>{new Date(recipe.createdAt).toDateString()}</p>
-                    <p><b>Status: </b><span className={recipe.approvalStatus === 'pending' ? 'status-style-pending' : recipe.approvalStatus === 'approved' ? 'status-style-approved' : 'status-style-denied'}>{recipe.approvalStatus}</span></p>
-                    <form>
-                        <select onChange={(e) => handleStatusChange(e)}>
-                            <option value="none" selected disabled hidden>Change status</option>
-                            <option value="denied">Denied</option>
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                        </select>
-                    </form>
-                    <div className="action-container">
-                        <button className="edit-btn" onClick={(e) => handleChange(e, recipe._id)}><i className="fas fa-edit"></i> Edit status</button>
-                        <button className="del-btn" onClick={(e) => setPopUp(true) + setSelectedId(recipe._id)}><i className="fas fa-trash"></i> Delete recipe</button>
-                    </div>
-                </div>
-            ))}
+            {isLoading === false 
+                ?
+                recipes && recipes.map((recipe) => {
+                    if (filterStatus && recipe.approvalStatus === filterStatus) {
+                        return (
+                            <div className="recipe-info-container">
+                                <Link to={'/recipes/' + recipe._id}>
+                                    {recipe.image
+                                        ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
+                                        : <img src='ED2_LOGOV5.png' />
+                                    }
+                                    <h3 className='username'>{recipe.title}</h3>
+                                </Link>
+                                <p><b>Created at: </b>{new Date(recipe.createdAt).toDateString()}</p>
+                                <p><b>Status: </b><span className={recipe.approvalStatus === 'pending' ? 'status-style-pending' : recipe.approvalStatus === 'approved' ? 'status-style-approved' : 'status-style-denied'}>{recipe.approvalStatus}</span></p>
+                                <form>
+                                    <select onChange={(e) => handleStatusChange(e)}>
+                                        <option value="none" selected disabled hidden>Change status</option>
+                                        <option value="denied">Denied</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="approved">Approved</option>
+                                    </select>
+                                </form>
+                                <div className="action-container">
+                                    <button className="edit-btn" onClick={(e) => handleChange(e, recipe._id)}><i className="fas fa-edit"></i> Edit status</button>
+                                    <button className="del-btn" onClick={(e) => setPopUp(true) + setSelectedId(recipe._id)}><i className="fas fa-trash"></i> Delete recipe</button>
+                                </div>
+                            </div>
+                        )
+                    } else if (!filterStatus) {
+                        return (
+                            <div className="recipe-info-container">
+                                <Link to={'/recipes/' + recipe._id}>
+                                    {recipe.image
+                                        ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
+                                        : <img src='ED2_LOGOV5.png' />
+                                    }
+                                    <h3 className='username'>{recipe.title}</h3>
+                                </Link>
+                                <p><b>Created at: </b>{new Date(recipe.createdAt).toDateString()}</p>
+                                <p><b>Status: </b><span className={recipe.approvalStatus === 'pending' ? 'status-style-pending' : recipe.approvalStatus === 'approved' ? 'status-style-approved' : 'status-style-denied'}>{recipe.approvalStatus}</span></p>
+                                <form>
+                                    <select onChange={(e) => handleStatusChange(e)}>
+                                        <option value="none" selected disabled hidden>Change status</option>
+                                        <option value="denied">Denied</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="approved">Approved</option>
+                                    </select>
+                                </form>
+                                <div className="action-container">
+                                    <button className="edit-btn" onClick={(e) => handleChange(e, recipe._id)}><i className="fas fa-edit"></i> Edit status</button>
+                                    <button className="del-btn" onClick={(e) => setPopUp(true) + setSelectedId(recipe._id)}><i className="fas fa-trash"></i> Delete recipe</button>
+                                </div>
+                            </div>
+                        )
+                    }
+                })
+                :
+                Array.from({length: 10 }, (_, i) => <Loading key={i}/>)
+            }
             </div>
             {popUp && 
                 <div className="pop-up-background">
@@ -147,6 +232,16 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                         </div>
                     </div>
                 </div>
+            }
+            {error &&
+                <div className="alert-error">
+                    <p>{error}</p>
+                </div>
+            }
+            {message &&
+                <div className="alert-message">
+                    <p>{message}</p>
+                </div>  
             }
         </div>
     )

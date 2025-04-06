@@ -155,7 +155,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                             </div>
                             <div className='single-recipe-info'>
                                 <h1>{recipe.title}</h1>
-                                <span className='poster'><b>Posted By:</b> {posted}</span>
+                                <span className='poster'><b>Posted By:</b> {posted || 'Anonymous Cook'}</span>
                                 <div className='avarage-rating-container'>
                                     <h4>Rating: </h4>
                                     <p>{avarageRating && avarageRating.toFixed(1)}</p>

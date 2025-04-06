@@ -213,6 +213,10 @@ const updateUser = async (req, res) => {
     const { id } = req.params
     const { role } = req.body
     
+    if (!role) {
+        return res.status(400).json({error: 'Role cannot be empty! Please select a role for the user!'})
+    }
+
     try {
         // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
         if (!mongoose.Types.ObjectId.isValid(id)) {

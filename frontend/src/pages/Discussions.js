@@ -133,8 +133,8 @@ const Discussions = ({ setShowNavbar }) => {
                             {recipe.comments.map((comment) => (  
                                 <div className="discussion-card" key={comment._id}>                                                             
                                     <div className="comment-header">
-                                        {/* DISPLAYING USERNAMES OR 'Loading...' IF THEY HAVE NOT LOADED COMPLETELY */}
-                                        <h3>{commentUsers[comment.user] || 'Loading...'}</h3> 
+                                        {/* DISPLAYING USERNAMES OR 'Anonymous' IF THEY HAVE NOT LOADED COMPLETELY */}
+                                        <h3>{commentUsers[comment.user] || 'Anonymous Cook'}</h3> 
                                         <i>{new Date(comment.timestamp).toDateString()}</i>
                                     </div>
                                     <p>{comment.content}</p>

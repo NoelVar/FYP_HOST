@@ -140,7 +140,11 @@ const deleteRecipe = async (req, res) => {
 const updateRecipe = async (req, res) => {
     const { id } = req.params
     const { status } = req.body
-    
+
+    if (!status) {
+        return res.status(400).json({error: 'Status cannot be empty. Please seclect a status.'})
+    }
+
     try {
         // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
         if (!mongoose.Types.ObjectId.isValid(id)) {
