@@ -15,6 +15,8 @@ import { useAuthContext } from './hooks/useAuthContext';
 import UserProfile from './pages/UserProfile';
 import AllUserProfiles from './pages/AllUserProfiles';
 import ControllRecipes from './pages/ControllRecipes';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 function App() {  
 
@@ -96,6 +98,14 @@ function App() {
               <Route
                 path='/manage-recipes'
                 element={<ControllRecipes setShowNavbar={setShowNavbar} role={currentUser.role} />}
+              />
+              <Route
+                path='/terms-and-conditions'
+                element={<TermsAndConditions setShowNavbar={setShowNavbar} />}
+              />
+              <Route
+                path='/privacy-policy'
+                element={<PrivacyPolicy setShowNavbar={setShowNavbar} />}
               />
               <Route 
                 path='/*'

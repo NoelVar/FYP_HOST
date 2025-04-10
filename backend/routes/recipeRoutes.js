@@ -8,6 +8,8 @@ const {
     updateRecipe,
     addComment,
     addRating,
+    deleteComment,
+    removeUserComment,
     popularRecipe
 } = require('../controllers/recipeController')
 const { upload } = require('../controllers/imageUpload')
@@ -40,6 +42,12 @@ router.patch('/:id', updateRecipe)
 
 // NOTE: ADDING COMMENT
 router.post('/:id/comments', addComment)
+
+// NOTE: DELETING COMMENT
+router.delete('/:id/comments', deleteComment)
+
+// NOTE: DELETING COMMENT
+router.delete('/:id/comments/moderate', removeUserComment)
 
 // NOTE: ADDING RATING
 router.post('/:id/rating', addRating)

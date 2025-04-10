@@ -186,6 +186,11 @@ const addComment = async (req, res) => {
         return res.status(400).json({ error: 'Field cannot be empty.' })
     }
 
+    // CHECKS IF CONTENT IS BETWEEN CHARACTER REQUIREMENT
+    if (content.length < 3 || content.length > 250) {
+        return res.status(400).json({ error: 'Please make sure your comment is between 3 and 250 characters!' })
+    }
+
     try {
         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
         if (email === '') {
@@ -209,15 +214,20 @@ const addComment = async (req, res) => {
         }
 
         // NOTE: ADDS A NEW COMMENT TO THE ALREADY ESTABLISHED ARRAY OF COMMENTS
-        recipe.comments.push({
+        const addedComment = recipe.comments.push({
             user,
             content,
             timestamp
         });
         await recipe.save();
 
+        // NOTE: CHECKS IF THE COMMENT HAS BEEN ADDED SUCCESSFULLY
+        if (!addedComment) {
+            return res.status(404).json({error: 'Couldn\'t add comment.'})
+        }
+
         // NOTE: CREATES COMMENT IF EVERYTHING IS OK
-        return res.status(201).json({ message: "Comment has been added!" })
+        return res.status(201).json({ message: "Comment has been added!", comment: recipe.comments[addedComment-1]})
     } catch(err) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
         return res.status(500).json({ message: err.message })
@@ -292,6 +302,151 @@ const addRating = async (req, res) => {
 
         // NOTE: ADDS RATING IF EVERYTHING IS OK
         return res.status(201).json({ message: "Rating has been added!" })
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ message: err.message })
+    }
+}
+
+// REMOVE RECIPE ----------------------------------------------------------------------------------
+const deleteComment = async (req, res) => {
+    const { commentID, email } = req.body;
+    const { id } = req.params;
+
+    // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({error: 'Invalid recipe ID.'})
+    }
+
+    // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+    if (!mongoose.Types.ObjectId.isValid(commentID)) {
+        return res.status(400).json({error: 'Invalid comment ID.'})
+    }
+
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (email === '') {
+            return res.status(400).json({ error: 'Email cannot be empty' })
+        }
+
+        // GETS USER FROM DB
+        const user = await userModel.findOne({ email })
+
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
+        // GETS RECIPE FROM DB
+        const recipe = await recipeModel.findById(id);
+        
+        // NOTE: CHECKS IF RECIPE EXISTS IN DB
+        if (!recipe) {
+            return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
+
+        var commentToDelete = null
+
+         // NOTE: FIND COMMENT AND REMOVES IT FROM COMMENTS OBJECT ARRAY
+         recipe.comments.map((comment) => {
+            if (comment._id.toString() === commentID.toString() && 
+                comment.user.toString() === user._id.toString()) {
+                    commentToDelete = comment
+            }
+        })
+
+        if (!commentToDelete) {
+            return res.status(404).json({error: "Selected comment cannot be found!"})
+        }
+
+        // REMOVING COMMENT
+        const removeComment = await recipeModel.findByIdAndUpdate(
+            id,
+            {
+                $pull: { "comments": {$in: [commentToDelete]} }
+            }
+        )
+
+        if (!removeComment) {
+            return res.status(404).json({error: "Comment cannot be deleted!"})
+        }
+
+        // NOTE: CREATES COMMENT IF EVERYTHING IS OK
+        return res.status(201).json({ message: "Your comment has been deleted!", comment: commentToDelete })
+    } catch(err) {
+        // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
+        return res.status(500).json({ message: err.message })
+    }
+}
+
+// REMOVE COMMENT BY MOD / ADMIN ------------------------------------------------------------------
+const removeUserComment = async (req, res) => {
+    const { commentID, email } = req.body;
+    const { id } = req.params;
+
+    // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({error: 'Invalid recipe ID.'})
+    }
+
+    // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+    if (!mongoose.Types.ObjectId.isValid(commentID)) {
+        return res.status(400).json({error: 'Invalid comment ID.'})
+    }
+
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (email === '') {
+            return res.status(400).json({ error: 'Email cannot be empty' })
+        }
+
+        // GETS USER FROM DB
+        const user = await userModel.findOne({ email })
+
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
+        if (!user.role === 'admin' || !user.role === 'moderator') {
+            return res.status(403).json({ error: 'No permission to access the requested resource ' })
+        }
+
+        // GETS RECIPE FROM DB
+        const recipe = await recipeModel.findById(id);
+        
+        // NOTE: CHECKS IF RECIPE EXISTS IN DB
+        if (!recipe) {
+            return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
+
+        var commentToDelete = null
+
+         // NOTE: FIND COMMENT AND REMOVES IT FROM COMMENTS OBJECT ARRAY
+         recipe.comments.map((comment) => {
+            if (comment._id.toString() === commentID.toString()) {
+                    commentToDelete = comment
+            }
+        })
+
+        if (!commentToDelete) {
+            return res.status(404).json({error: "Selected comment cannot be found!"})
+        }
+
+        // REMOVING COMMENT
+        const removeComment = await recipeModel.findByIdAndUpdate(
+            id,
+            {
+                $pull: { "comments": {$in: [commentToDelete]} }
+            }
+        )
+
+        if (!removeComment) {
+            return res.status(404).json({error: "Comment cannot be deleted!"})
+        }
+
+        // NOTE: CREATES COMMENT IF EVERYTHING IS OK
+        return res.status(201).json({ message: "The selected comment has been removed successfully!", comment: commentToDelete })
     } catch(err) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
         return res.status(500).json({ message: err.message })
@@ -384,6 +539,8 @@ module.exports = {
     updateRecipe,
     addComment,
     addRating,
+    deleteComment,
+    removeUserComment,
     popularRecipe
 }
 

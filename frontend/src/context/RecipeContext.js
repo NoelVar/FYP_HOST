@@ -9,17 +9,18 @@ export const recipesReducer = (state, action) => {
     switch (action.type) {
         // INITIALIZING RECIPES
         case 'SET_RECIPES': 
-            // THE RECIPE IS WHAT THE SERVER SENDS BACK
-            return { recipes: action.payload }
+            return { ...state, recipes: action.payload }
+        // ADDING RECIPES
+        case 'ADD_RECIPES':
+            return { ...state, recipes: [...state.recipes, action.payload] }
         // DELETING RECIPE ACTION
         case 'DELETE_RECIPE':
-            // Filter out the deleted recipe by comparing IDs
             return { 
+                ...state,
                 recipes: state.recipes.filter((recipe) => recipe._id !== action.payload._id)
             }
         // UPDATING RECIPE STATUS ACTION
         case 'UPDATE_RECIPE':
-            // Filter out the deleted recipe by comparing IDs
             var recipeArray = []
             state.recipes.filter((recipe) => {
                 if (recipe._id === action.payload._id) {
@@ -30,6 +31,18 @@ export const recipesReducer = (state, action) => {
                 } 
             })
             return {...state, recipes: recipeArray}
+        // SETTING COMMENTS
+        case 'SET_COMMENTS':
+            return { ...state, comments: action.payload }
+        // ADDING COMMENT
+        case 'ADD_COMMENT':
+            return { ...state, comments: [...state.comments, action.payload] }
+        // DELETING COMMENT
+        case 'DELETE_COMMENT':
+            return { 
+                ...state, 
+                comments: state.comments.filter((comment) => comment._id !== action.payload._id)
+            }
         default:
             // NO CHANGE RETURN ORIGINAL STATE
             return state
@@ -37,9 +50,10 @@ export const recipesReducer = (state, action) => {
 }
 
 // CUSTOM COMPONENT
-export const RecipeContextProvider = ({ children }) => { // CHILDREN REPRESENTS WHATEVER THE COMPONENT WRAPS
+export const RecipeContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(recipesReducer, {
-        recipes: null
+        recipes: null,
+        comments: null
     })
 
     // WRAPPING THE 'CHILDREN' (APP COMPONENT) IN THE "RecipeContext.Provider" COMPONENT
