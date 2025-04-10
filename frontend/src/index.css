@@ -1600,17 +1600,7 @@ input[type="file"] {
   gap: 20px;
   font-size: 1.1em;
   list-style: none; /*REMOVING DEFAULT NUMBERING*/
-}
-
-/* ADDING CUSTOM ORDERING */
-.basic-information ol li:before {
-  margin-right: 10px;
-  content: counter(i);
-  background: var(--secondary-color);
-  color: white;
-  text-align: center;
-  padding: 10px;
-  border-radius: 5px;
+  counter-reset: item;
 }
 
 /* STYLING LIST ITEMS */
@@ -1623,7 +1613,18 @@ input[type="file"] {
   display: flex;
   margin: 20px 0;
   align-items: center;
-  counter-increment: i;
+  counter-increment: item;
+}
+
+/* ADDING CUSTOM ORDERING */
+.basic-information ol li:before {
+  content: counter(item);
+  background: var(--secondary-color);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+  margin-right: 10px;
 }
 
 /* STYLING DELETE BUTTON */

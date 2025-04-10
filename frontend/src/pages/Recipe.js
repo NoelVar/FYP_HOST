@@ -48,9 +48,9 @@ const Recipe = ({ setShowNavbar, role }) => {
             // CHECKING IF RESPONSE IS OKAY
             if (response.ok) {
                 const recipeArray = []
-                // CHECKS ALL RECIPES IF THE RECIPES STATUS IS NOT DENIED
+                // CHECKS ALL RECIPES IF THE RECIPES STATUS IS NOT DENIED OR PENDING
                 for (var i = 0; i < json.length; i++) {
-                    if (json[i].approvalStatus !== 'denied' && json[i].variationOfRecipe.status === false) {
+                    if (json[i].approvalStatus === 'approved' && json[i].variationOfRecipe.status === false) {
                         recipeArray.push(json[i])
                     }
                     // ADDING ALL RECIPES THAT HAS A STATUS PENDING OR APPROVED

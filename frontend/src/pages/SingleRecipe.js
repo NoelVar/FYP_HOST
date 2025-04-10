@@ -21,11 +21,12 @@ const SingleRecipe = ({ setShowNavbar }) => {
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[0]
     const [rating, setRating] = useState(null)
     const [hover, setHover] = useState(null)
-    const [message, setMessage] = useState(null)
     const [posted, setPostedBy] = useState(null)
     const [avarageRating, setAvarageRating] = useState(null)
     const [roundedRating, setRoundedRating] = useState(null)
     const [variations, setVariations] = useState(null)
+    const [error, setError] = useState(null)
+    const [message, setMessage] = useState(null)
 
     useEffect(() => {
         var singleRecipe
@@ -111,26 +112,37 @@ const SingleRecipe = ({ setShowNavbar }) => {
     // NOTE: ADD RATING ---------------------------------------------------------------------------
     const handleRating = async () => {
         if (user) {
-            await axios.post(`${urlname}/rating`, {
-                value: rating,
-                email: user.email
-            }, { 
+            const response = await fetch(`${urlname}/rating`, {
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${user.token}`
-                } 
+                    'Authorization': `Bearer ${user.token}`,
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({value: rating, email: user.email}),
             })
-            .then((response) => {
-                // SETTING MESSAGE FOR USER
-                if(response.status === 200 || response.status === 201) {
-                    setMessage(response.data.message)
-                }
-            })
-            .catch((err) => {
-                setMessage(err)
-            })
+
+            const json = await response.json()
+
+            // SETTING MESSAGE FOR USER
+            if(response.status === 200 || response.status === 201) {
+                setMessage(json.message)
+                setTimeout(() => {
+                    setMessage(null)
+                }, 4000)
+            }
+
+            if (!response.ok) {
+                setError(json.error)
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
+            }
         } else {
             // TODO: ADD MESSAGE AND REDIRECT AFTER 2 Seconds
-            setMessage('You need to login to use this functionality!')
+            setError('You need to login to use this functionality!')
+            setTimeout(() => {
+                setError(null)
+            }, 4000)
             setTimeout(() => navigate('/login'), 3000)
         }
     }
@@ -290,24 +302,25 @@ const SingleRecipe = ({ setShowNavbar }) => {
                                 <p>Please log in to rate the recipes</p>
                             }
                             <br></br>
-                            {message && <p>{message}</p>}
                             {user && <button className='btn' onClick={handleRating}>Submit Rating</button>}
                         </div>
-                        {variations &&
+                        {variations && 
                             <div className='variation-box'>
                                 <h3>Variations of {recipe.title}</h3>
                                 <div className='variation-container'>
                                     {variations.map((variation) => {
                                         const url = '/recipes/' + variation._id
-                                        return (
-                                            <Link to={url} onClick={() => {window.location.href=url}} className='variation-card'>
-                                                {variation.image
-                                                    ? <img src={`http://localhost:4000/images/` + variation.image} alt='Recipe cover' />
-                                                    : <img src='../ED2_LOGOV5.png' alt='Coulnt find img' />
-                                                }
-                                                <p>{variation.title}</p>
-                                            </Link>
-                                        )
+                                        if (variation.approvalStatus === 'approved') {
+                                            return (
+                                                <Link to={url} onClick={() => {window.location.href=url}} className='variation-card'>
+                                                    {variation.image
+                                                        ? <img src={`http://localhost:4000/images/` + variation.image} alt='Recipe cover' />
+                                                        : <img src='../ED2_LOGOV5.png' alt='Coulnt find img' />
+                                                    }
+                                                    <p>{variation.title}</p>
+                                                </Link>
+                                            )
+                                        }
                                     })}
                                 </div>
                             </div>
@@ -320,6 +333,16 @@ const SingleRecipe = ({ setShowNavbar }) => {
                 :
                 <p>No recipe found</p>
                 
+            }
+            {error &&
+                <div className="alert-error">
+                    <p>{error}</p>
+                </div>
+            }
+            {message &&
+                <div className="alert-message">
+                    <p>{message}</p>
+                </div>  
             }
             <Footer />
         </div>

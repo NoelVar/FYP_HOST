@@ -60,6 +60,10 @@ const createRecipe = async (req, res) => {
     const ingredients = req.body.ingredients ? JSON.parse(req.body.ingredients) : [];
     const nutritionalInfo = req.body.nutrInfo ? JSON.parse(req.body.nutrInfo) : {};
     const variationOfRecipe = req.body.variation ? JSON.parse(req.body.variation) : {};
+
+    if (title === '' || prepTime === 0 || cookTime === 0 || servingSize === 0 || difficulty === '' || origin === '' || mealType === '') {
+        return res.status(400).json({ error: "One or more required field was left empty." })
+    }
     
     // NOTE: ATTEMPTS TO CREATE RECIPE IN DB
     try {
@@ -102,7 +106,7 @@ const createRecipe = async (req, res) => {
         }
 
         // NOTE: CREATES RECIPE IF EVERYTHING IS OK
-        return res.status(201).json(recipe);
+        return res.status(201).json({recipe, message: "Recipe has been created successfully!"});
     } catch (error) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
         console.log('Error occourd' + error)
@@ -238,6 +242,7 @@ const addComment = async (req, res) => {
 const addRating = async (req, res) => {
     const { value, email } = req.body;
     const { id } = req.params;
+    console.log(value, email)
 
     // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -279,7 +284,7 @@ const addRating = async (req, res) => {
 
         // IF THE USER ALREADY HAS RATED THE RECIPE THE RATING WILL NOT BE ADDED
         if (match) {
-            return res.json({ message: "You have already rated the recipe!" })
+            return res.status(400).json({ error: "You have already rated the recipe!" })
         }
 
         // CHECKING IF USER OWNS THE RECIPE
@@ -290,7 +295,7 @@ const addRating = async (req, res) => {
 
         // IF THE USER OWNS THE RECIPE THE RATING WILL NOT BE ADDED
         if (ownedRecipe) {
-            return res.json({ message: "You cannot rate your own recipe!" })
+            return res.status(400).json({ error: "You cannot rate your own recipe!" })
         }
 
         // NOTE: ADDS A NEW RATING TO THE ALREADY ESTABLISHED ARRAY OF RATING

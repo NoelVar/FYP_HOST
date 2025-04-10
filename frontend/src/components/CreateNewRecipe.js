@@ -43,7 +43,8 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         totalFat: 0,
         totalProtein: 0
     });
-    const [error, setError] = useState('')
+    const [error, setError] = useState(null)
+    const [message, setMessage] = useState(null)
     const { user } = useAuthContext()
     
     // NOTE: HANDLING OPTION CHANGE ---------------------------------------------------------------
@@ -66,12 +67,14 @@ const CreateNewRecipe = ({setShowNavbar}) => {
     const handleCookInst = (e) => {
         e.preventDefault()
         setCookInst([...cookInst, cookingStep])
+        setCookingStep('')
     }
 
     // NOTE: HANDLING COOKING INSTRUCTIONS --------------------------------------------------------
     const handlePrepInst = (e) => {
         e.preventDefault()
         setPrepInst([...prepInst, prepStep])
+        setPrepStep('')
     }
 
     // NOTE: HANDLING ADDED NUTRINFO --------------------------------------------------------------
@@ -84,6 +87,11 @@ const CreateNewRecipe = ({setShowNavbar}) => {
     const addIngredient = (e) => {
         e.preventDefault()
         setIngredients([singleIngredient, ...ingredients])
+        setSingleIngredient({
+            ingredient: '',
+            quantity: 0,
+            measurement: ''
+        })
     }
 
     // NOTE: REMOVING SINGLE INGREDIENT FROM LIST OF INGREDIENTS ----------------------------------
@@ -120,6 +128,9 @@ const CreateNewRecipe = ({setShowNavbar}) => {
             ingredients.length === 0
         ) {
             setError('Required fields cannot be empty!')
+            setTimeout(() => {
+                setError(null)
+            }, 4000)
         }
 
         const email = user.email
@@ -158,6 +169,13 @@ const CreateNewRecipe = ({setShowNavbar}) => {
             });
             const json = await response.json();
 
+            if (!response.ok) {
+                setError(json.message)
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
+            }
+
             if (response.ok) {
                 setTitle('')
                 setFile()
@@ -171,9 +189,18 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                 setCookInst([])
                 setSingleIngredient([])
                 setNutrInfo('')
-                navigate('/recipes')
+                setTimeout(() => {
+                    navigate('/recipes')
+                }, 2000)
+                setMessage(json.message)
+                setTimeout(() => {
+                    setMessage(null)
+                }, 4000)
             } else {
-                console.error('Server Error:', json.error)
+                setError(json.error)
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
             }
         }
     }
@@ -186,7 +213,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                 <div className='important-info'>
                     <i className='fas fa-circle-info'></i>
                     <p><b>Note:</b> All the fields that have a <span className="required">*</span> infront of them are required to fill in.</p>
-                    <p>By submitting a recipe you agree to our <Link to='terms-and-conditions'>Terms and conditions</Link></p>
+                    <p>By submitting a recipe you agree to our <Link to='/terms-and-conditions'>Terms and conditions</Link></p>
                 </div>
                 <div className="basic-information">
                     <h2>Basic information</h2>
@@ -224,6 +251,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                                 <label>Preparation Time: <span className="required">*</span> </label>
                                 <input 
                                     type="number"
+                                    min="0"
                                     value={prepTime}
                                     placeholder="Enter the amount of time it takes to prepare for the recipe..."
                                     onChange={(e) => setPrepTime(e.target.value)}
@@ -235,6 +263,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                                 <label>Cooking Time: <span className="required">*</span> </label>
                                 <input 
                                     type="number"
+                                    min="0"
                                     value={cookTime}
                                     placeholder="Enter the amount of time it takes to cook the recipe..."
                                     onChange={(e) => setCookTime(e.target.value)}
@@ -246,6 +275,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                                 <label>Serving Size: <span className="required">*</span> </label>
                                 <input 
                                     type="number"
+                                    min="0"
                                     value={serving}
                                     placeholder="Enter the number of people the recipe serves..."
                                     onChange={(e) => setServingSize(e.target.value)}
@@ -304,6 +334,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                             type="text" 
                             id="inputItem"
                             name="ingredient"
+                            value={singleIngredient.ingredient}
                             placeholder="Enter the ingredients needed for the recipe..."
                             onChange={handleNewIngredient}
                             required
@@ -311,8 +342,10 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                         <label>Quantity: </label>
                         <input 
                             type="number" 
+                            min="0"
                             id="inputItem"
                             name="quantity"
+                            value={singleIngredient.quantity}
                             placeholder="Enter the ingredient's quantity needed for the recipe..."
                             onChange={handleNewIngredient}
                         />
@@ -321,6 +354,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                             type="text"
                             id="inputItem"
                             name="measurement"
+                            value={singleIngredient.measurement}
                             placeholder="Enter the measurement's type"
                             onChange={handleNewIngredient}
                         />
@@ -353,15 +387,15 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                     </div>
                     <ol>
                         <div className="added-instuction-box">
-                            {Array.from({length: prepInst.length }, (_, i) =>
-                                <span className="added-instruction">
-                                    <li>{prepInst[i]}&nbsp;
-                                        <button className="delete-btn" onClick={(e) => removeInstruction(e, i, 'prep')}>
+                            {prepInst.map((step, index) => (
+                                <span className="added-instruction" key={index}>
+                                    <li key={index}>{step}&nbsp;
+                                        <button className="delete-btn" onClick={(e) => removeInstruction(e, index, 'prep')}>
                                             <i className="fas fa-trash"></i>
                                         </button>
                                     </li>
                                 </span>
-                            )}
+                            ))}
                         </div>
                     </ol>
                 </div>
@@ -400,37 +434,50 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                     <div className="add-ingredient">
                         <label>Total Kcal: </label>
                         <input 
-                            type="text" 
+                            type="number" 
+                            min="0"
                             name="totalKcal"
                             placeholder="Enter total calories value..."
                             onChange={handleNutrition}
                         />
                         <label>Total Carbs: </label>
                         <input 
-                            type="text" 
+                            type="number" 
+                            min="0"
                             name="totalCarbs"
                             placeholder="Enter total carb value..."
                             onChange={handleNutrition}
                         />
                         <label>Total Fat: </label>
                         <input 
-                            type="text" 
+                            type="number" 
+                            min="0"
                             name="totalFat"
                             placeholder="Enter total fat value..."
                             onChange={handleNutrition}
                         />
                         <label>Total Protein: </label>
                         <input 
-                            type="text" 
+                            type="number" 
+                            min="0"
                             name="totalProtein"
                             placeholder="Enter total protein value..."
                             onChange={handleNutrition}
                         />
                     </div>
                 </div>
-                {error && <div className="error-message">{error}</div>}
                 <button type="submit">Submit</button>
             </form>
+            {error &&
+                <div className="alert-error">
+                    <p>{error}</p>
+                </div>
+            }
+            {message &&
+                <div className="alert-message">
+                    <p>{message}</p>
+                </div>  
+            }
         </div>
     )
 }

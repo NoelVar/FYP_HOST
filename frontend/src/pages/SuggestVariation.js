@@ -34,6 +34,8 @@ const SuggestVariation = ({ setShowNavbar }) => {
     const params = window.location.href
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[1]
     const [changed, setChanged] = useState(false)
+    const [error, setError] = useState(null)
+    const [message, setMessage] = useState(null)
     const { user } = useAuthContext()
 
     useEffect(() => {
@@ -69,16 +71,28 @@ const SuggestVariation = ({ setShowNavbar }) => {
         if (type === 'prep') {
             setPrepInstructions(prepInst.filter((inst, i) => { 
                 setChanged(true)
+                setMessage("Item removed successfully!")
+                setTimeout(() => {
+                    setMessage(null)
+                }, 4000)
                 return i !== index
             }))
         } else if (type === 'cook') {
             setCookInstructions(cookInst.filter((inst, i) => { 
                 setChanged(true)
+                setMessage("Item removed successfully!")
+                setTimeout(() => {
+                    setMessage(null)
+                }, 4000)
                 return i !== index
             }))
         } else if (type === 'ingredient') {
             setIngredients(ingredients.filter((ingredient, i) => {
                 setChanged(true)
+                setMessage("Item removed successfully!")
+                setTimeout(() => {
+                    setMessage(null)
+                }, 4000)
                 return i !== index
             }))
         }
@@ -95,9 +109,19 @@ const SuggestVariation = ({ setShowNavbar }) => {
         e.preventDefault()
         if (type === 'prep') {
             prepInst.push(newPrepInst)
+            setNewPrepInst('')
+            setMessage("Item added successfully!")
+            setTimeout(() => {
+                setMessage(null)
+            }, 4000)
             setChanged(true)
         } else if (type === 'cook') {
             cookInst.push(newCookInst)
+            setNewCookInst('')
+            setMessage("Item added successfully!")
+            setTimeout(() => {
+                setMessage(null)
+            }, 4000)
             setChanged(true)
         }
     }
@@ -120,6 +144,10 @@ const SuggestVariation = ({ setShowNavbar }) => {
     const addIngredient = (e) => {
         e.preventDefault()
         setIngredients([singleIngredient, ...ingredients])
+        setMessage("Ingredient has been added!")
+        setTimeout(() => {
+            setMessage(null)
+        }, 4000)
     }
 
     // NOTE: FUNCTION TO HANDLE THE SUBMITION ----------------------------------------------------
@@ -144,8 +172,12 @@ const SuggestVariation = ({ setShowNavbar }) => {
 
             // NOTE: CHECKING IF USER ENTERED ANY VALUES
             // IF THE USER DID, IT WILL BE SENT BACK INSTEAD OF THE ORIGINAL DATA
-            if (title !== '') {
-                change = true
+            if (title === '') {
+                setError("Title extention must be added!")
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
+                return
             }
 
             if (serving !== 0) {
@@ -228,14 +260,28 @@ const SuggestVariation = ({ setShowNavbar }) => {
                 });
                 const json = await response.json();
 
-                if (response.ok) {
-                    navigate('/recipes')
-                } else {
-                    console.error('Server Error:', json.error)
+                if (!response.ok) {
+                    setError(json.error)
+                    setTimeout(() => {
+                        setError(null)
+                    }, 4000)
                 }
+
+                if (response.ok) {
+                    setMessage(json.message)
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 4000)
+                    setTimeout(() => {
+                        navigate('/recipes')
+                    }, 2000)
+                }
+
             } else {
-                console.log(change)
-                console.log("Atleast one change needs to be made")
+                setError("Atleast one change needs to be made")
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
             }
         }
     }
@@ -279,6 +325,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                         </p>
                                         <input 
                                             type='number'
+                                            min="0"
                                             placeholder='Change prep time...'
                                             value={prepTime}
                                             onChange={(e) => setPrepTime(e.target.value)}
@@ -304,6 +351,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                         </p>
                                         <input 
                                             type='number'
+                                            min="0"
                                             placeholder='Change serving size...'
                                             value={serving}
                                             onChange={(e) => setServing(e.target.value)}
@@ -367,6 +415,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
 
                                     <input 
                                         type="number" 
+                                        min="0"
                                         id="inputItem"
                                         name="quantity"
                                         placeholder="Enter the quantity..."
@@ -422,6 +471,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                     <p>{recipe.nutritionalInfo.totalKcal}g</p>  
                                     <input 
                                         type='number'
+                                        min="0"
                                         name='totalKcal'
                                         placeholder='Add new total kcal...'
                                         onChange={handleNutrition}
@@ -436,6 +486,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                     <p>{recipe.nutritionalInfo.totalCarbs}g</p>  
                                     <input 
                                         type='number'
+                                        min="0"
                                         name='totalCarbs'
                                         placeholder='Add new total carbs...'
                                         onChange={handleNutrition}
@@ -450,6 +501,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                     <p>{recipe.nutritionalInfo.totalFat}g</p> 
                                     <input 
                                         type='number'
+                                        min="0"
                                         name='totalFat'
                                         placeholder='Add new total fats...'
                                         onChange={handleNutrition}
@@ -464,6 +516,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                     <p>{recipe.nutritionalInfo.totalProtein}g</p> 
                                     <input 
                                         type='number'
+                                        min="0"
                                         name='totalProtein'
                                         placeholder='Add new total protein...'
                                         onChange={handleNutrition}
@@ -483,6 +536,16 @@ const SuggestVariation = ({ setShowNavbar }) => {
             :
             <p>No recipe found</p>
             
+        }
+        {error &&
+            <div className="alert-error">
+                <p>{error}</p>
+            </div>
+        }
+        {message &&
+            <div className="alert-message">
+                <p>{message}</p>
+            </div>  
         }
     </div>
     )

@@ -36,9 +36,9 @@ const RecipeDetails = ({ recipe, role}) => {
             // CHECKING IF RESPONSE IS OKAY
             if (response.ok) {
                 const recipeArray = []
-                // CHECKS ALL RECIPES IF THE RECIPES STATUS IS NOT DENIED
+                // CHECKS ALL RECIPES IF THE RECIPES STATUS IS NOT DENIED OR PENDING
                 for (var i = 0; i < json.length; i++) {
-                    if (recipe && json[i].approvalStatus !== 'denied' && json[i].variationOfRecipe.recipe === recipe._id) {
+                    if (recipe && json[i].approvalStatus === 'approved' && json[i].variationOfRecipe.recipe === recipe._id) {
                         recipeArray.push(json[i])
                     }
                 }

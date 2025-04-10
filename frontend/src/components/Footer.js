@@ -7,7 +7,7 @@ const Footer = () => {
                 <div className="section-1">
                     <h4>Get in touch</h4>
                     <p><i class="fa-solid fa-envelope"></i>edibleeducation.contact@gmail.com</p>
-                    <p><i class="fa-brands fa-linkedin"></i><Link to='https://linkedin.com/in/noel-varga'>linkedin.com/in/noel-varga</Link></p>
+                    <p><i class="fa-brands fa-linkedin"></i><Link to='https://linkedin.com/in/noel-varga' target="_blank" rel="noopener noreferrer">linkedin.com/in/noel-varga</Link></p>
                 </div>
                 <div className="section-2">
                     <h4>About EdibleEducation</h4>
