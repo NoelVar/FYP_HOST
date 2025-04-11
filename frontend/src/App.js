@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import PageNotFound from './pages/PageNotFound';
 import Recipe from './pages/Recipe';
-import CreateNewRecipe from './components/CreateNewRecipe';
+import CreateNewRecipe from './pages/CreateNewRecipe';
 import NavBar from './components/NavBar';
 import { useEffect, useState } from 'react';
 import SingleRecipe from './pages/SingleRecipe';
@@ -17,6 +17,7 @@ import AllUserProfiles from './pages/AllUserProfiles';
 import ControllRecipes from './pages/ControllRecipes';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import VerifyAccount from './components/VerifyAccount';
 
 function App() {  
 
@@ -43,76 +44,150 @@ function App() {
     if (user) {
         fetchUser()
     }
-  }, [user])
+  }, [user, currentUser])
 
   // NOTE: RETURNING COMPONENTS AND PAGES
   return (
     <div>
     {currentUser ?
       // NOTE: ROUTE HANDLING WHEN USER IS LOGGED IN ----------------------------------------------
-      <div className="app-container">
+      currentUser.status === 'verified'
+        ?
+        <div className="app-container">
+            {showNavbar && <NavBar role={currentUser.role}/>}
+            <Routes>
+                <Route
+                  path='/'
+                  element={<Home setShowNavbar={setShowNavbar}/>}
+                />
+                <Route 
+                  path='/recipes'
+                  element={<Recipe setShowNavbar={setShowNavbar} role={currentUser.role}/>}
+                />
+                {/* ADDING VALIDATION TO ROUTE AND REDIRECTING IF USER ISNT LOGGED IN */}
+                <Route
+                  path='/newrecipe'
+                  element={<CreateNewRecipe setShowNavbar={setShowNavbar}/>}
+                />
+                <Route
+                  path='recipes/:id'
+                  element={<SingleRecipe setShowNavbar={setShowNavbar}/>}
+                />
+                <Route
+                  path='recipes/:id/discussion'
+                  element={<Discussions setShowNavbar={setShowNavbar} role={currentUser.role}/>}
+                />
+                {/* ADDING VALIDATION TO ROUTE AND REDIRECTING IF USER ISNT LOGGED IN */}
+                <Route
+                  path='recipes/:id/suggest-variation'
+                  element={<SuggestVariation setShowNavbar={setShowNavbar}/>}
+                />
+                <Route 
+                  path='/login'
+                  element={<Login setShowNavbar={setShowNavbar}/>}
+                />
+                <Route 
+                  path='/signup'
+                  element={<Register setShowNavbar={setShowNavbar}/>}
+                />
+                <Route 
+                  path='/all-users'
+                  element={<AllUserProfiles setShowNavbar={setShowNavbar} role={currentUser.role}/>}
+                />
+                <Route
+                  path='/my-profile'
+                  element={<UserProfile setShowNavbar={setShowNavbar}/>}
+                />
+                <Route
+                  path='/manage-recipes'
+                  element={<ControllRecipes setShowNavbar={setShowNavbar} role={currentUser.role} />}
+                />
+                <Route
+                  path='/terms-and-conditions'
+                  element={<TermsAndConditions setShowNavbar={setShowNavbar} />}
+                />
+                <Route
+                  path='/privacy-policy'
+                  element={<PrivacyPolicy setShowNavbar={setShowNavbar} />}
+                />
+                <Route
+                  path='/verify-account'
+                  element={<VerifyAccount setShowNavbar={setShowNavbar} />}
+                />
+                <Route 
+                  path='/*'
+                  element={<PageNotFound setShowNavbar={setShowNavbar}/>}
+                />
+            </Routes>
+        </div>
+        :
+        <div className="app-container">
           {showNavbar && <NavBar role={currentUser.role}/>}
           <Routes>
-              <Route
-                path='/'
-                element={<Home setShowNavbar={setShowNavbar}/>}
-              />
-              <Route 
-                path='/recipes'
-                element={<Recipe setShowNavbar={setShowNavbar} role={currentUser.role}/>}
-              />
-              {/* ADDING VALIDATION TO ROUTE AND REDIRECTING IF USER ISNT LOGGED IN */}
-              <Route
-                path='/newrecipe'
-                element={<CreateNewRecipe setShowNavbar={setShowNavbar}/>}
-              />
-              <Route
-                path='recipes/:id'
-                element={<SingleRecipe setShowNavbar={setShowNavbar}/>}
-              />
-              <Route
-                path='recipes/:id/discussion'
-                element={<Discussions setShowNavbar={setShowNavbar} role={currentUser.role}/>}
-              />
-              {/* ADDING VALIDATION TO ROUTE AND REDIRECTING IF USER ISNT LOGGED IN */}
-              <Route
-                path='recipes/:id/suggest-variation'
-                element={<SuggestVariation setShowNavbar={setShowNavbar}/>}
-              />
-              <Route 
-                path='/login'
-                element={<Login setShowNavbar={setShowNavbar}/>}
-              />
-              <Route 
-                path='/signup'
-                element={<Register setShowNavbar={setShowNavbar}/>}
-              />
-              <Route 
-                path='/all-users'
-                element={<AllUserProfiles setShowNavbar={setShowNavbar} role={currentUser.role}/>}
-              />
-              <Route
-                path='/my-profile'
-                element={<UserProfile setShowNavbar={setShowNavbar}/>}
-              />
-              <Route
-                path='/manage-recipes'
-                element={<ControllRecipes setShowNavbar={setShowNavbar} role={currentUser.role} />}
-              />
-              <Route
-                path='/terms-and-conditions'
-                element={<TermsAndConditions setShowNavbar={setShowNavbar} />}
-              />
-              <Route
-                path='/privacy-policy'
-                element={<PrivacyPolicy setShowNavbar={setShowNavbar} />}
-              />
-              <Route 
-                path='/*'
-                element={<PageNotFound setShowNavbar={setShowNavbar}/>}
-              />
+            <Route
+              path='/'
+              element={<Home setShowNavbar={setShowNavbar}/>}
+            />
+            <Route 
+              path='/recipes'
+              element={<Recipe setShowNavbar={setShowNavbar} role={currentUser.role}/>}
+            />
+            {/* ADDING VALIDATION TO ROUTE AND REDIRECTING IF USER ISNT LOGGED IN */}
+            <Route
+              path='/newrecipe'
+              element={<Navigate to={'/verify-account'}/> }
+            />
+            <Route
+              path='recipes/:id'
+              element={<SingleRecipe setShowNavbar={setShowNavbar}/>}
+            />
+            <Route
+              path='recipes/:id/discussion'
+              element={<Navigate to={'/verify-account'}/> }
+            />
+            {/* ADDING VALIDATION TO ROUTE AND REDIRECTING IF USER ISNT LOGGED IN */}
+            <Route
+              path='recipes/:id/suggest-variation'
+              element={<Navigate to={'/verify-account'}/> }
+            />
+            <Route 
+              path='/login'
+              element={<Login setShowNavbar={setShowNavbar}/>}
+            />
+            <Route 
+              path='/signup'
+              element={<Register setShowNavbar={setShowNavbar}/>}
+            />
+            <Route 
+              path='/all-users'
+              element={<Navigate to={'/verify-account'}/> }
+            />
+            <Route
+              path='/my-profile'
+              element={<UserProfile setShowNavbar={setShowNavbar}/>}
+            />
+            <Route
+              path='/manage-recipes'
+              element={<Navigate to={'/verify-account'}/> }
+            />
+            <Route
+              path='/terms-and-conditions'
+              element={<TermsAndConditions setShowNavbar={setShowNavbar} />}
+            />
+            <Route
+              path='/privacy-policy'
+              element={<PrivacyPolicy setShowNavbar={setShowNavbar} />}
+            />
+            <Route
+              path='/verify-account'
+              element={<VerifyAccount setShowNavbar={setShowNavbar} />}
+            />
+            <Route 
+              path='/*'
+              element={<PageNotFound setShowNavbar={setShowNavbar}/>}
+            />
           </Routes>
-      </div>
+        </div>
     : 
     // NOTE: ROUTE HANDLING WHEN USER IS NOT LOGGED IN --------------------------------------------
       <div className="app-container">
@@ -171,6 +246,10 @@ function App() {
               <Route
                 path='/privacy-policy'
                 element={<PrivacyPolicy setShowNavbar={setShowNavbar} />}
+              />
+              <Route
+                path='/verify-account'
+                element={<VerifyAccount setShowNavbar={setShowNavbar} />}
               />
               <Route 
                 path='/*'

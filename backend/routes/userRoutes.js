@@ -3,6 +3,7 @@ const express = require('express')
 const {
     loginUser,
     registerUser,
+    verifyEmail,
     getAllUsers,
     getSingleUser,
     getUserById,
@@ -18,6 +19,9 @@ router.post('/login', loginUser)
 
 // NOTE: REGISTER USER
 router.post('/register', registerUser)
+
+// NOTE: REGISTER USER
+router.post('/verify', verifyEmail)
 
 // NOTE: GET ALL USERS
 router.get('/all-users', getAllUsers)

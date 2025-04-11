@@ -152,6 +152,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                             <h3 className='username'>{user.username}</h3>
                             <p><b>Email: </b>{user.email}</p>
                             <p><b>Role: </b><span className={user.role === 'user' ? 'role-style-user' : user.role === 'moderator' ? 'role-style-moderator': 'role-style-admin'}>{user.role}</span></p>
+                            <p><b>Status: </b><span style={{ color: user.status === 'verified' ? 'green' : 'red' }}>{user.status}</span></p>
                             <p><b>Account created at: </b>{new Date(user.createdAt).toDateString()}</p>
                             {user.role === 'admin' 
                                 ?
@@ -190,6 +191,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                             <h3 className='username'>{user.username}</h3>
                             <p><b>Email: </b>{user.email}</p>
                             <p><b>Role: </b><span className={user.role === 'user' ? 'role-style-user' : user.role === 'moderator' ? 'role-style-moderator': 'role-style-admin'}>{user.role}</span></p>
+                            <p><b>Status: </b><span style={{ color: user.status === 'verified' ? 'green' : 'red' }}>{user.status}</span></p>
                             <p><b>Account created at: </b>{new Date(user.createdAt).toDateString()}</p>
                             {user.role === 'admin' 
                                 ?

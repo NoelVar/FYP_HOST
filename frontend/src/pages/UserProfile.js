@@ -148,6 +148,7 @@ const UserProfile = ({ setShowNavbar }) => {
                     <p className="username">{singleUser.username}</p>
                     <p><b>Email: </b>{singleUser.userEmail}</p>
                     <p><b>Role: </b>{singleUser.role}</p>
+                    <p><b>Status: </b><span className={singleUser.status === 'verified' ? 'role-style-user' : 'role-style-admin'}>{singleUser.status}</span></p>
                     <div className="action-container">
                     {singleUser.role === 'admin'
                         ?

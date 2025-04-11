@@ -51,7 +51,7 @@ const Register = ({setShowNavbar}) => {
                 setIsLoading(false)
                 setRegistered(true)
                 setError(null)
-                setTimeout(() => navigate('/'), 2000)
+                setTimeout(() => navigate('/verify-account'), 2000)
             }
         } catch (error) {
             setError(error)
@@ -100,7 +100,7 @@ const Register = ({setShowNavbar}) => {
                         />
                     </div>
                     {error && <div className="error-message">{error}</div>}
-                    {registered && <div className="success-message">You are now registered! Redirecting to Home!</div>}
+                    {registered && <div className="success-message">You are now registered! Redirecting to verify your email!</div>}
                     <button 
                         disabled={isLoading}
                         type="submit"

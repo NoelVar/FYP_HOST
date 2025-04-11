@@ -2,6 +2,7 @@
 const recipeModel = require('../models/recipeModel.js')
 const mongoose = require('mongoose')
 const userModel = require('../models/userModel.js')
+const { sendEmail } = require('../Utilities/SendingEmail.js')
 
 // GET ALL RECIPES --------------------------------------------------------------------------------
 const getAllRecipes = async (req, res) => {
@@ -105,6 +106,37 @@ const createRecipe = async (req, res) => {
             return res.status(409).json({ error: 'The request could not be completed due to a conflict with the current state of the resource.' })
         }
 
+        const subject = 'You Have Successfully Created a Recipe !✅'
+        const content = `
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                </div>
+                
+                <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Hello ${user.username}!</h1>
+                
+                <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        You have successfully created a new recipe! ⭐
+                    </p>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        The created recipe needs to go through a validation process, which once is done it will be available on our platform!
+                    </p>
+                    
+                    <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                        If you have any questions, feel free to reach out to our support team.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                    <p>© 2025 EdibleEducation. All rights reserved.</p>
+                </div>
+            </div>
+        `
+
+        sendEmail(user.email, subject, content)
+
         // NOTE: CREATES RECIPE IF EVERYTHING IS OK
         return res.status(201).json({recipe, message: "Recipe has been created successfully!"});
     } catch (error) {
@@ -130,6 +162,41 @@ const deleteRecipe = async (req, res) => {
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
         if (!recipe) {
             return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
+
+        const user = await userModel.findById(recipe.postedBy)
+
+        if (user) {
+            const subject = 'Your Recipe has been Deleted!❌'
+            const content = `
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                    </div>
+                    
+                    <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Dear ${user.username}!</h1>
+                    
+                    <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                            Your recipe has been deleted!
+                        </p>
+                        
+                        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                            The deletion of the recipe could be due to violating our Terms & Conditions, or you choose to delete it yourself.
+                        </p>
+                        
+                        <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                            If this change has not been done by you or you feel like you have not violated our T&Cs please contact our support team.
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                        <p>© 2025 EdibleEducation. All rights reserved.</p>
+                    </div>
+                </div>
+            `
+
+            sendEmail(user.email, subject, content)
         }
         
         // NOTE: DELETES RECIPE IF STATUS IS OK
@@ -164,6 +231,50 @@ const updateRecipe = async (req, res) => {
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
         if (!recipe) {
             return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
+
+        const user = await userModel.findById(recipe.postedBy)
+
+        if (user) {
+            const subject = 'Your Recipe Status has been Updated!'
+            const content = `
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                    </div>
+                    
+                    <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Dear ${user.username}!</h1>
+                    
+                    <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                            Your recipe status has been updated to <b>${status}<b>!
+                        </p>
+                        
+                        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                            This change affects the visibility of your posted recipe, for other users on the platform.
+                        </p>
+
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="http://localhost:3000/login" 
+                            style="display: inline-block; padding: 12px 30px; background-color: #ff7800; color: white; 
+                                    text-decoration: none; border-radius: 5px; font-weight: bold; 
+                                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                Check out my recipe here
+                            </a>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                            If you have any questions please contact our support team.
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                        <p>© 2025 EdibleEducation. All rights reserved.</p>
+                    </div>
+                </div>
+            `
+
+            sendEmail(user.email, subject, content)
         }
 
         // NOTE: UPDATES RECIPE IF STATUS IS OK
@@ -230,6 +341,47 @@ const addComment = async (req, res) => {
             return res.status(404).json({error: 'Couldn\'t add comment.'})
         }
 
+        const subject = 'Your Comment has been added!💬'
+        const content = `
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                </div>
+                
+                <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Dear ${user.username}!</h1>
+                
+                <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        You have successfully posted a comment on the platform!
+                    </p>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        The comment you posted: <br>
+                        <i>${content}</i>
+                    </p>
+
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="http://localhost:3000/login" 
+                        style="display: inline-block; padding: 12px 30px; background-color: #ff7800; color: white; 
+                                text-decoration: none; border-radius: 5px; font-weight: bold; 
+                                box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            Go to discussions
+                        </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                        If you have any questions please contact our support team.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                    <p>© 2025 EdibleEducation. All rights reserved.</p>
+                </div>
+            </div>
+        `
+
+        sendEmail(email, subject, content)
+
         // NOTE: CREATES COMMENT IF EVERYTHING IS OK
         return res.status(201).json({ message: "Comment has been added!", comment: recipe.comments[addedComment-1]})
     } catch(err) {
@@ -266,6 +418,10 @@ const addRating = async (req, res) => {
         // NOTE: CHECKS IF USER EXISTS IN DB
         if (!user) {
             return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
+        if (user.verification.status !== 'verified') {
+            return res.status(404).json({ error: 'You cannot rate recipes until you verify your account.' })
         }
 
         const recipe = await recipeModel.findById(id);

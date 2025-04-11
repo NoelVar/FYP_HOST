@@ -357,7 +357,6 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                             value={singleIngredient.ingredient}
                             placeholder="Enter the ingredients needed for the recipe..."
                             onChange={handleNewIngredient}
-                            required
                         />
                         <label>Quantity: </label>
                         <input 
@@ -401,7 +400,6 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                             value={prepStep}
                             placeholder="Enter the preparation instructions step by step..."
                             onChange={(e) => setPrepStep(e.target.value)}
-                            required
                         />
                         <button onClick={handlePrepInst} className="instruction-btn">Add step</button>
                     </div>
@@ -429,7 +427,6 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                             value={cookingStep}
                             placeholder="Enter the cooking instructions step by step..."
                             onChange={(e) => setCookingStep(e.target.value)}
-                            required
                         />
                         <button onClick={handleCookInst} className="instruction-btn">Add step</button>
                     </div>

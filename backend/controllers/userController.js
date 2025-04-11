@@ -14,6 +14,11 @@ const createToken = (_id) => {
     return jwt.sign({ _id: _id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
 }
 
+// CREATE VERIFICATION CODE
+const verificationCode = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 // ADAPTED FROM: https://mailtrap.io/blog/nodejs-email-validation/
 // NOTE: FOR EMAIL VALIDATION USING REGULAR EXPRESSION (RegEx)
 /*
@@ -43,8 +48,15 @@ const registerUser = async (req, res) => {
 
     const { username, email, password, confirmPassword } = req.body;
     const role = 'user';
+    const status = 'unconfirmed';
+    const veriCode = verificationCode()
 
-// ------------------------- NOTE: VALIDATION -------------------------
+    const verification = {
+        status: status,
+        code: veriCode
+    }
+
+    // ------------------------- NOTE: VALIDATION -------------------------
     // NOTE: CHECKS IF USERNAME IS EMPTY
     if (username === '' || password === '' || confirmPassword === '') {
         return res.status(400).json({ error: 'Field cannot be empty.' })
@@ -87,7 +99,7 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(password, salt)
 
-        const user = await userModel.create({username, email, password: hash, role})
+        const user = await userModel.create({username, email, password: hash, role, verification})
 
         if(!user) {
             // NOTE: RETURNS ERROR IF COULDN'T CREATE USER
@@ -97,8 +109,44 @@ const registerUser = async (req, res) => {
         // CREATING TOKEN
         const token = createToken(user._id)
 
-        const subject = 'Successful Registration for EdibleEducation!'
-        const content = `<h1>Hello ${username},</h1><p>Thank you for joining EdibleEducation!</p><p>We are EGGcited to have you here! Explore recipes from all around the world and connect with others through discussions!</p><br><a href='http://localhost:3000/login'>Login</a>`
+        const subject = 'Welcome to EdibleEducation!🍓'
+        const content = `
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                </div>
+                
+                <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Hello ${username}!</h1>
+                
+                <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        Thank you for joining <b>EdibleEducation</b>! <br> We are EGGcited to have you here! 🥚
+                    </p>
+
+                    <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid black; text-align: center;">
+                        <h2>Your code to verify your email address:</h2>
+                        <p>${veriCode}</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="http://localhost:3000/login" 
+                           style="display: inline-block; padding: 12px 30px; background-color: #ff7800; color: white; 
+                                  text-decoration: none; border-radius: 5px; font-weight: bold; 
+                                  box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            Verify Account
+                        </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                        If you have any questions, feel free to reach out to our support team.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                    <p>© 2025 EdibleEducation. All rights reserved.</p>
+                </div>
+            </div>
+        `
 
         sendEmail(email, subject, content)
 
@@ -148,6 +196,93 @@ const loginUser = async (req, res) => {
     }
 }
 
+// VERIFY EMAIL ADDRESS ---------------------------------------------------------------------------
+const verifyEmail = async (req, res) => {
+    const { email, veriCode } = req.body;
+
+    if (veriCode === '') {
+        return res.status(400).json({ error: 'Please provide a verification code!' })
+    }
+
+    try {
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (email === '') {
+            return res.status(400).json({ error: 'Email cannot be empty' })
+        }
+
+        const user = await userModel.findOne({ email })
+        
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
+        if (veriCode !== user.verification.code) {
+            return res.status(400).json({ error: 'Invalid verification code.' })
+        }
+
+        const updatedUser = await userModel.findOneAndUpdate(
+            {email: email},
+            {verification: {
+                status: 'verified',
+                veriCode: ''
+            }},
+            {new: true}
+        )
+
+        if (!updatedUser) {
+            return res.status(400).json({error: 'Couldn\'t verify user.'})
+        }
+
+        const subject = 'Your Account has been Verified!🍳'
+        const content = `
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                </div>
+                
+                <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Hello ${user.username}!</h1>
+                
+                <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        Im happy to inform you that your account has been verified!
+                    </p>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        Get ready to explore delicious recipes from around the world and connect with fellow food enthusiasts through our vibrant community discussions!
+                    </p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="http://localhost:3000/login" 
+                           style="display: inline-block; padding: 12px 30px; background-color: #ff7800; color: white; 
+                                  text-decoration: none; border-radius: 5px; font-weight: bold; 
+                                  box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            Start Your Culinary Journey
+                        </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                        If you have any questions, feel free to reach out to our support team.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                    <p>© 2025 EdibleEducation. All rights reserved.</p>
+                </div>
+            </div>
+        `
+
+        sendEmail(user.email, subject, content)
+
+        // NOTE: UPDATES USER IF STATUS IS OK
+        return res.status(200).json({updatedUser, message: "Your account has been verified!"})
+
+    } catch (err) {
+        return res.status(500).json({ error: err.message })
+    }
+
+}
+
 // GET ALL USERS ----------------------------------------------------------------------------------
 const getAllUsers = async (req, res) => {
     // NOTE: FETCHES ALL USERS FROM DB
@@ -167,6 +302,7 @@ const getAllUsers = async (req, res) => {
                 username: user.username,
                 email: user.email,
                 role: user.role,
+                status: user.verification.status,
                 createdAt: user.createdAt
             }
 
@@ -201,7 +337,8 @@ const getSingleUser = async (req, res) => {
             _id: user._id,
             username: user.username,
             userEmail: user.email,
-            role: user.role
+            role: user.role,
+            status: user.verification.status
         }
 
         // NOTE: RETURNS USER IF STATUS IS OK
@@ -252,9 +389,16 @@ const updateUser = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({error: 'Invalid user ID.'})
         }
+
+        const user = userModel.findById(id)
+
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
         
         // SETTING 'role' TO NEW STATUS USING ID
-        const user = await userModel.findOneAndUpdate(
+        user = await userModel.findOneAndUpdate(
             {_id: id},
             {role: role}, 
             {new: true})
@@ -263,6 +407,46 @@ const updateUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({error: 'Couldn\'t find user.'})
         }
+
+        const subject = 'Your user status has been changed!🍳'
+        const content = `
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                </div>
+                
+                <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Hello ${user.username}!</h1>
+                
+                <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        Your account role has been updated to ${role}!
+                    </p>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        This change could impact what functionalities you have access to. To check out your new role please go to your account.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="http://localhost:3000/login" 
+                           style="display: inline-block; padding: 12px 30px; background-color: #ff7800; color: white; 
+                                  text-decoration: none; border-radius: 5px; font-weight: bold; 
+                                  box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            See the changes here
+                        </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                        If you have any questions, feel free to reach out to our support team.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                    <p>© 2025 EdibleEducation. All rights reserved.</p>
+                </div>
+            </div>
+        `
+
+        sendEmail(user.email, subject, content)
 
         // NOTE: UPDATES USER IF STATUS IS OK
         return res.status(200).json(user)
@@ -275,7 +459,6 @@ const updateUser = async (req, res) => {
 // DELETE USER ------------------------------------------------------------------------------------
 const deleteUser = async (req, res) => {
     const { id } = req.params
-    console.log("ID: " + id)
 
     try {
         // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
@@ -290,6 +473,37 @@ const deleteUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({error: 'Couldn\'t find user.'})
         }
+
+        const subject = 'Your Account has been Terminated!❌'
+        const content = `
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                </div>
+                
+                <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Dear ${user.username}!</h1>
+                
+                <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        We regret to inform you that your account has been deleted!
+                    </p>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                        The termination could be due to violating our Terms & Conditions, or you choose to delete your account.
+                    </p>
+                    
+                    <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                        If this change has not been done by you or you feel like you have not violated our T&Cs please contact our support team.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                    <p>© 2025 EdibleEducation. All rights reserved.</p>
+                </div>
+            </div>
+        `
+
+        sendEmail(user.email, subject, content)
         
         // NOTE: DELETES USER IF STATUS IS OK
         return res.status(200).json(user)
@@ -302,6 +516,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
     loginUser,
     registerUser,
+    verifyEmail,
     getAllUsers,
     getSingleUser,
     getUserById,

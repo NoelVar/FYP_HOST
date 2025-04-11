@@ -24,9 +24,15 @@ const userSchema = new Schema({
         enum: ['admin', 'moderator', 'user'],
         require: true
     },
-    // NOTE: ADD LAST_LOGGED_IN FOR SECURITY
-    lastLoggedIn: {
-        type: Date
+    verification: {
+        status: {
+            type: String,
+            enum: ['verified', 'unconfirmed'],
+            require: true
+        },
+        code: {
+            type: String,
+        }
     }
 
 },
