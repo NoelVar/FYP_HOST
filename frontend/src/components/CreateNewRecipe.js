@@ -133,6 +133,14 @@ const CreateNewRecipe = ({setShowNavbar}) => {
             }, 4000)
         }
 
+        if (!file) {
+            setError("You need to upload a cover image!")
+            setTimeout(() => {
+                setError(null)
+            }, 4000)
+            return
+        }
+
         const email = user.email
         const variation = {
             status: false,
@@ -235,7 +243,19 @@ const CreateNewRecipe = ({setShowNavbar}) => {
                             {/* ADAPTED FROM: https://dev.to/yosraskhiri/how-to-upload-an-image-using-mern-stack-1j95*/}
                             <div className="single-input">
                                 <label>Cover Image: </label>
-                                <label for="file" className="file-input">Browse and upload your image +</label>
+                                <label htmlFor="file" className="file-input">
+                                    {file ? (
+                                        <div>
+                                            <img 
+                                                src={URL.createObjectURL(file)} 
+                                                alt="Preview" 
+                                            />
+                                            <p>Change Image</p>
+                                        </div>
+                                    ) : (
+                                        <p>Browse and upload your image +</p>
+                                    )}
+                                </label>
                                 <input 
                                     type="file"
                                     id="file"

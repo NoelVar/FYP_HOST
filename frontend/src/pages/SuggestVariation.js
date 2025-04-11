@@ -10,6 +10,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
     const [recipe, setRecipe] = useState(null)
     const [ingredients, setIngredients] = useState([])
     const [title, setTitle] = useState('')
+    const [file, setFile] = useState(null)
     const [prepTime, setPrepTime] = useState(0)
     const [cookTime, setCookTime] = useState(0)
     const [difficulty, setDifficulty] = useState('')
@@ -157,7 +158,6 @@ const SuggestVariation = ({ setShowNavbar }) => {
             var change = changed
                     
             var variationTitle = recipe.title + " - " + title
-            var file = recipe.image
             var variationPrepTime = recipe.prepTime
             var variationCookTime = recipe.cookTime
             var variationServingSize = recipe.servingSize
@@ -174,6 +174,14 @@ const SuggestVariation = ({ setShowNavbar }) => {
             // IF THE USER DID, IT WILL BE SENT BACK INSTEAD OF THE ORIGINAL DATA
             if (title === '') {
                 setError("Title extention must be added!")
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
+                return
+            }
+
+            if (!file) {
+                setError("You need to upload a cover image!")
                 setTimeout(() => {
                     setError(null)
                 }, 4000)
@@ -299,11 +307,28 @@ const SuggestVariation = ({ setShowNavbar }) => {
                     </div>
                     <div className='single-recipe'>
                         <div className='single-recipe-middle'>
-                            <div className='single-recipe-img'>
-                                {recipe.image
-                                    ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
-                                    : <img src='ED2_LOGOV5.png' />
-                                }
+                            <div className="single-input">
+                                <label>Cover Image: </label>
+                                <label htmlFor="file" className="file-input">
+                                    {file ? (
+                                        <div>
+                                            <img 
+                                                src={URL.createObjectURL(file)} 
+                                                alt="Preview"
+                                            />
+                                            <p>Change Image</p>
+                                        </div>
+                                    ) : (
+                                        <p>Browse and upload your image +</p>
+                                    )}
+                                </label>
+                                <input 
+                                    type="file"
+                                    id="file"
+                                    accept=".png, .jpg, .jpeg"
+                                    name="file"
+                                    onChange={(e) => setFile(e.target.files[0])}
+                                />
                             </div>
                             <div className='single-recipe-info'>
                                 <h1>{recipe.title} - 

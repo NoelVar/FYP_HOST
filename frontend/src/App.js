@@ -164,6 +164,14 @@ function App() {
                 path='/manage-recipes'
                 element={user ? <ControllRecipes setShowNavbar={setShowNavbar}/> : <Navigate to={'/login'}/>}
               />
+              <Route
+                path='/terms-and-conditions'
+                element={<TermsAndConditions setShowNavbar={setShowNavbar} />}
+              />
+              <Route
+                path='/privacy-policy'
+                element={<PrivacyPolicy setShowNavbar={setShowNavbar} />}
+              />
               <Route 
                 path='/*'
                 element={<PageNotFound setShowNavbar={setShowNavbar}/>}

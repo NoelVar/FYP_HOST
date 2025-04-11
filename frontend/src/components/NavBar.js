@@ -20,7 +20,7 @@ const NavBar = ({ role }) => {
         <header>
             <div className='navbar-container'>
                 <div className='logo-container'>
-                    <Link to='/'><img src='ED2_LOGOV6.png' alt='EdibleEducation logo' /></Link>
+                    <Link to='/'><img src='/ED2_LOGOV6.png' alt='EdibleEducation logo' /></Link>
                     <i className='fa fa-bars menu-toggle'></i>
                 </div>
                 <ul>

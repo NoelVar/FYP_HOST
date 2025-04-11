@@ -3,6 +3,11 @@ const userModel = require('../models/userModel')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
+const dotenv = require("dotenv")
+dotenv.config()
+// NOTE: INSPIRED FROM: https://www.w3schools.com/nodejs/nodejs_email.asp
+var nodemailer = require('nodemailer');
+const { sendEmail } = require('../Utilities/SendingEmail');
 
 // ADAPTED FROM: https://youtu.be/MsudBMepwO8
 const createToken = (_id) => {
@@ -22,9 +27,20 @@ const createToken = (_id) => {
 */
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// NOTE: FOR STRONG PASSWORD VALIDATION USING REGULAR EXPRESSION (RegEx)
+/*
+    CHECKS PASSWORD FOR:
+        - MINIMUM 1 LOWERCASE CHARACTER
+        - MINIMUM 1 UPPERCASE CHARACTER
+        - MINIMUM 1 NUMBER
+        - MINIMUM 1 SPECIAL CHARACTER
+        - MINIMUM LENGHT OF 8 CHARACTERS
+*/
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%&*])[A-Za-z\d!@#$%&*]{8,}$/;
+
 // REGISTER USER ----------------------------------------------------------------------------------
 const registerUser = async (req, res) => {
-    
+
     const { username, email, password, confirmPassword } = req.body;
     const role = 'user';
 
@@ -34,8 +50,10 @@ const registerUser = async (req, res) => {
         return res.status(400).json({ error: 'Field cannot be empty.' })
     }
 
-    if (password !== confirmPassword) {
-        return res.status(401).json({ error: 'Password and confirm password does not match.' })
+    const usernameExists = await userModel.findOne({ username })
+
+    if (usernameExists) {
+        return res.status(400).json({ error: 'Username is already registered.' })
     }
 
     // NOTE: CHECKS IF EMAIL IS EMPTY
@@ -52,8 +70,15 @@ const registerUser = async (req, res) => {
     const alreadyRegisteredEmail = await userModel.findOne({ email })
 
     if (alreadyRegisteredEmail) {
-        console.log(alreadyRegisteredEmail, email)
         return res.status(400).json({ error: 'Email is already registered.' })
+    }
+
+    if (password !== confirmPassword) {
+        return res.status(401).json({ error: 'Password and confirm password does not match.' })
+    }
+
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({ error: 'Weak password! Password should be minimum 8 characters long and contain atleast one number, one uppercase, one lowercase, and one special character (!@#$%&*).' })
     }
 
     // NOTE: ATTEMPTS TO CREATE USER IN DB  
@@ -72,8 +97,13 @@ const registerUser = async (req, res) => {
         // CREATING TOKEN
         const token = createToken(user._id)
 
+        const subject = 'Successful Registration for EdibleEducation!'
+        const content = `<h1>Hello ${username},</h1><p>Thank you for joining EdibleEducation!</p><p>We are EGGcited to have you here! Explore recipes from all around the world and connect with others through discussions!</p><br><a href='http://localhost:3000/login'>Login</a>`
+
+        sendEmail(email, subject, content)
+
         // NOTE: CREATES USER IF EVERYTHING IS OK
-        res.status(201).json({ email, username, token  })
+        res.status(201).json({ email, username, token })
     
     } catch (err) {
          // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
