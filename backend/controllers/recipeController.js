@@ -207,8 +207,142 @@ const deleteRecipe = async (req, res) => {
     }
 }
 
-// UPDATE RECIPE ----------------------------------------------------------------------------------
-const updateRecipe = async (req, res) => {
+// UPDATE OWNED RECIPE ----------------------------------------------------------------------------
+const updateOwnedRecipe = async (req, res) => {
+    const { id } = req.params
+    
+    try {
+        // Parse form data fields
+        const title = req.body.title;
+        const prepTime = req.body.prepTime;
+        const cookTime = req.body.cookTime;
+        const servingSize = req.body.servingSize;
+        const difficulty = req.body.difficulty;
+        const origin = req.body.origin;
+        const mealType = req.body.mealType;
+        const email = req.body.email;
+
+        // Handle file upload
+        const image = req.file ? req.file.filename : null;
+
+        // NOTE: PARSE INGREDIENT AND NUTRITIONAL INFO IF THEY ARE SENT AS A JSON STRING
+        const prepInstructions = req.body.cookInstructions ? JSON.parse(req.body.prepInstructions) : [];
+        const cookInstructions = req.body.cookInstructions ? JSON.parse(req.body.cookInstructions) : [];
+        const ingredients = req.body.ingredients ? JSON.parse(req.body.ingredients) : [];
+        const nutritionalInfo = req.body.nutrInfo ? JSON.parse(req.body.nutrInfo) : {};
+
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({error: 'Invalid recipe ID.'})
+        }
+
+        // NOTE: VALIDATES ID FORMAT TO CHECK IF USER EXISTS
+        if (email === '') {
+            return res.status(400).json({ error: 'Email cannot be empty' })
+        }
+    
+        // GETS USER FROM DB
+        const user = await userModel.findOne({ email })
+
+        // NOTE: CHECKS IF USER EXISTS IN DB
+        if (!user) {
+            return res.status(404).json({ error: 'Couldn\'t find user.' })
+        }
+
+        const recipe = await recipeModel.findById(id)
+
+        if (!recipe) {
+            return res.status(404).json({error: 'Couldn\'t find recipe.'})
+        }
+
+        // CHECKING IF LOGGED IN USER OWNS RECIPE
+        if (recipe.postedBy.toString() !== user._id.toString()) {
+            return res.status(401).json({ error: 'Updating recipe is not authorized.' })
+        }
+
+        // Create update object
+        const updateData = {
+            title: title || recipe.title,
+            prepTime: prepTime || recipe.prepTime,
+            cookTime: cookTime || recipe.cookTime,
+            servingSize: servingSize || recipe.servingSize,
+            difficulty: difficulty || recipe.difficulty,
+            origin: origin || recipe.origin,
+            mealType: mealType || recipe.mealType,
+            prepInstructions: prepInstructions.length > 0 ? prepInstructions : recipe.prepInstructions,
+            cookInstructions: cookInstructions.length > 0 ? cookInstructions : recipe.cookInstructions,
+            ingredients: ingredients.length > 0 ? ingredients : recipe.ingredients,
+            nutritionalInfo: Object.keys(nutritionalInfo).length > 0 ? nutritionalInfo : recipe.nutritionalInfo,
+            approvalStatus: 'pending'
+        };
+
+        if (image) {
+            updateData.image = image;
+        }
+
+        // Update the recipe
+        const updatedRecipe = await recipeModel.findOneAndUpdate(
+            {_id: id},
+            updateData,
+            { new: true }
+        )
+
+        // NOTE: CHECKS IF RECIPE EXISTS IN DB
+        if (!updatedRecipe) {
+            return res.status(404).json({error: 'Couldn\'t update recipe.'})
+        }
+
+        if (user) {
+            const subject = 'Your Recipe has been Updated!'
+            const content = `
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
+                    </div>
+                    
+                    <h1 style="color: #ff7800; text-align: center; margin-bottom: 20px;">Dear ${user.username},</h1>
+                    
+                    <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                            We would like to notify you that your recipe has been updated!
+                        </p>
+                        
+                        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
+                            Since you have made changes to your recipe, it needs to be re-evaluated by our moderators. Once this has been completed we will notify you with further details.
+                        </p>
+
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="http://localhost:3000/login" 
+                            style="display: inline-block; padding: 12px 30px; background-color: #ff7800; color: white; 
+                                    text-decoration: none; border-radius: 5px; font-weight: bold; 
+                                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                Check out my recipe here
+                            </a>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                            If you have any questions please contact our support team.
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+                        <p>© 2025 EdibleEducation. All rights reserved.</p>
+                    </div>
+                </div>
+            `
+
+            sendEmail(user.email, subject, content)
+        }
+
+        return res.status(200).json({message: "Recipe updated successfully!", recipe: updatedRecipe})
+    } catch(err) {
+        // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
+        return res.status(500).json({ error: err.message })
+    }
+}
+
+// UPDATE RECIPE STATUS ---------------------------------------------------------------------------
+const updateRecipeStatus = async (req, res) => {
     const { id } = req.params
     const { status } = req.body
 
@@ -342,7 +476,7 @@ const addComment = async (req, res) => {
         }
 
         const subject = 'Your Comment has been added!💬'
-        const content = `
+        const emailContent = `
             <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <img src="http://localhost:3000/ED2_LOGOV6.png" alt="EdibleEducation Logo" style="width: 150px; height: auto;"/>
@@ -380,13 +514,13 @@ const addComment = async (req, res) => {
             </div>
         `
 
-        sendEmail(email, subject, content)
+        sendEmail(email, subject, emailContent)
 
         // NOTE: CREATES COMMENT IF EVERYTHING IS OK
         return res.status(201).json({ message: "Comment has been added!", comment: recipe.comments[addedComment-1]})
     } catch(err) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
-        return res.status(500).json({ message: err.message })
+        return res.status(500).json({ error: "Something went wrong" })
     }
 }
 
@@ -394,7 +528,6 @@ const addComment = async (req, res) => {
 const addRating = async (req, res) => {
     const { value, email } = req.body;
     const { id } = req.params;
-    console.log(value, email)
 
     // NOTE: VALIDATES ID FORMAT TO CHECK IF RECIPE EXISTS
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -654,25 +787,25 @@ const popularRecipe = async (req, res) => {
             popularAvarage = popularTotal / bestRated.rating.length
 
             // CHECKING IF AVARAGE RECIPE RATING IS GREATER THAN THE BEST RATED ONE
-            if (popularAvarage < avarageRating) {
+            if (recipe.approvalStatus === 'approved' && popularAvarage < avarageRating) {
                 bestRated = recipe
-            // MAKING SURE BEST RATED RECIPE WILL NOT STAY NAN FOR THE NEXT RECIPE
-            } else if (isNaN(popularAvarage)) {
+            // MAKING SURE BEST RATED RECIPE WILL NOT STAY NAN(Not RATED) FOR THE NEXT RECIPE
+            } else if (recipe.approvalStatus === 'approved' && isNaN(popularAvarage)) {
                 bestRated = recipe
             }
 
             // IDENTIFYING THE MOST RATED RECIPE 
-            if (mostRated.rating.length < recipe.rating.length) {
+            if (recipe.approvalStatus === 'approved'&& mostRated.rating.length < recipe.rating.length) {
                 mostRated = recipe
             } 
 
             // IDENTIFYING THE MOST COMMENTS ON RECIPE 
-            if (mostComments.comments.length < recipe.comments.length) {
+            if (recipe.approvalStatus === 'approved' && mostComments.comments.length < recipe.comments.length) {
                 mostComments = recipe
             } 
 
             // IDENTIFYING THE LATEST RECIPE
-            if (recipe.approvalStatus !== 'denied' && recipe.variationOfRecipe.status !== true) {
+            if (recipe.approvalStatus === 'approved' && recipe.variationOfRecipe.status !== true) {
                 latestRecipe = recipe
             }
 
@@ -697,7 +830,8 @@ module.exports = {
     getSingleRecipe,
     createRecipe,
     deleteRecipe,
-    updateRecipe,
+    updateOwnedRecipe,
+    updateRecipeStatus,
     addComment,
     addRating,
     deleteComment,

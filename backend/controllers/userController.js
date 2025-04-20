@@ -390,7 +390,7 @@ const updateUser = async (req, res) => {
             return res.status(400).json({error: 'Invalid user ID.'})
         }
 
-        const user = userModel.findById(id)
+        var user = userModel.findById(id)
 
         // NOTE: CHECKS IF USER EXISTS IN DB
         if (!user) {
@@ -403,9 +403,9 @@ const updateUser = async (req, res) => {
             {role: role}, 
             {new: true})
 
-        // NOTE: CHECKS IF USER EXISTS IN DB
+        // NOTE: CHECKS IF USER UPDATE IS SUCCESSFULT
         if (!user) {
-            return res.status(404).json({error: 'Couldn\'t find user.'})
+            return res.status(404).json({error: 'Couldn\'t update user.'})
         }
 
         const subject = 'Your user status has been changed!🍳'
@@ -419,7 +419,7 @@ const updateUser = async (req, res) => {
                 
                 <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                     <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">
-                        Your account role has been updated to ${role}!
+                        Your account role has been updated to <b>${role}</b>!
                     </p>
                     
                     <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: black;">

@@ -302,7 +302,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                 <form>
                     <div className='important-info'>
                         <i className='fas fa-circle-info'></i>
-                        <p>Add your changes to the {recipe.title} recipe and create a new variation of it!</p>
+                        <p>Add your changes to the "{recipe.title}" recipe and create a new variation of it!</p>
                         <p>Note: Only fill in the fields that you would like to make a change to, otherwise leave the fields empty to keep the original information.</p>
                     </div>
                     <div className='single-recipe'>

@@ -5,7 +5,8 @@ const {
     getSingleRecipe,
     createRecipe,
     deleteRecipe,
-    updateRecipe,
+    updateOwnedRecipe,
+    updateRecipeStatus,
     addComment,
     addRating,
     deleteComment,
@@ -37,8 +38,11 @@ router.post('/', upload.single('file'), createRecipe)
 // NOTE: DELETE RECIPE
 router.delete('/:id', deleteRecipe)
 
-// NOTE: UPDATE RECIPE
-router.patch('/:id', updateRecipe)
+// NOTE: UPDATE RECIPE STATUS
+router.patch('/:id', updateRecipeStatus)
+
+// NOTE: UPDATE OWNED RECIPE
+router.patch('/:id/update', upload.single('file'), updateOwnedRecipe)
 
 // NOTE: ADDING COMMENT
 router.post('/:id/comments', addComment)

@@ -18,6 +18,7 @@ import ControllRecipes from './pages/ControllRecipes';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import VerifyAccount from './components/VerifyAccount';
+import UpdateOwnedRecipe from './pages/UpdateOwnedRecipe';
 
 function App() {  
 
@@ -27,24 +28,33 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null)
   
   useEffect(() => {
-    const fetchUser = async () => {
-        const email = user.email
-        const response = await fetch('http://localhost:4000/user/single-user', {
-            method: 'POST',
-            headers: { 'Content-type': 'application/json' },
-            body: JSON.stringify({email})
-        })
-        const json = await response.json()
+    let isMounted = true;
 
-        if (response.ok) {
-            setCurrentUser(json)
+    const fetchUser = async () => {
+        if (!user?.email) return;
+        
+        try {
+            const response = await fetch('http://localhost:4000/user/single-user', {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify({email: user.email})
+            })
+            const json = await response.json()
+
+            if (response.ok && isMounted) {
+                setCurrentUser(json)
+            }
+        } catch (error) {
+            console.error('Error fetching user:', error);
         }
     }
 
-    if (user) {
-        fetchUser()
-    }
-  }, [user, currentUser])
+    fetchUser();
+
+    return () => {
+        isMounted = false;
+    };
+  }, [user]) // Only depend on user changes
 
   // NOTE: RETURNING COMPONENTS AND PAGES
   return (
@@ -81,6 +91,10 @@ function App() {
                 <Route
                   path='recipes/:id/suggest-variation'
                   element={<SuggestVariation setShowNavbar={setShowNavbar}/>}
+                />
+                <Route
+                  path='recipes/:id/update-recipe'
+                  element={<UpdateOwnedRecipe setShowNavbar={setShowNavbar}/>}
                 />
                 <Route 
                   path='/login'

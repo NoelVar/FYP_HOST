@@ -184,7 +184,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                                     </select>
                                 </form>
                                 <div className="action-container">
-                                    <button className="edit-btn" onClick={(e) => handleChange(e, recipe._id)}><i className="fas fa-edit"></i> Edit status</button>
+                                    <button className="edit-btn" onClick={(e) => handleChange(e, recipe._id)}><i className="fas fa-edit"></i> Save status</button>
                                     <button className="del-btn" onClick={(e) => setPopUp(true) + setSelectedId(recipe._id)}><i className="fas fa-trash"></i> Delete recipe</button>
                                 </div>
                             </div>
@@ -210,7 +210,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                                     </select>
                                 </form>
                                 <div className="action-container">
-                                    <button className="edit-btn" onClick={(e) => handleChange(e, recipe._id)}><i className="fas fa-edit"></i> Edit status</button>
+                                    <button className="edit-btn" onClick={(e) => handleChange(e, recipe._id)}><i className="fas fa-edit"></i> Save status</button>
                                     <button className="del-btn" onClick={(e) => setPopUp(true) + setSelectedId(recipe._id)}><i className="fas fa-trash"></i> Delete recipe</button>
                                 </div>
                             </div>

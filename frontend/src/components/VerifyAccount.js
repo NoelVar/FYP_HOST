@@ -53,6 +53,7 @@ const VerifyAccount = ({ setShowNavbar }) => {
         <div className="verify-account">
             <form onSubmit={handleVerification}>
                 <h3>Verify your Email address</h3>
+                <p>Please check your spam folder if you dont seem to recieve the verification code!</p>
                 <div className="single-section">
                 <label>
                     Verification Code

@@ -174,6 +174,7 @@ const UserProfile = ({ setShowNavbar }) => {
                             <p><b>Created at: </b>{new Date(recipe.createdAt).toDateString()}</p>
                             <p><b>Status: </b><span className={recipe.approvalStatus === 'pending' ? 'status-style-pending' : recipe.approvalStatus === 'approved' ? 'status-style-approved' : 'status-style-denied'}>{recipe.approvalStatus}</span></p>
                             <div className="action-container">
+                            <Link to={"/recipes/" + recipe._id + "/update-recipe"} className="update-btn"><i className="fas fa-pen"></i> Update recipe</Link>
                                 <button className="del-btn" onClick={(e) => setPopUp(1) + setSelectedId(recipe._id)}><i className="fas fa-trash"></i> Delete recipe</button>
                             </div>
                         </div>

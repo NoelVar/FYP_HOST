@@ -158,14 +158,14 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                                 ?
                                     <form>
                                         <select>
-                                            <option value="none" selected disabled hidden>Change status</option>
+                                            <option value="none" selected disabled hidden>Change role</option>
                                             <option value="none" disabled>Cannot change role</option>
                                         </select>
                                     </form>
                                 :
                                     <form>
                                         <select onChange={(e) => setSelectedStatus(e.target.value)}>
-                                            <option value="none" selected disabled hidden>Change status</option>
+                                            <option value="none" selected disabled hidden>Change role</option>
                                             <option value="moderator">Moderator</option>
                                             <option value="user">User</option>
                                         </select>
@@ -197,14 +197,14 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                                 ?
                                     <form>
                                         <select>
-                                            <option value="none" selected disabled hidden>Change status</option>
+                                            <option value="none" selected disabled hidden>Change role</option>
                                             <option value="none" disabled>Cannot change role</option>
                                         </select>
                                     </form>
                                 :
                                     <form>
                                         <select onChange={(e) => setSelectedStatus(e.target.value)}>
-                                            <option value="none" selected disabled hidden>Change status</option>
+                                            <option value="none" selected disabled hidden>Change role</option>
                                             <option value="moderator">Moderator</option>
                                             <option value="user">User</option>
                                         </select>
