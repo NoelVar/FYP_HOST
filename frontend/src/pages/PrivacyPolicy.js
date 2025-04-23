@@ -1,6 +1,8 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { useLayoutEffect } from "react";
 import Footer from "../components/Footer";
 
+// PRIVACY PAGE -----------------------------------------------------------------------------------
 const PrivacyPolicy = ({ setShowNavbar }) => {
 
     // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
@@ -70,3 +72,5 @@ const PrivacyPolicy = ({ setShowNavbar }) => {
 }
 
 export default PrivacyPolicy
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

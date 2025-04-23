@@ -1,3 +1,4 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { Link } from 'react-router-dom';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useEffect, useState } from 'react';
@@ -9,25 +10,9 @@ const RecipeDetails = ({ recipe, role}) => {
     const urlName = '/recipes/' + recipe._id
 
     // VARIABLE TO STORE LOGGED IN USER
-    const { user } = useAuthContext()
     const [hasVariation, setHasVariation] = useState(false)
 
-    // NOTE: HANDLING DELETE ----------------------------------------------------------------------
-    const handleDelete = async () => {
-        if (user) {
-            const response = await fetch(`http://localhost:4000/recipes/` + recipe._id, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                },
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                console.log("Deleted: " + recipe._id)
-            }
-        }
-    } 
-
+    // RETRIEVING RECIPES ON LOAD
     useEffect(() => {
         const fetchRecipes = async () => {
             const response = await fetch('http://localhost:4000/recipes') // FIXME: REMOVE FULL URL
@@ -79,9 +64,6 @@ const RecipeDetails = ({ recipe, role}) => {
                         </tr>
                     </table>
                 </div>
-                {/* {role && (role === 'admin' || role === 'moderator') &&
-                    <button className="delete-recipe-btn" onClick={handleDelete}>X</button>
-                } */} 
             </Link>
         </div>
     )

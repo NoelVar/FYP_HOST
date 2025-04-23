@@ -1,9 +1,11 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { useLayoutEffect } from "react";
 import Footer from "../components/Footer";
 
+// TERMS AND CONDITIONS PAGE ----------------------------------------------------------------------
 const TermsAndConditions = ({ setShowNavbar }) => {
 
-    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    // NOTE: SETTING NAV BAR TO TRUE
     useLayoutEffect(() => {
         setShowNavbar(true);
     }, [])
@@ -62,3 +64,5 @@ const TermsAndConditions = ({ setShowNavbar }) => {
 }
 
 export default TermsAndConditions
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

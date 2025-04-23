@@ -3,7 +3,6 @@ import { useState, useEffect, useLayoutEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import RecipeCommunitySwitch from '../components/RecipeCommunitySwitch';
 import { useAuthContext } from '../hooks/useAuthContext';
-import axios from 'axios';
 import Footer from '../components/Footer';
 
 const SingleRecipe = ({ setShowNavbar }) => {
@@ -47,8 +46,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
         }
 
         const fetchRecipes = async () => {
-            // console.log(BACKEND)
-            const response = await fetch('http://localhost:4000/recipes') // FIXME: REMOVE FULL URL
+            const response = await fetch('http://localhost:4000/recipes')
             const json = await response.json()
 
             // CHECKING IF RESPONSE IS OKAY
@@ -75,7 +73,10 @@ const SingleRecipe = ({ setShowNavbar }) => {
         try {
             const response = await fetch('http://localhost:4000/user/single-user-id', {
                 method: 'POST',
-                headers: { 'Content-type': 'application/json' },
+                headers: {
+                     'Content-type': 'application/json',
+                     'Authorization': `Bearer ${user.token}` 
+                    },
                 body: JSON.stringify({ id: userId })
             });
             const json = await response.json();
@@ -138,7 +139,6 @@ const SingleRecipe = ({ setShowNavbar }) => {
                 }, 4000)
             }
         } else {
-            // TODO: ADD MESSAGE AND REDIRECT AFTER 2 Seconds
             setError('You need to login to use this functionality!')
             setTimeout(() => {
                 setError(null)
@@ -147,6 +147,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
         }
     }
 
+    // SUGGESTIONS PAGE NAVIGATION
     const toSuggestion = () => {
         navigate('suggest-variation')
     }
@@ -350,3 +351,5 @@ const SingleRecipe = ({ setShowNavbar }) => {
 }
 
 export default SingleRecipe
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

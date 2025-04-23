@@ -50,3 +50,5 @@ export const AuthContextProvider = ({ children }) => { // CHILDREN REPRESENTS WH
         </AuthContext.Provider>
     )
 }
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

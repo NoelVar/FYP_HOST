@@ -32,11 +32,26 @@ function App() {
 
     const fetchUser = async () => {
         if (!user?.email) return;
+
+        // ADAPTED FROM: https://stackoverflow.com/questions/45561610/how-can-i-remove-local-storage-after-one-hour
+        var hours = 24
+        var now = new Date().getTime();
+        var loggedInTime = localStorage.getItem('loggedInTime')
+
+        console.log(now-loggedInTime > hours*60*60*1000)
+        if(now-loggedInTime > hours*60*60*1000) {
+          localStorage.clear()
+          setCurrentUser(null)
+          return;
+        }
         
         try {
             const response = await fetch('http://localhost:4000/user/single-user', {
                 method: 'POST',
-                headers: { 'Content-type': 'application/json' },
+                headers: { 
+                  'Content-type': 'application/json',
+                  'Authorization': `Bearer ${user.token}`,
+                 },
                 body: JSON.stringify({email: user.email})
             })
             const json = await response.json()

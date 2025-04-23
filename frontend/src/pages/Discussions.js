@@ -1,14 +1,15 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { useState, useEffect, useLayoutEffect } from "react";
 import RecipeCommunitySwitch from "../components/RecipeCommunitySwitch";
-import axios from "axios";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useRecipeContext } from "../hooks/useRecipeContext";
 
+// DISCUSSIONS ------------------------------------------------------------------------------------
 const Discussions = ({ setShowNavbar }) => {
 
-    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    // NOTE: SETTING NAV BAR TO TRUE
     useLayoutEffect(() => {
         setShowNavbar(true);
     }, [])
@@ -42,19 +43,22 @@ const Discussions = ({ setShowNavbar }) => {
             }
         }
 
+        // NOTE: FETCHING THE LOGGED IN USER
         const fetchLoggedInUser = async () => {
             const email = user.email
             try {
                 const response = await fetch('http://localhost:4000/user/single-user', {
                     method: "POST",
-                    headers: { 'Content-type': 'application/json' },
+                    headers: { 
+                        'Content-type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                     },
                     body: JSON.stringify({email})
                 })
                 const json = await response.json()
 
                 if (response.ok) {
                     setLoggedInUser(json)
-                    console.log(json)
                 }
             } catch (err) {
                 console.log(err)
@@ -67,15 +71,17 @@ const Discussions = ({ setShowNavbar }) => {
         }
     }, [])
 
-    // NOTE: SENDING THE RECIPE TO THE SERVER
+    // HANDLING COMMENT SUBMITTING ----------------------------------------------------------------
     const handleSubmit = async(e) => {
         e.preventDefault()
+        // ONLY CONDUCTING FUNCTION IF USER IS LOGGED IN
         if (user) {
 
+            // ESTABLISHING BASE INFO
             const email = user.email
             const currentDate = Date.now()
         
-            // TODO: CHANGE TO REFERENCED DATA MODEL
+            // SENDING DATA TO SERVER
             const response = await fetch(`${urlname}/comments`, {
                 method: "POST", 
                 headers: {
@@ -91,6 +97,7 @@ const Discussions = ({ setShowNavbar }) => {
             
             const json = await response.json()
 
+            // VALIDATING RESPONSE (WENT WRONG)
             if(!response.ok) {
                 setError(json.error)
                 setTimeout(() => {
@@ -98,6 +105,7 @@ const Discussions = ({ setShowNavbar }) => {
                 }, 3000)
             }
 
+            // VALIDATING RESPONSE (OK)
             if(response.ok) {
                 setMessage(json.message)
                 setTimeout(() => {
@@ -110,6 +118,7 @@ const Discussions = ({ setShowNavbar }) => {
                 }
                 setContent('')
             }
+        // IF THE USER IS NOT LOGGED IN
         } else {
             // TODO: ADD MESSAGE AND REDIRECT AFTER 2 Seconds
             setError('You need to login to use this functionality!')
@@ -117,42 +126,46 @@ const Discussions = ({ setShowNavbar }) => {
         }
     }
 
-    // NOTE: SENDING THE RECIPE TO THE SERVER
+    // HANDLING DELETE FUNCTION -------------------------------------------------------------------
     const handleDelete = async(e, comment) => {
         e.preventDefault()
+        // ONLY CONDUCTING FUNCTION IF USER IS LOGGED IN
         if (user){
             const email = user.email
-           
-        try {
-            const response = await fetch(`${urlname}/comments`, {
-                method: "DELETE",
-                headers: {
-                    'Content-type': 'application/json' ,
-                    'Authorization': `Bearer ${user.token}`
-                },
-                body: JSON.stringify({email: email, commentID: comment})
-            })
+            // ATTEMPTING TO SEND REQUEST TO SERVER
+            try {
+                const response = await fetch(`${urlname}/comments`, {
+                    method: "DELETE",
+                    headers: {
+                        'Content-type': 'application/json' ,
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    body: JSON.stringify({email: email, commentID: comment})
+                })
 
-            const json = await response.json()
+                const json = await response.json()
 
-            if (!response.ok) {
-                setError(json.error)
-                setTimeout(() => {
-                    setError(null)
-                }, 3000)
+                // VALIDATING RESPONSE (WENT WRONG)
+                if (!response.ok) {
+                    setError(json.error)
+                    setTimeout(() => {
+                        setError(null)
+                    }, 3000)
+                }
+
+                // VALIDATING RESPONSE (OK)
+                if (response.ok) {
+                    setMessage(json.message)
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 3000)
+                    dispatch({ type: "DELETE_COMMENT", payload: json.comment })         
+                }
+            // CATCHING ERRORS
+            } catch (err) {
+                console.log(err)
             }
-
-            if (response.ok) {
-                setMessage(json.message)
-                setTimeout(() => {
-                    setMessage(null)
-                }, 3000)
-                dispatch({ type: "DELETE_COMMENT", payload: json.comment })         
-            }
-
-        } catch (err) {
-            console.log(err)
-        }
+        // IF USER IS NOT LOGGED IN
         } else {
             // TODO: ADD MESSAGE AND REDIRECT AFTER 2 Seconds
             setError('You need to login to use this functionality!')
@@ -163,39 +176,45 @@ const Discussions = ({ setShowNavbar }) => {
     // HANDLE DELETING USER'S COMMENT AS ADMIN OR MOD ---------------------------------------------
     const removeUserComment = async(e, comment) => {
         e.preventDefault()
+        // ONLY CONDUCTING FUNCTION IF THE USER IS LOGGED IN
         if (user){
             const email = user.email
-           
-        try {
-            const response = await fetch(`${urlname}/comments/moderate`, {
-                method: "DELETE",
-                headers: {
-                    'Content-type': 'application/json' ,
-                    'Authorization': `Bearer ${user.token}`
-                },
-                body: JSON.stringify({email: email, commentID: comment})
-            })
+        
+            // ATTEMPTING TO SEND REQUEST TO SERVER
+            try {
+                const response = await fetch(`${urlname}/comments/moderate`, {
+                    method: "DELETE",
+                    headers: {
+                        'Content-type': 'application/json' ,
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    body: JSON.stringify({email: email, commentID: comment})
+                })
 
-            const json = await response.json()
+                const json = await response.json()
+                
+                // VALIDATING RESPONSE (WENT WRONG)
+                if (!response.ok) {
+                    setError(json.error)
+                    setTimeout(() => {
+                        setError(null)
+                    }, 3000)
+                }
 
-            if (!response.ok) {
-                setError(json.error)
-                setTimeout(() => {
-                    setError(null)
-                }, 3000)
+                // VALIDATING RESPONSE (OK)
+                if (response.ok) {
+                    setMessage(json.message)
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 3000)
+                    dispatch({ type: "DELETE_COMMENT", payload: json.comment })         
+                }
+            
+            // CATCHING ERRORS
+            } catch (err) {
+                console.log(err)
             }
-
-            if (response.ok) {
-                setMessage(json.message)
-                setTimeout(() => {
-                    setMessage(null)
-                }, 3000)
-                dispatch({ type: "DELETE_COMMENT", payload: json.comment })         
-            }
-
-        } catch (err) {
-            console.log(err)
-        }
+        // IF THE USER NOT LOGGED IN 
         } else {
             // TODO: ADD MESSAGE AND REDIRECT AFTER 2 Seconds
             setError('You need to login to use this functionality!')
@@ -205,14 +224,19 @@ const Discussions = ({ setShowNavbar }) => {
 
     // NOTE: FUNCTION TO RETRIEVE USERNAMES -------------------------------------------------------
     const fetchUsernames = async (userId) => {
+        // ATTEMPTING TO FETCH USER ID
         try {
             const response = await fetch('http://localhost:4000/user/single-user-id', {
                 method: 'POST',
-                headers: { 'Content-type': 'application/json' },
+                headers: { 
+                    'Content-type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`,
+                 },
                 body: JSON.stringify({ id: userId })
             });
             const json = await response.json();
 
+            // VALIDATING RESPONSE (OK)
             if (response.ok) {
                 // ADDS USERNAME TO 'commentUsers' STATE OBJECT
                 setCommentUsers(prev => ({
@@ -220,12 +244,13 @@ const Discussions = ({ setShowNavbar }) => {
                     [userId]: json
                 }));
             }
+        // CATCHING ERRORS
         } catch (error) {
             console.log(error);
         }
     };
 
-    // USER EFFECT TO FETCH USERNAMES WHEN COMMENTS LOAD
+    // USER EFFECT TO FETCH USERNAMES WHEN COMMENTS LOAD ------------------------------------------
     useEffect(() => {
         if (recipe && comments) {
             comments.forEach(comment => {
@@ -299,3 +324,5 @@ const Discussions = ({ setShowNavbar }) => {
 }
 
 export default Discussions
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

@@ -1,14 +1,15 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { Link } from "react-router-dom";
 import { useRecipeContext } from "../hooks/useRecipeContext";
 import Loading from "../components/Loading";
 
+// CONTROLL ALL RECIPES FUNCTION 
 const ControllRecipes = ({ setShowNavbar, role }) => {
+    // VARIABLES
     const { user } = useAuthContext()
     const { recipes, dispatch } = useRecipeContext()
-    // const [recipes, setRecipes] = useState(null)
-    const [filteredRecipes, setFilteredRecipes] = useState(null)
     const [status, setStatus] = useState(null)
     const [popUp, setPopUp] = useState(false)
     const [filterStatus, setFilterStatus] = useState(null)
@@ -18,7 +19,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
     const [isLoading, setLoading] = useState(true);
     
 
-    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    // NOTE: SETTING NAV BAR TO TRUE
     useLayoutEffect(() => {
         setShowNavbar(true);
     }, [])
@@ -28,24 +29,21 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
         setTimeout(() => setLoading(false), 1000)
     }, [])
 
+    // FETCHING ALL RECIPES
     useEffect(() => {
         const fetchRecipes = async () => {
             const response = await fetch('http://localhost:4000/recipes')
             const json = await response.json()
 
             if (response.ok) {
-                // setRecipes(json)
+                // SETTING RECIPES USING RECIPE CONTEXT
                 dispatch({type: 'SET_RECIPES', payload: json})
             }
         }
 
-        // const filteredRecipes = () => {
-        //     setFilteredRecipes(recipes)
-        // }
-
+        // ONLY FETCHING RECIPES IF ROLE IS ADMIN OR MOD
         if (role && (role === 'admin' || role === 'moderator')) {
             fetchRecipes()
-            // filteredRecipes()
         }
     }, [])
 
@@ -67,15 +65,15 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
 
             const json = await response.json()
 
+            // VALIDATING RESPONSE (WENT WRONG)
             if (!response.ok) {
                 setError(json.error || "Could not delete recipe!")
                 setTimeout(() => {
                     setError(null)
                 }, 4000)
             }
-
+            // VALIDATING RESPONSE (OK)
             if (response.ok) {
-                console.log(json)
                 dispatch({type: "DELETE_RECIPE", payload: json})
                 setMessage("Recipe has been deleted successfully!")
                 setTimeout(() => {
@@ -86,22 +84,9 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
             }
         }
     } 
-
-    // // NOTE: FILTER RECIPES -----------------------------------------------------------------------
-    // const filterRecipes = (e) => {
-    //     e.preventDefault()
-    //     var filteredArray = []
-    //     recipes.map((recipe) => {
-    //         if (recipe.approvalStatus === filterStatus) {
-    //             filteredArray.push(recipe)
-    //         }
-    //     })
-    //     setFilteredRecipes(filteredArray)
-    // }
     
     // NOTE: CLEARING FILTERS ---------------------------------------------------------------------
     const handleClear = () => {
-        // setFilteredRecipes(recipes)
         setFilterStatus(null)
     }
 
@@ -120,16 +105,16 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
 
             const json = await response.json()
 
+            // VALIDATING RESPONSE (WENT WRONG)
             if (!response.ok) {
-                console.log(json)
                 setError(json.error || "Could not update status!")
                 setTimeout(() => {
                     setError(null)
                 }, 4000)
             }
 
+            // VALIDATING RESPONSE (OK)
             if (response.ok) {
-                console.log(json)
                 setMessage("Recipe Status Updated")
                 setTimeout(() => {
                     setMessage(null)
@@ -138,7 +123,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                 dispatch({type: "UPDATE_RECIPE", payload: json})
             }
 
-
+        // CATCHING ERRORS
         } catch (err) {
             console.error(err)
         }
@@ -155,7 +140,6 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                     <option value='denied'>denied</option>
                 </select>
                 <div className="filter-action">
-                    {/* <button className='filter-btn' onClick={filterRecipes}>Filter</button> */}
                     <input type="reset" onClick={handleClear}></input>
                 </div>
             </form>
@@ -248,3 +232,5 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
 }
 
 export default ControllRecipes
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

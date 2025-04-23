@@ -1,3 +1,4 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router';
 import RecipeDetails from '../components/RecipeDetails';
@@ -11,7 +12,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 // NOTE: RECIPE PAGE LOGIC ------------------------------------------------------------------------
 const Recipe = ({ setShowNavbar, role }) => {
 
-    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    // NOTE: SETTING NAV BAR TO TRUE
     useLayoutEffect(() => {
         setShowNavbar(true);
     }, [])
@@ -41,8 +42,7 @@ const Recipe = ({ setShowNavbar, role }) => {
     //NOTE: FETCHING RECIPES FROM SERVER ----------------------------------------------------------
     useEffect(() => {
         const fetchRecipes = async () => {
-            // console.log(BACKEND)
-            const response = await fetch('http://localhost:4000/recipes') // FIXME: REMOVE FULL URL
+            const response = await fetch('http://localhost:4000/recipes')
             const json = await response.json()
 
             // CHECKING IF RESPONSE IS OKAY
@@ -58,7 +58,6 @@ const Recipe = ({ setShowNavbar, role }) => {
                     setRecipes(recipeArray)
                 }
 
-                // FIXME: 3 FOR LOOPS IS NOT EFFICIENT - DOESNT ADD ALL INGREDIENTS
                 // NOTE: ADDING ALL RECIPES TO DROPDOWN LIST
                 const ingredArray = []
                 const originArray = []
@@ -72,7 +71,6 @@ const Recipe = ({ setShowNavbar, role }) => {
                         match = false
                         // STORING INGREDIENTS NAME IN 'ingredientName'
                         const ingredientName = json[i].ingredients[j].ingredient
-                        // DEBUG: console.log(ingredientName)
                         // SETTING THE DROPDOWN OPTION WITH THE CURRENT INGREDIENT
                         const option = {value: ingredientName.toLowerCase(), label: ingredientName.toLowerCase()}
 
@@ -109,8 +107,6 @@ const Recipe = ({ setShowNavbar, role }) => {
                         originArray.push(json[i].origin)
                     }
                 }
-                // DEBUG: console.log(ingredArray)
-                // DEBUG: console.log(originArray)
                 setAllCountries(originArray)
                 setSearchIngred(ingredArray)
             }
@@ -124,11 +120,6 @@ const Recipe = ({ setShowNavbar, role }) => {
         navigate('/newrecipe')
     }
 
-    // NOTE: HANDLING FILTER TOGGLE ---------------------------------------------------------------
-    // const handleToggle = (e) => {
-    //     e.preventDefault()
-    //     setToggle(!toggle)
-    // }
     // NOTE: HANDLING SEARCH ----------------------------------------------------------------------
     const handleSearch = (e) => {
         e.preventDefault()
@@ -179,7 +170,6 @@ const Recipe = ({ setShowNavbar, role }) => {
         const filteredItems = recipes.filter((recipe) => 
            recipe.title.toLowerCase().includes(searchPrompt.toLowerCase())
         )
-        // DEBUG: console.log(filteredItems)
         setFilteredRecipes(filteredItems);
     }
 
@@ -213,8 +203,6 @@ const Recipe = ({ setShowNavbar, role }) => {
         setFilterServingSize(0)
         setFilterTime(0)
     }
-
-    // TODO: FETCH USER TO RECIEVE USERTYPE -------------------------------------------------------
 
     // NOTE: DISPLAYING RECIPES -------------------------------------------------------------------
     return (
@@ -323,7 +311,6 @@ const Recipe = ({ setShowNavbar, role }) => {
             </div>
             <div className='content-container'>
                 <h1 className='page-title'>BROWSE RECIPES</h1>
-                {/* <p className='page-description'>Find an inspiration for your next big hit!</p> */}
                 <form onSubmit={FilterSearchPrompt}>
                     <div className='search-options'>
                         <input 
@@ -333,7 +320,6 @@ const Recipe = ({ setShowNavbar, role }) => {
                             onChange={handleInputChange}
                             placeholder='Search for a recipe title...'
                         />
-                        {/* <button className='search-filter' onClick={handleToggle}><i className='fa fa-bars menu-toggle'></i></button> */}
                     </div>
                 </form>
                 {user && (

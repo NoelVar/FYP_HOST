@@ -7,7 +7,7 @@ const Schema = mongoose.Schema
 const recipeSchema = new Schema({
     title: {
         type: String,
-        require: true   // NOTE: 'title' MUST BE ENTERED
+        require: true
     },
     image: {
         type: String,
@@ -16,30 +16,30 @@ const recipeSchema = new Schema({
     prepTime: {
         type: Number,
         min: 0,
-        require: true   // NOTE: 'prepTime' MUST BE ENTERED
+        require: true
     },
     cookTime: {
         type: Number,
         min: 0,
-        require: true   // NOTE: 'cookTime' MUST BE ENTERED
+        require: true
     },
     servingSize: {
         type: Number,
-        require: true   // NOTE: 'servingSize' MUST BE ENTERED
+        require: true
     },
     difficulty: {
         type: String,
         enum: ['easy', 'moderate', 'hard'],
-        require: true   // NOTE: 'difficulty' MUST BE ENTERED
+        require: true
     },
     origin: {
         type: String,
-        require: true   // NOTE: 'origin' MUST BE ENETERED
+        require: true
     },
     mealType: {
         type: String,
         enum: ['breakfast', 'brunch', 'lunch', 'dinner', 'dish', 'snack', 'drink', 'dessert', 'other'],
-        require: true   // NOTE: 'mealType' MUST BE ENETERED
+        require: true
     },
     prepInstructions: [String],
     cookInstructions: [String],
@@ -120,3 +120,5 @@ const recipeSchema = new Schema({
 
 // NOTE: EXPORTS THE RECIPE MODEL BASED ON THE DEFINED SCHEMA
 module.exports = mongoose.model('Recipe', recipeSchema)
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

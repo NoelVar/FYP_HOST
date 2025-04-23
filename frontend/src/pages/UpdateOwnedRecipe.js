@@ -34,7 +34,6 @@ const UpdateOwnedRecipe = ({ setShowNavbar }) => {
     });
     const params = window.location.href
     const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[1]
-    const [changed, setChanged] = useState(false)
     const [error, setError] = useState(null)
     const [message, setMessage] = useState(null)
     const { user } = useAuthContext()
@@ -71,7 +70,6 @@ const UpdateOwnedRecipe = ({ setShowNavbar }) => {
         e.preventDefault()
         if (type === 'prep') {
             setPrepInstructions(prepInst.filter((inst, i) => { 
-                setChanged(true)
                 setMessage("Item removed successfully!")
                 setTimeout(() => {
                     setMessage(null)
@@ -80,7 +78,6 @@ const UpdateOwnedRecipe = ({ setShowNavbar }) => {
             }))
         } else if (type === 'cook') {
             setCookInstructions(cookInst.filter((inst, i) => { 
-                setChanged(true)
                 setMessage("Item removed successfully!")
                 setTimeout(() => {
                     setMessage(null)
@@ -89,7 +86,6 @@ const UpdateOwnedRecipe = ({ setShowNavbar }) => {
             }))
         } else if (type === 'ingredient') {
             setIngredients(ingredients.filter((ingredient, i) => {
-                setChanged(true)
                 setMessage("Item removed successfully!")
                 setTimeout(() => {
                     setMessage(null)
@@ -115,7 +111,7 @@ const UpdateOwnedRecipe = ({ setShowNavbar }) => {
             setTimeout(() => {
                 setMessage(null)
             }, 4000)
-            setChanged(true)
+
         } else if (type === 'cook') {
             cookInst.push(newCookInst)
             setNewCookInst('')
@@ -123,7 +119,6 @@ const UpdateOwnedRecipe = ({ setShowNavbar }) => {
             setTimeout(() => {
                 setMessage(null)
             }, 4000)
-            setChanged(true)
         }
     }
 
@@ -131,14 +126,12 @@ const UpdateOwnedRecipe = ({ setShowNavbar }) => {
     const handleNutrition = (e) => {
         e.preventDefault()
         setNutrInfo({...nutrInfo, [e.target.name]: e.target.value})
-        setChanged(true)
     }
 
     // NOTE: HANDLING ADDED INGREDIENT ------------------------------------------------------------
     const handleNewIngredient = (e) => {
         e.preventDefault()
         setSingleIngredient({...singleIngredient, [e.target.name]: e.target.value})
-        setChanged(true)
     }
 
     // NOTE: ADDING SINGLE INGREDIENT TO LIST OF INGREDIENTS --------------------------------------
@@ -558,3 +551,5 @@ const UpdateOwnedRecipe = ({ setShowNavbar }) => {
 }
 
 export default UpdateOwnedRecipe
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

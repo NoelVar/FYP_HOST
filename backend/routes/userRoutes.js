@@ -10,6 +10,8 @@ const {
     updateUser,
     deleteUser
 } = require('../controllers/userController')
+// IMPORTING MIDDLEWARE
+const requireAuth = require('../middleware/requireAuth')
 
 // NOTE: CREATING ROUTER COMPONENT
 const router = express.Router()
@@ -22,6 +24,9 @@ router.post('/register', registerUser)
 
 // NOTE: REGISTER USER
 router.post('/verify', verifyEmail)
+
+// REQUIRE AUTHENTICATION FOR SPECIFIC RECIPE ROUTES
+router.use(requireAuth)
 
 // NOTE: GET ALL USERS
 router.get('/all-users', getAllUsers)

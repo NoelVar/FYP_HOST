@@ -1,14 +1,16 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { Link } from "react-router-dom";
 import { useLayoutEffect, useEffect, useState } from "react";
 import RecipeDetails from "../components/RecipeDetails";
 import Footer from "../components/Footer";
 
+// HOME PAGE --------------------------------------------------------------------------------------
 const Home = ({ setShowNavbar }) => {
 
     // NOTE: VARIABLES
     const [popularRecipe, SetPopularRecipe] = useState(null)
 
-    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    // NOTE: SETTING NAV BAR TO TRUE
     useLayoutEffect(() => {
         setShowNavbar(true);
     }, [])
@@ -16,13 +18,11 @@ const Home = ({ setShowNavbar }) => {
     //NOTE: FETCHING POPULAR RECIPE FROM SERVER ---------------------------------------------------
         useEffect(() => {
             const fetchPopular = async () => {
-                // console.log(BACKEND)
-                const response = await fetch('http://localhost:4000/recipes/recipe/popular') // FIXME: REMOVE FULL URL
+                const response = await fetch('http://localhost:4000/recipes/recipe/popular')
                 const json = await response.json()
     
                 // CHECKING IF RESPONSE IS OKAY
                 if (response.ok) {
-                    console.log(json)
                     SetPopularRecipe(json)
                 }
             }

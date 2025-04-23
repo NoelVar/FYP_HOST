@@ -1,38 +1,52 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { useEffect, useLayoutEffect, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useRecipeContext } from "../hooks/useRecipeContext";
 
+// ALL USER PROFILES FUNCTION ---------------------------------------------------------------------
 const AllUserProfiles = ({ setShowNavbar, role }) => {
 
-     const { user } = useAuthContext()
-     const { recipes: users, dispatch } = useRecipeContext()
-    // const [users, setUsers] = useState(null)
+    // VARIABLES
+    const { user } = useAuthContext()
+    const { recipes: users, dispatch } = useRecipeContext()
     const [selectedStatus, setSelectedStatus] = useState(null)
-    // const [filteredUsers, setFilteredUsers] = useState(null)
     const [filterStatus, setFilterStatus] = useState(null)
     const [selectedId, setSelectedId] = useState(null)
     const [popUp, setPopUp] = useState(false)
     const [message, setMessage] = useState(null)
     const [error, setError] = useState(null)
     
-    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    // NOTE: SETTING NAV BAR TO TRUE
     useLayoutEffect(() => {
         setShowNavbar(true);
     }, [])
 
+    // FETCHING ALL USERS
     useEffect(() => {
         const fetchUser = async () => {
-            const response = await fetch('http://localhost:4000/user/all-users')
+            const response = await fetch('http://localhost:4000/user/all-users', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`,
+                }
+            })
             const json = await response.json()
 
+            // CHECKING IF RESPONSE IS NOT OK
+            if (!response.ok) {
+                setError(json.error || "Could not retrieve users!")
+                setTimeout(() => {
+                    setError(null)
+                }, 4000)
+            }
+
+            // RE USING RECIPE CONTEXT TO KEEP USERS UPDATED CONSTANTLY
             if (response.ok) {
                 dispatch({type: "SET_RECIPES", payload: json})
-                // setUsers(json)
-                // setFilteredUsers(json)
             }
         }
 
+        // ONLY FETHICNG RECIPES IF ROLE IS ADMIN
         if (role && role === 'admin') {
             fetchUser()
         }
@@ -52,6 +66,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                 })
                 const json = await response.json()
 
+                // VALIDATING RESPONSE (WENT WRONG)
                 if (!response.ok) {
                     setError(json.error || "Could not delete user!")
                     setTimeout(() => {
@@ -59,6 +74,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                     }, 4000)
                 }
 
+                // VALIDATING RESPONSE (OK)
                 if (response.ok) {
                     dispatch({type: "DELETE_RECIPE", payload: json})
                     setMessage("User has been deleted successfully!")
@@ -68,6 +84,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                     setSelectedId(null)
                     setPopUp(false)
                 }
+            // CATCHING ERRORS IF ANY OCCOURED
             } catch (err) {
                 console.log(err)
             }
@@ -90,6 +107,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
 
                 const json = await response.json()
 
+                // VALIDATING RESPONSE (WENT WRONG)
                 if (!response.ok) {
                     setError(json.error || "Could not update user's role!")
                     setTimeout(() => {
@@ -97,6 +115,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                     }, 4000)
                 }
 
+                // VALIDATING RESPONSE (OK)
                 if (response.ok) {
                     setMessage("User role has been updated successfully!")
                     setTimeout(() => {
@@ -106,23 +125,12 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                     dispatch({type: "UPDATE_RECIPE", payload: json})
                 }
 
+            // CATCHING ERRORS
             } catch (err) {
                 console.error(err)
             }
         }
     }
-
-    // // NOTE: FILTER USERS -------------------------------------------------------------------------
-    // const filterUsers = (e) => {
-    //     e.preventDefault()
-    //     var filteredArray = []
-    //     users.map((user) => {
-    //         if (user.role === filterStatus) {
-    //             filteredArray.push(user)
-    //         }
-    //     })
-    //     setFilteredUsers(filteredArray)
-    // }
     
     // NOTE: CLEARING FILTERS ---------------------------------------------------------------------
     const handleClear = () => {
@@ -140,7 +148,6 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
                     <option value='user'>user</option>
                 </select>
                 <div className="filter-action">
-                    {/* <button className='filter-btn' onClick={filterUsers}>Filter</button> */}
                     <input type="reset" onClick={handleClear}></input>
                 </div>
             </form>
@@ -254,3 +261,5 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
 }
 
 export default AllUserProfiles
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+// LOADING FUNCTION -------------------------------------------------------------------------------
 const Loading = () => {
     return (
             <div className="recipe-details">
@@ -10,3 +11,5 @@ const Loading = () => {
 }
 
 export default Loading
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

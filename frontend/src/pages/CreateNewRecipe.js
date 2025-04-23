@@ -4,11 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useLayoutEffect } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 
-    /* TODO: - REMOVE CAPITAL LETTER WHEN SAVING
-             - STYLE PAGE
-             - ADD ALL INGREDIENT DISPLAY BASED ON INGREDIENT NAMES (IF MATCHES DONT ADD TO LIST)
-    */
-
 // NOTE: CREATE NEW RECIPE ------------------------------------------------------------------------
 const CreateNewRecipe = ({setShowNavbar}) => {
 
@@ -32,9 +27,9 @@ const CreateNewRecipe = ({setShowNavbar}) => {
     const [cookingStep, setCookingStep] = useState('');
     const [cookInst, setCookInst] = useState([]);
     const [singleIngredient, setSingleIngredient] = useState({
-            ingredient: '',
-            quantity: 0,
-            measurement: ''
+        ingredient: '',
+        quantity: 0,
+        measurement: ''
     });
     const [ingredients, setIngredients] = useState([]);
     const [nutrInfo, setNutrInfo] = useState({

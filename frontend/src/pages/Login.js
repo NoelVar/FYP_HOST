@@ -1,9 +1,11 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useLayoutEffect } from "react";
 import { useAuthContext } from "../hooks/useAuthContext"
 
+// LOGIN ------------------------------------------------------------------------------------------
 const Login = ({setShowNavbar}) => {
 
     // NOTE: SETTING NAV BAR TO FALSE -------------------------------------------------------------
@@ -39,7 +41,9 @@ const Login = ({setShowNavbar}) => {
             }
             if (response.ok) {
                 // NOTE: SAVE THE USER TO LOCAL STORAGE
+                var now = new Date().getTime();
                 localStorage.setItem('user', JSON.stringify(json))
+                localStorage.setItem('loggedInTime', now)
 
                 // NOTE: UPDATE AUTH CONTEXT
                 dispatch({ type: 'LOGIN', payload: json })

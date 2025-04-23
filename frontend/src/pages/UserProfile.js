@@ -1,3 +1,4 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -5,6 +6,7 @@ import Footer from "../components/Footer";
 import { useRecipeContext } from "../hooks/useRecipeContext";
 import Loading from "../components/Loading";
 
+// USER PROFILE -----------------------------------------------------------------------------------
 const UserProfile = ({ setShowNavbar }) => {
 
     // NOTE: USE STATES
@@ -20,7 +22,7 @@ const UserProfile = ({ setShowNavbar }) => {
     const [error, setError] = useState(null)
     const [isLoading, setLoading] = useState(true);
 
-    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    // NOTE: SETTING NAV BAR TO TRUE 
     useLayoutEffect(() => {
         setShowNavbar(true);
     }, [])
@@ -30,14 +32,19 @@ const UserProfile = ({ setShowNavbar }) => {
         setTimeout(() => setLoading(false), 1000)
     }, [])
 
+    // FETCHING USER & THEIR RECIPES --------------------------------------------------------------
     useEffect(() => {
         var userID = null
 
+        // FETCHING USER
         const fetchUser = async () => {
             const email = user.email
             const response = await fetch('http://localhost:4000/user/single-user', {
                 method: 'POST',
-                headers: { 'Content-type': 'application/json' },
+                headers: { 
+                    'Content-type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                 },
                 body: JSON.stringify({email})
             })
             const json = await response.json()
@@ -48,9 +55,10 @@ const UserProfile = ({ setShowNavbar }) => {
             }
         }
 
+        // FETCHING RECIPES OF THE USER
         const usersRecipes = async () => {
             try {
-                const response = await fetch('http://localhost:4000/recipes') // FIXME: REMOVE FULL URL
+                const response = await fetch('http://localhost:4000/recipes')
                 const json = await response.json()
 
                 // CHECKING IF RESPONSE IS OKAY
@@ -71,6 +79,7 @@ const UserProfile = ({ setShowNavbar }) => {
             }
         }
 
+        // ONLY FETCHING USER RECIPES AND USER INFO IF THE USER IS LOGGED IN
         if (user) {
             fetchUser()
             usersRecipes()
@@ -90,6 +99,7 @@ const UserProfile = ({ setShowNavbar }) => {
 
             const json = await response.json()
 
+            // VALIDATING RESPONSE (WENT WRONG)
             if (!response.ok) {
                 setError(json.error || "Could not delete recipe!")
                 setTimeout(() => {
@@ -97,8 +107,8 @@ const UserProfile = ({ setShowNavbar }) => {
                 }, 4000)
             }
 
+            // VALIDATING RESPONSE (OK)
             if (response.ok) {
-                console.log(json)
                 recipeDispatch({type: "DELETE_RECIPE", payload: json})
                 setMessage("Recipe has been deleted successfully!")
                 setTimeout(() => {
@@ -123,10 +133,9 @@ const UserProfile = ({ setShowNavbar }) => {
                 const json = await response.json()
 
                 if (response.ok) {
-                    console.log(json)
                     setPopUp(0)
                     // NOTE: REMOVE USER FROM LOCAL STORAGE
-                    localStorage.removeItem('user')
+                    localStorage.clear()
                     // NOTE: DISPATCH LOGOUT ACTION
                     dispatch({type: 'LOGOUT'})
                     navigate('/')
@@ -231,3 +240,5 @@ const UserProfile = ({ setShowNavbar }) => {
 }
 
 export default UserProfile
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

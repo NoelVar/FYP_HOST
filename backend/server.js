@@ -18,11 +18,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static('public'));
 
-app.use((req, res, next) => {
-    // DEBUG: REMOVE BEFORE DEPLOYMENT
-    console.log("Request path: " + req.path, " Request method: " + req.method)
-    next()
-})
+// DEBUG THIS IS USED FOR DEVELOPING PURPOSES!
+// app.use((req, res, next) => {
+//     // DEBUG: REMOVE BEFORE DEPLOYMENT
+//     console.log("Request path: " + req.path, " Request method: " + req.method)
+//     next()
+// })
 
 // NOTE: ROUTES
 app.use('/recipes', recipesRoutes);
@@ -33,8 +34,7 @@ mongoose.connect(process.env.DB_CONNECTION)
     .then(() => {
         // NOTE: LISTEN FOR REQUESTS
         app.listen(process.env.PORT, () => {
-            // DEBUG: REMOVE BEFORE DEPLOYMENT 
-            console.log("Connected to DB and listening to the PORT", process.env.PORT)
+            console.log("Connected to DB")
         })
     })
     .catch((error) => {

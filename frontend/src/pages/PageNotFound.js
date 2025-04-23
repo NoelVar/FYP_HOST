@@ -1,6 +1,8 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { Link } from "react-router-dom";
 import { useLayoutEffect } from 'react';
 
+// PAGE NOT FOUND PAGE ----------------------------------------------------------------------------
 const PageNotFound = ({setShowNavbar}) => {
 
     // NOTE: SETTING NAV BAR TO FALSE -------------------------------------------------------------

@@ -5,8 +5,6 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const dotenv = require("dotenv")
 dotenv.config()
-// NOTE: INSPIRED FROM: https://www.w3schools.com/nodejs/nodejs_email.asp
-var nodemailer = require('nodemailer');
 const { sendEmail } = require('../Utilities/SendingEmail');
 
 // ADAPTED FROM: https://youtu.be/MsudBMepwO8
@@ -45,12 +43,13 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%&*])[A-Za-z\d!@
 
 // REGISTER USER ----------------------------------------------------------------------------------
 const registerUser = async (req, res) => {
-
+    // ESTABLISHING BASIC VARIABLES AND INFORMATION
     const { username, email, password, confirmPassword } = req.body;
     const role = 'user';
     const status = 'unconfirmed';
     const veriCode = verificationCode()
 
+    // CREATING VERIFICATION OBJECT
     const verification = {
         status: status,
         code: veriCode
@@ -62,8 +61,10 @@ const registerUser = async (req, res) => {
         return res.status(400).json({ error: 'Field cannot be empty.' })
     }
 
+    // CHECKING IF THE USERNAME IS ALREADY IN THE DATABASE
     const usernameExists = await userModel.findOne({ username })
 
+    // IF SO THE USER RECIEVES AN ERROR
     if (usernameExists) {
         return res.status(400).json({ error: 'Username is already registered.' })
     }
@@ -81,14 +82,17 @@ const registerUser = async (req, res) => {
     // NOTE: CHECKS IF USER EXISTS IN DB
     const alreadyRegisteredEmail = await userModel.findOne({ email })
 
+    // SENDING ERROR IF THE USER EMAIL IS ALREADY REGISTERED
     if (alreadyRegisteredEmail) {
         return res.status(400).json({ error: 'Email is already registered.' })
     }
 
+    // SENDING ERROR IF THE PASSWORD AND CONFIRMATION PASSWORD DOES NOT MATCH
     if (password !== confirmPassword) {
         return res.status(401).json({ error: 'Password and confirm password does not match.' })
     }
 
+    // CHECKING IF THE PASSWORD IS STRONG ENOUGH
     if (!passwordRegex.test(password)) {
         return res.status(400).json({ error: 'Weak password! Password should be minimum 8 characters long and contain atleast one number, one uppercase, one lowercase, and one special character (!@#$%&*).' })
     }
@@ -99,6 +103,7 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(password, salt)
 
+        // ATTEMPTING TO CREATE USER
         const user = await userModel.create({username, email, password: hash, role, verification})
 
         if(!user) {
@@ -109,6 +114,7 @@ const registerUser = async (req, res) => {
         // CREATING TOKEN
         const token = createToken(user._id)
 
+        // CREATING SUBJECT AND CONTENT FOR EMAIL
         const subject = 'Welcome to EdibleEducation!🍓'
         const content = `
             <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -148,6 +154,7 @@ const registerUser = async (req, res) => {
             </div>
         `
 
+        // SENDING EMAIL USING THE 'sendEmail' UTILITY FUNCTION
         sendEmail(email, subject, content)
 
         // NOTE: CREATES USER IF EVERYTHING IS OK
@@ -163,6 +170,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
+    // CHECKING IF FIELDS HAVE BEEN LEFT EMPTY
     if (email === '' || password === '') {
         return res.status(400).json({ error: 'Field cannot be empty.' })
     }
@@ -172,15 +180,21 @@ const loginUser = async (req, res) => {
         return res.status(400).json({ error: 'Invalid email format.' })
     }
 
+    // ATTEMPTING TO LOG USER IN
     try {
+        // TRYING TO RETRIEVE USER FROM DATABASE
         const user = await userModel.findOne({ email })
 
+        // SENDING ERROR IF THE USER DOES NOT EXIST (BY EMAIL)
         if (!user) {
             return res.status(404).json({ error: 'Couldn\'t find user with matching email address.' })
         }
+
+        // COMPARING SAVED AND ENTERED PASSWORDS USING THE 'bycrypt.compare' FUNCTION
         const username = user.username
         const match = await bcrypt.compare(password, user.password)
 
+        // IF IT DOES NOT MATCH RETURN ERROR
         if (!match) {
             return res.status(401).json({ error: 'Invalid credentials.' })
         }
@@ -200,6 +214,7 @@ const loginUser = async (req, res) => {
 const verifyEmail = async (req, res) => {
     const { email, veriCode } = req.body;
 
+    // CHECKING IF THE USER ENTERED A VERIFICATION CODE
     if (veriCode === '') {
         return res.status(400).json({ error: 'Please provide a verification code!' })
     }
@@ -210,6 +225,7 @@ const verifyEmail = async (req, res) => {
             return res.status(400).json({ error: 'Email cannot be empty' })
         }
 
+        // ATTEMPTS TO FIND USER IN THE DATABASE
         const user = await userModel.findOne({ email })
         
         // NOTE: CHECKS IF USER EXISTS IN DB
@@ -217,10 +233,12 @@ const verifyEmail = async (req, res) => {
             return res.status(404).json({ error: 'Couldn\'t find user.' })
         }
 
+        // CHECKS IF THE ENTERED VERIFICATION CODE IS VALID
         if (veriCode !== user.verification.code) {
             return res.status(400).json({ error: 'Invalid verification code.' })
         }
 
+        // IF EVERYTHING IS VALID THE USER IS UPDATED TO BE VERIFIED
         const updatedUser = await userModel.findOneAndUpdate(
             {email: email},
             {verification: {
@@ -230,10 +248,12 @@ const verifyEmail = async (req, res) => {
             {new: true}
         )
 
+        // IF SOMETHING WENT WRONG ERROR IS SENT
         if (!updatedUser) {
             return res.status(400).json({error: 'Couldn\'t verify user.'})
         }
 
+        // ESTABLISHING EMAIL SUBJECT AND CONTENT
         const subject = 'Your Account has been Verified!🍳'
         const content = `
             <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -272,21 +292,23 @@ const verifyEmail = async (req, res) => {
             </div>
         `
 
+        // SENDING EMAIL TO USER USING THE SEND EMAIL UTILITY FUNCTION
         sendEmail(user.email, subject, content)
 
         // NOTE: UPDATES USER IF STATUS IS OK
         return res.status(200).json({updatedUser, message: "Your account has been verified!"})
 
     } catch (err) {
+        // SENDING ERROR IF INTERNAL ERROR HAS OCCOURED
         return res.status(500).json({ error: err.message })
     }
-
 }
 
 // GET ALL USERS ----------------------------------------------------------------------------------
 const getAllUsers = async (req, res) => {
     // NOTE: FETCHES ALL USERS FROM DB
     try {
+        // ATTEMPTING TO RETRIEVE ALL USERS FROM DB
         const users = await userModel.find({})
         
         // NOTE: VALIDATES IF THE USERS EXIST IN DB
@@ -327,12 +349,15 @@ const getSingleUser = async (req, res) => {
             return res.status(400).json({ error: 'Email cannot be empty' })
         }
 
+        // ATTEMPTING TO FIND USER IN DB
         const user = await userModel.findOne({ email })
         
         // NOTE: CHECKS IF USER EXISTS IN DB
         if (!user) {
             return res.status(404).json({ error: 'Couldn\'t find user.' })
         }
+
+        // CREATING AN OBJECT TO ONLY RETURN SPECIFIC INFORMATION IN RESPONSE
         const userInfo = {
             _id: user._id,
             username: user.username,
@@ -380,6 +405,7 @@ const updateUser = async (req, res) => {
     const { id } = req.params
     const { role } = req.body
     
+    // CHECKING IF ROLE IS EMPTY
     if (!role) {
         return res.status(400).json({error: 'Role cannot be empty! Please select a role for the user!'})
     }
@@ -390,6 +416,7 @@ const updateUser = async (req, res) => {
             return res.status(400).json({error: 'Invalid user ID.'})
         }
 
+        // ATTEMPTING TO FIND USER IN DB
         var user = userModel.findById(id)
 
         // NOTE: CHECKS IF USER EXISTS IN DB
@@ -408,6 +435,7 @@ const updateUser = async (req, res) => {
             return res.status(404).json({error: 'Couldn\'t update user.'})
         }
 
+        // CREATING SUBJECT AND CONTENT FOR EMAIL
         const subject = 'Your user status has been changed!🍳'
         const content = `
             <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -446,6 +474,7 @@ const updateUser = async (req, res) => {
             </div>
         `
 
+        // SENDING EMAIL USING THE 'sendEmail' UTILITY FUNCTION
         sendEmail(user.email, subject, content)
 
         // NOTE: UPDATES USER IF STATUS IS OK
@@ -474,6 +503,7 @@ const deleteUser = async (req, res) => {
             return res.status(404).json({error: 'Couldn\'t find user.'})
         }
 
+        // CREATING SUBJECT AND CONTENT FOR EMAIL
         const subject = 'Your Account has been Terminated!❌'
         const content = `
             <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -503,6 +533,7 @@ const deleteUser = async (req, res) => {
             </div>
         `
 
+        // SENDING EMAIL USING UTILITY FUNCTION
         sendEmail(user.email, subject, content)
         
         // NOTE: DELETES USER IF STATUS IS OK
@@ -513,6 +544,7 @@ const deleteUser = async (req, res) => {
     }
 }
 
+// EXPORTING FUNCTIONS
 module.exports = {
     loginUser,
     registerUser,

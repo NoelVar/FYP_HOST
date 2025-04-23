@@ -1,5 +1,7 @@
+// IMPORTS ----------------------------------------------------------------------------------------
 import { Link } from "react-router-dom"
 
+// FOOTER FUNCTION --------------------------------------------------------------------------------
 const Footer = () => {
     return (
         <div className="footer-container">
@@ -22,3 +24,5 @@ const Footer = () => {
 }
 
 export default Footer
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

@@ -3,9 +3,10 @@ import { useState, useEffect, useLayoutEffect, use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../hooks/useAuthContext';
 
+// SUGGESTION PAGE --------------------------------------------------------------------------------
 const SuggestVariation = ({ setShowNavbar }) => {
 
-    // NOTE: SETTING NAV BAR TO TRUE --------------------------------------------------------------
+    // NOTE: SETTING NAV BAR TO TRUE 
     const navigate = useNavigate()
     const [recipe, setRecipe] = useState(null)
     const [ingredients, setIngredients] = useState([])
@@ -470,7 +471,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                         onChange={(e) => setNewPrepInst(e.target.value)}
                                         value={newPrepInst}
                                     />
-                                    <button onClick={(e) => handleInput(e, 'prep')}>+ add new instruction</button>
+                                    <button onClick={(e) => handleInput(e, 'prep')}>+ Add new instruction</button>
                                 </ol>     
                             </div>
                             <div className='instructions'>
@@ -485,7 +486,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                                         onChange={(e) => setNewCookInst(e.target.value)}
                                         value={newCookInst}
                                     />
-                                    <button onClick={(e) => handleInput(e, 'cook')}>+ add new instruction</button>
+                                    <button onClick={(e) => handleInput(e, 'cook')}>+ Add new instruction</button>
                                 </ol> 
                             </div>                                                         
                         </div>
@@ -577,3 +578,5 @@ const SuggestVariation = ({ setShowNavbar }) => {
 }
 
 export default SuggestVariation
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

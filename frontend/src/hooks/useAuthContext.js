@@ -14,3 +14,5 @@ export const useAuthContext = () => {
     // RETURNS CONTEXT
     return context
 }
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

@@ -16,6 +16,7 @@ const sendEmail = (email, subject, content) => {
         }
     });
 
+    // ADDING THE MAILING INFORMATION
     var mailOptions = {
         from: process.env.SOURCE_EMAIL_ADD,
         to: email,
@@ -23,6 +24,7 @@ const sendEmail = (email, subject, content) => {
         html: content
     };
 
+    // SENDING THE EMAIL USING THE MAIN+L INFORMATION AND THE TRANSPORTER
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
             console.log(error);
@@ -33,3 +35,5 @@ const sendEmail = (email, subject, content) => {
 }
 
 module.exports = { sendEmail }
+
+// END OF DOCUMENT --------------------------------------------------------------------------------

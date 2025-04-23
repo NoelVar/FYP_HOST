@@ -106,6 +106,7 @@ const createRecipe = async (req, res) => {
             return res.status(409).json({ error: 'The request could not be completed due to a conflict with the current state of the resource.' })
         }
 
+        // SETTING THE EMAIL SUBJECT AND CONTENT
         const subject = 'You Have Successfully Created a Recipe !✅'
         const content = `
             <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -135,13 +136,13 @@ const createRecipe = async (req, res) => {
             </div>
         `
 
+        // SENDING EMAIL SUBJECT AND CONTENT TO SEND EMAIL UTILITY FUNCTION
         sendEmail(user.email, subject, content)
 
         // NOTE: CREATES RECIPE IF EVERYTHING IS OK
         return res.status(201).json({recipe, message: "Recipe has been created successfully!"});
     } catch (error) {
         // NOTE: RETURNS ERROR IF SOMETHING WENT WRONG
-        console.log('Error occourd' + error)
         return res.status(500).json({ error: error.message })
     }
 }
@@ -166,7 +167,9 @@ const deleteRecipe = async (req, res) => {
 
         const user = await userModel.findById(recipe.postedBy)
 
+        // ONLY SENDING EMAIL IF THE USER OWNS THE POST
         if (user) {
+            // SETTING THE EMAIL SUBJECT AND CONTENT
             const subject = 'Your Recipe has been Deleted!❌'
             const content = `
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -196,6 +199,7 @@ const deleteRecipe = async (req, res) => {
                 </div>
             `
 
+            // SENDING EMAIL SUBJECT AND CONTENT TO SEND EMAIL UTILITY FUNCTION
             sendEmail(user.email, subject, content)
         }
         
@@ -212,7 +216,7 @@ const updateOwnedRecipe = async (req, res) => {
     const { id } = req.params
     
     try {
-        // Parse form data fields
+        // RETRIEVING DATA FIELDS FROM REQ BY ONE BY ONE
         const title = req.body.title;
         const prepTime = req.body.prepTime;
         const cookTime = req.body.cookTime;
@@ -222,8 +226,8 @@ const updateOwnedRecipe = async (req, res) => {
         const mealType = req.body.mealType;
         const email = req.body.email;
 
-        // Handle file upload
-        const image = req.file ? req.file.filename : null;
+        // HANDLING IMAGE
+        const image = req.file;
 
         // NOTE: PARSE INGREDIENT AND NUTRITIONAL INFO IF THEY ARE SENT AS A JSON STRING
         const prepInstructions = req.body.cookInstructions ? JSON.parse(req.body.prepInstructions) : [];
@@ -249,8 +253,10 @@ const updateOwnedRecipe = async (req, res) => {
             return res.status(404).json({ error: 'Couldn\'t find user.' })
         }
 
+        // ATTEMPTING TO FIND USER'S RECIPE
         const recipe = await recipeModel.findById(id)
 
+        // SENDING ERROR IF COULDN'T FIND THE RECIPE
         if (!recipe) {
             return res.status(404).json({error: 'Couldn\'t find recipe.'})
         }
@@ -260,7 +266,7 @@ const updateOwnedRecipe = async (req, res) => {
             return res.status(401).json({ error: 'Updating recipe is not authorized.' })
         }
 
-        // Create update object
+        // CREATING UPDATE OBJECT
         const updateData = {
             title: title || recipe.title,
             prepTime: prepTime || recipe.prepTime,
@@ -276,11 +282,12 @@ const updateOwnedRecipe = async (req, res) => {
             approvalStatus: 'pending'
         };
 
+        // CHECKING IF THE USER UPLOADED A NEW IMAGE
         if (image) {
             updateData.image = image;
         }
 
-        // Update the recipe
+        // UPDATING RECIPE
         const updatedRecipe = await recipeModel.findOneAndUpdate(
             {_id: id},
             updateData,
@@ -292,7 +299,9 @@ const updateOwnedRecipe = async (req, res) => {
             return res.status(404).json({error: 'Couldn\'t update recipe.'})
         }
 
+        // SENDING EMAIL TO THE OWNER OF THE RECIPE
         if (user) {
+            // ESTABLISHING SUBJECT AND CONTENT
             const subject = 'Your Recipe has been Updated!'
             const content = `
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -331,9 +340,11 @@ const updateOwnedRecipe = async (req, res) => {
                 </div>
             `
 
+            // USING 'sendEmail' UTILITY FUNCTION TO SEND EMAIL
             sendEmail(user.email, subject, content)
-        }
+        }   
 
+        // RETURNING RESPONSE WITH STATUS 200
         return res.status(200).json({message: "Recipe updated successfully!", recipe: updatedRecipe})
     } catch(err) {
         // NOTE: CATCHES ERRORS AND RETURNS ERROR MESSAGE
@@ -346,6 +357,7 @@ const updateRecipeStatus = async (req, res) => {
     const { id } = req.params
     const { status } = req.body
 
+    // CHECKING IF A STATUS HAS BEEN SELECTED
     if (!status) {
         return res.status(400).json({error: 'Status cannot be empty. Please seclect a status.'})
     }
@@ -367,9 +379,12 @@ const updateRecipeStatus = async (req, res) => {
             return res.status(404).json({error: 'Couldn\'t find recipe.'})
         }
 
+        // ATTEMPTING TO FIND USER BASED ON THE POSTER
         const user = await userModel.findById(recipe.postedBy)
 
+        // IF USER IS FOUND AN EMAIL IS SENT TO THEM ABOUT THE UPDATION
         if (user) {
+            // SUBJECT AND CONTENT IS ESTABLISHED FOR THE EMAIL
             const subject = 'Your Recipe Status has been Updated!'
             const content = `
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -408,6 +423,7 @@ const updateRecipeStatus = async (req, res) => {
                 </div>
             `
 
+            // USING THE UTILITY FUNCTION 'sendEmail' TO SEND THE EMAIL
             sendEmail(user.email, subject, content)
         }
 
@@ -475,6 +491,7 @@ const addComment = async (req, res) => {
             return res.status(404).json({error: 'Couldn\'t add comment.'})
         }
 
+        // SETTING SUBJECT AND CONTENT OF EMAIL
         const subject = 'Your Comment has been added!💬'
         const emailContent = `
             <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #F5E9DF; color: #071320;">
@@ -514,6 +531,7 @@ const addComment = async (req, res) => {
             </div>
         `
 
+        // SENDING EMAIL TO USER USING THE 'sendEmail' UTILITY FUNCTION
         sendEmail(email, subject, emailContent)
 
         // NOTE: CREATES COMMENT IF EVERYTHING IS OK
@@ -553,11 +571,14 @@ const addRating = async (req, res) => {
             return res.status(404).json({ error: 'Couldn\'t find user.' })
         }
 
+        // MAKING SURE USER IS VERIFIED TO CONDUCT RATING
         if (user.verification.status !== 'verified') {
             return res.status(404).json({ error: 'You cannot rate recipes until you verify your account.' })
         }
 
+        // ATTEMPTING TO FIND RECIPE USER WANTS TO RATE
         const recipe = await recipeModel.findById(id);
+
         // NOTE: CHECKS IF RECIPE EXISTS IN DB
         if (!recipe) {
             return res.status(404).json({error: 'Couldn\'t find recipe.'})
@@ -649,6 +670,7 @@ const deleteComment = async (req, res) => {
             }
         })
 
+        // IF NO COMMENT HAS BEEN FOUND
         if (!commentToDelete) {
             return res.status(404).json({error: "Selected comment cannot be found!"})
         }
@@ -661,6 +683,7 @@ const deleteComment = async (req, res) => {
             }
         )
 
+        // IF SOMETHING WENT WRONG DURING THE DELETION
         if (!removeComment) {
             return res.status(404).json({error: "Comment cannot be deleted!"})
         }
@@ -702,6 +725,7 @@ const removeUserComment = async (req, res) => {
             return res.status(404).json({ error: 'Couldn\'t find user.' })
         }
 
+        // CHECKING IF THE USER IS AUTHORIZED
         if (!user.role === 'admin' || !user.role === 'moderator') {
             return res.status(403).json({ error: 'No permission to access the requested resource ' })
         }
@@ -723,6 +747,7 @@ const removeUserComment = async (req, res) => {
             }
         })
 
+        // CHECKING IF THE COMMENT EXISTS
         if (!commentToDelete) {
             return res.status(404).json({error: "Selected comment cannot be found!"})
         }
@@ -735,6 +760,7 @@ const removeUserComment = async (req, res) => {
             }
         )
 
+        // CHECKING IF SOMETHING WENT WRONG
         if (!removeComment) {
             return res.status(404).json({error: "Comment cannot be deleted!"})
         }
