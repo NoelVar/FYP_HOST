@@ -10,7 +10,7 @@ dotenv.config()
 // NOTE: EXPRESS APPLICATION
 const app = express();
 app.use(cors({
-    origin: ["http://localhost:3000", "https://classy-madeleine-bde46c.netlify.app"], 
+    origin: ["http://localhost:3000", "edibleeducation.netlify.app"], 
     credentials: true
 }))
 
