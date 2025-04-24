@@ -24,7 +24,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
     // FETCHING ALL USERS
     useEffect(() => {
         const fetchUser = async () => {
-            const response = await fetch('http://localhost:4000/user/all-users', {
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/user/all-users', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -58,7 +58,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
         e.preventDefault()
         if (user) {
             try {
-                const response = await fetch('http://localhost:4000/user/delete-user/' + id, {
+                const response = await fetch('https://edibleeducation-backend.up.railway.app/user/delete-user/' + id, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${user.token}`
@@ -96,7 +96,7 @@ const AllUserProfiles = ({ setShowNavbar, role }) => {
         e.preventDefault()
         if (user) {
             try {
-                const response = await fetch('http://localhost:4000/user/update-status/' + id, {
+                const response = await fetch('https://edibleeducation-backend.up.railway.app/user/update-status/' + id, {
                     headers: {
                         'Authorization': `Bearer ${user.token}`,
                         'Content-Type': 'application/json'

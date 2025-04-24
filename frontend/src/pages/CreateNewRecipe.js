@@ -163,7 +163,7 @@ const CreateNewRecipe = ({setShowNavbar}) => {
         // CHECKING IF USER IS LOGGED IN
         if (user) {
             // NOTE: SENDING THE RECIPE TO THE SERVER AND THE AUTH TOKEN TO GET ACCESS TO THE ENDPOINT
-            const response = await fetch('http://localhost:4000/recipes', {
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes', {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 },

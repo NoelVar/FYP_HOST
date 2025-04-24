@@ -29,7 +29,7 @@ const Register = ({setShowNavbar}) => {
 
         try {
             // SENDING REQUEST TO BACKEND API
-            const response = await fetch('http://localhost:4000/user/register', {
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/user/register', {
                 method: 'POST',
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify({ username, email: userEmail, password, confirmPassword })

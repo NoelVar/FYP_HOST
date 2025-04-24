@@ -17,7 +17,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
     const [recipe, setRecipe] = useState(null)
     const { user } = useAuthContext()
     const params = window.location.href
-    const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[0]
+    const urlname = 'https://edibleeducation-backend.up.railway.app/recipes/' + params.split('/').reverse()[0]
     const [rating, setRating] = useState(null)
     const [hover, setHover] = useState(null)
     const [posted, setPostedBy] = useState(null)
@@ -46,7 +46,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
         }
 
         const fetchRecipes = async () => {
-            const response = await fetch('http://localhost:4000/recipes')
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes')
             const json = await response.json()
 
             // CHECKING IF RESPONSE IS OKAY
@@ -71,7 +71,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
     // NOTE: FUNCTION TO RETRIEVE USERNAMES -------------------------------------------------------
     const fetchUser = async (userId) => {
         try {
-            const response = await fetch('http://localhost:4000/user/single-user-id', {
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/user/single-user-id', {
                 method: 'POST',
                 headers: {
                      'Content-type': 'application/json',
@@ -162,7 +162,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                         <div className='single-recipe-middle'>
                             <div className='single-recipe-img'>
                                 {recipe.image
-                                    ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
+                                    ? <img src={`https://edibleeducation-backend.up.railway.app/images/` + recipe.image} alt='Recipe cover' />
                                     : <img src='ED2_LOGOV5.png' alt='Recipe cover'/>
                                 }
                             </div>
@@ -315,7 +315,7 @@ const SingleRecipe = ({ setShowNavbar }) => {
                                             return (
                                                 <Link to={url} onClick={() => {window.location.href=url}} className='variation-card'>
                                                     {variation.image
-                                                        ? <img src={`http://localhost:4000/images/` + variation.image} alt='Recipe cover' />
+                                                        ? <img src={`https://edibleeducation-backend.up.railway.app/images/` + variation.image} alt='Recipe cover' />
                                                         : <img src='../ED2_LOGOV5.png' alt='Coulnt find img' />
                                                     }
                                                     <p>{variation.title}</p>

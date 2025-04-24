@@ -15,7 +15,7 @@ const RecipeDetails = ({ recipe, role}) => {
     // RETRIEVING RECIPES ON LOAD
     useEffect(() => {
         const fetchRecipes = async () => {
-            const response = await fetch('http://localhost:4000/recipes') // FIXME: REMOVE FULL URL
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes')
             const json = await response.json()
 
             // CHECKING IF RESPONSE IS OKAY
@@ -41,7 +41,7 @@ const RecipeDetails = ({ recipe, role}) => {
         <div className="recipe-details">
             <Link to={urlName.toLowerCase()}>
                 {recipe.image
-                    ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
+                    ? <img src={`https://edibleeducation-backend.up.railway.app/images/` + recipe.image} alt='Recipe cover' />
                     : <img src='ED2_LOGOV5.png' />
                 }
                 <div className="recipe-info">

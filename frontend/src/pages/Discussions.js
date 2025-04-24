@@ -22,7 +22,7 @@ const Discussions = ({ setShowNavbar }) => {
     const { user } = useAuthContext()
     const { comments, dispatch } = useRecipeContext()
     const params = window.location.href
-    const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[1]
+    const urlname = 'https://edibleeducation-backend.up.railway.app/recipes/' + params.split('/').reverse()[1]
     const [commentUsers, setCommentUsers] = useState({});
     const [loggedInUser, setLoggedInUser] = useState(null)
     const [error, setError] = useState(null)
@@ -47,7 +47,7 @@ const Discussions = ({ setShowNavbar }) => {
         const fetchLoggedInUser = async () => {
             const email = user.email
             try {
-                const response = await fetch('http://localhost:4000/user/single-user', {
+                const response = await fetch('https://edibleeducation-backend.up.railway.app/user/single-user', {
                     method: "POST",
                     headers: { 
                         'Content-type': 'application/json',
@@ -226,7 +226,7 @@ const Discussions = ({ setShowNavbar }) => {
     const fetchUsernames = async (userId) => {
         // ATTEMPTING TO FETCH USER ID
         try {
-            const response = await fetch('http://localhost:4000/user/single-user-id', {
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/user/single-user-id', {
                 method: 'POST',
                 headers: { 
                     'Content-type': 'application/json',

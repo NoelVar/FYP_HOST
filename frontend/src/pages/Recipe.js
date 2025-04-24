@@ -42,7 +42,7 @@ const Recipe = ({ setShowNavbar, role }) => {
     //NOTE: FETCHING RECIPES FROM SERVER ----------------------------------------------------------
     useEffect(() => {
         const fetchRecipes = async () => {
-            const response = await fetch('http://localhost:4000/recipes')
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes')
             const json = await response.json()
 
             // CHECKING IF RESPONSE IS OKAY

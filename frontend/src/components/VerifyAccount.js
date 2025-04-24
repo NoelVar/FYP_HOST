@@ -27,7 +27,7 @@ const VerifyAccount = ({ setShowNavbar }) => {
             const email = user.email
             try {
                 // SENDING REQUEST TO BACKEND API
-                const response = await fetch('http://localhost:4000/user/verify', {
+                const response = await fetch('https://edibleeducation-backend.up.railway.app/user/verify', {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json'

@@ -39,7 +39,7 @@ const UserProfile = ({ setShowNavbar }) => {
         // FETCHING USER
         const fetchUser = async () => {
             const email = user.email
-            const response = await fetch('http://localhost:4000/user/single-user', {
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/user/single-user', {
                 method: 'POST',
                 headers: { 
                     'Content-type': 'application/json',
@@ -58,7 +58,7 @@ const UserProfile = ({ setShowNavbar }) => {
         // FETCHING RECIPES OF THE USER
         const usersRecipes = async () => {
             try {
-                const response = await fetch('http://localhost:4000/recipes')
+                const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes')
                 const json = await response.json()
 
                 // CHECKING IF RESPONSE IS OKAY
@@ -90,7 +90,7 @@ const UserProfile = ({ setShowNavbar }) => {
     const handleDelete = async (e, id) => {
         e.preventDefault()
         if (user) {
-            const response = await fetch(`http://localhost:4000/recipes/` + id, {
+            const response = await fetch(`https://edibleeducation-backend.up.railway.app/recipes/` + id, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 },
@@ -124,7 +124,7 @@ const UserProfile = ({ setShowNavbar }) => {
         e.preventDefault()
         if (user) {
             try {
-                const response = await fetch('http://localhost:4000/user/delete-user/' + id, {
+                const response = await fetch('https://edibleeducation-backend.up.railway.app/user/delete-user/' + id, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${user.token}`

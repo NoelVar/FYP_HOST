@@ -18,7 +18,7 @@ const Home = ({ setShowNavbar }) => {
     //NOTE: FETCHING POPULAR RECIPE FROM SERVER ---------------------------------------------------
         useEffect(() => {
             const fetchPopular = async () => {
-                const response = await fetch('http://localhost:4000/recipes/recipe/popular')
+                const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes/recipe/popular')
                 const json = await response.json()
     
                 // CHECKING IF RESPONSE IS OKAY

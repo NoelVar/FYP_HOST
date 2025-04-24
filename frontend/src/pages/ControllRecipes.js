@@ -32,7 +32,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
     // FETCHING ALL RECIPES
     useEffect(() => {
         const fetchRecipes = async () => {
-            const response = await fetch('http://localhost:4000/recipes')
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes')
             const json = await response.json()
 
             if (response.ok) {
@@ -56,7 +56,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
     const handleDelete = async (e, id) => {
         e.preventDefault()
         if (user) {
-            const response = await fetch(`http://localhost:4000/recipes/` + id, {
+            const response = await fetch(`https://edibleeducation-backend.up.railway.app/recipes/` + id, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 },
@@ -94,7 +94,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
     const handleChange = async (e, id) => {
         e.preventDefault()
         try {
-            const response = await fetch('http://localhost:4000/recipes/' + id, {
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes/' + id, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json'
@@ -152,7 +152,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                             <div className="recipe-info-container">
                                 <Link to={'/recipes/' + recipe._id}>
                                     {recipe.image
-                                        ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
+                                        ? <img src={`https://edibleeducation-backend.up.railway.app/images/` + recipe.image} alt='Recipe cover' />
                                         : <img src='ED2_LOGOV5.png' />
                                     }
                                     <h3 className='username'>{recipe.title}</h3>
@@ -178,7 +178,7 @@ const ControllRecipes = ({ setShowNavbar, role }) => {
                             <div className="recipe-info-container">
                                 <Link to={'/recipes/' + recipe._id}>
                                     {recipe.image
-                                        ? <img src={`http://localhost:4000/images/` + recipe.image} alt='Recipe cover' />
+                                        ? <img src={`https://edibleeducation-backend.up.railway.app/images/` + recipe.image} alt='Recipe cover' />
                                         : <img src='ED2_LOGOV5.png' />
                                     }
                                     <h3 className='username'>{recipe.title}</h3>

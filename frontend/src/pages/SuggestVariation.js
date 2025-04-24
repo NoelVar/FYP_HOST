@@ -34,7 +34,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
         totalProtein: 0
     });
     const params = window.location.href
-    const urlname = 'http://localhost:4000/recipes/' + params.split('/').reverse()[1]
+    const urlname = 'https://edibleeducation-backend.up.railway.app/recipes/' + params.split('/').reverse()[1]
     const [changed, setChanged] = useState(false)
     const [error, setError] = useState(null)
     const [message, setMessage] = useState(null)
@@ -260,7 +260,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
 
             // NOTE: SENDING THE RECIPE TO THE SERVER IF THE USER HAS MADE A CHANGE
             if (change) {
-                const response = await fetch('http://localhost:4000/recipes', {
+                const response = await fetch('https://edibleeducation-backend.up.railway.app/recipes', {
                     headers: {
                         'Authorization': `Bearer ${user.token}`
                     },

@@ -46,7 +46,7 @@ function App() {
         }
         
         try {
-            const response = await fetch('http://localhost:4000/user/single-user', {
+            const response = await fetch('https://edibleeducation-backend.up.railway.app/user/single-user', {
                 method: 'POST',
                 headers: { 
                   'Content-type': 'application/json',
