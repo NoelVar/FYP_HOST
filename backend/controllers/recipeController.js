@@ -227,7 +227,7 @@ const updateOwnedRecipe = async (req, res) => {
         const email = req.body.email;
 
         // HANDLING IMAGE
-        const image = req.file;
+        const image = req.file ? req.file.filename : null;
 
         // NOTE: PARSE INGREDIENT AND NUTRITIONAL INFO IF THEY ARE SENT AS A JSON STRING
         const prepInstructions = req.body.cookInstructions ? JSON.parse(req.body.prepInstructions) : [];
