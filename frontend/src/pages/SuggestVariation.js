@@ -287,7 +287,7 @@ const SuggestVariation = ({ setShowNavbar }) => {
                 }
 
             } else {
-                setError("Atleast one change needs to be made")
+                setError("At least one change needs to be made")
                 setTimeout(() => {
                     setError(null)
                 }, 4000)
